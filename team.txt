@@ -3,3 +3,4 @@ Adding something to team.txt - jwuzinski
 - HoytIseghohi
 - Hemanshu2005
 - gobezie
+- CurtisIsCoding
