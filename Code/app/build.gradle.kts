@@ -8,7 +8,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.konoha_events"
+        applicationId = "com.konoha.konoha_events"
         minSdk = 25
         targetSdk = 36
         versionCode = 1
