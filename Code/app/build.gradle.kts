@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    compileOnly("org.projectlombok:lombok:1.18.42")
 
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -44,6 +45,10 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation("com.google.firebase:firebase-firestore")
+
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
