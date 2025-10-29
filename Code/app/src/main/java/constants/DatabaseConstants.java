@@ -11,6 +11,7 @@ public class DatabaseConstants {
     public static final String COLLECTION_USERS_USER_TYPE_FIELD = "userType";
     public static final String COLLECTION_USERS_DEVICE_ID_FIELD = "deviceId";
     public static final String COLLECTION_ON_WAITING_LIST_NAME = "onWaitingList";
+    public static final String COLLECTION_ON_WAITING_LIST_STATUS_FIELD = "status";
     public static final String COLLECTION_ON_WAITING_LIST_USER_ID_FIELD = "userId";
     public static final String COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD = "eventId";
 

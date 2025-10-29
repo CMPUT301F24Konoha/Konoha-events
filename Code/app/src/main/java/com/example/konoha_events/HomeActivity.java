@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import constants.DatabaseConstants;
 import constants.IntentConstants;
+import services.FirebaseService;
 
 /**
  * HomeActivity
@@ -30,6 +31,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        init();
 
         entrantButton = findViewById(R.id.entrantButton);
         organizerButton = findViewById(R.id.organizerButton);
@@ -82,5 +85,8 @@ public class HomeActivity extends AppCompatActivity {
                     break;
             }
         });
+    }
+    private void init() {
+        FirebaseService.init();
     }
 }

@@ -19,6 +19,7 @@ import java.util.Map;
 import constants.DatabaseConstants;
 import lombok.Getter;
 import models.EventModel;
+import interfaces.UserTypeCallback;
 import models.OnWaitingListModel;
 import models.UserModel;
 import util.ModelUtil;
@@ -111,35 +112,41 @@ public class FirebaseService {
      * returns the user type of that user. If it doesn't, returns NULL user type.
      * @param username  The username of the user being logged in
      * @param password  The password of the user being logged in
-     * @return          The user type of the logged in user, or NULL if no such user exists
+     * @param userTypeCallback   The callback to be called when the login is completed
      */
-    public DatabaseConstants.USER_TYPE login(@NonNull String username, @NonNull String password) {
-        List<DocumentSnapshot> documentSnapshots = users
+    public void login(@NonNull String username, @NonNull String password,
+                      @NonNull UserTypeCallback userTypeCallback) {
+        users
                 .whereEqualTo(DatabaseConstants.COLLECTION_USERS_USERNAME_FIELD, username)
                 .whereEqualTo(DatabaseConstants.COLLECTION_USERS_PASSWORD_FIELD, password)
                 .get()
-                .getResult()
-                .getDocuments();
+                .addOnSuccessListener((v) -> {
+                    List<DocumentSnapshot> documentSnapshots = v.getDocuments();
+                    if (documentSnapshots.isEmpty()) {
+                        Log.i(LOG_TAG,
+                                String.format("Database contains no entry for given username and password: %s, %s", username, password));
+                        userTypeCallback.onCompleted(DatabaseConstants.USER_TYPE.NULL);
+                        return;
+                    }
 
-        if (documentSnapshots.isEmpty()) {
-            Log.i(LOG_TAG,
-                    String.format("Database contains no entry for given username and password: %s, %s", username, password));
-            return DatabaseConstants.USER_TYPE.NULL;
-        }
-        if (documentSnapshots.size() > 1) {
-            Log.w(LOG_TAG,
-                    String.format("Database contains multiple entries for given username and password: %s, %s", username, password));
-        }
+                    if (documentSnapshots.size() > 1) {
+                        Log.w(LOG_TAG,
+                                String.format("Database contains multiple entries for given username and password: %s, %s", username, password));
+                    }
 
-        String userTypeStr = documentSnapshots.get(0).getString(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD);
-        if (userTypeStr == null) {
-            Log.w(LOG_TAG,
-                    String.format("Database contains entry with NULL user type. It should never be null. Username and password: %s, %s", username, password));
-            return DatabaseConstants.USER_TYPE.NULL;
-        }
-        Log.i(LOG_TAG,
-                String.format("Successfully logged in user %s, password %s, with user type %s", username, password, userTypeStr));
-        return DatabaseConstants.USER_TYPE.valueOf(userTypeStr);
+                    String userTypeStr = documentSnapshots.get(0).getString(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD);
+                    if (userTypeStr == null) {
+                        Log.w(LOG_TAG,
+                                String.format("Database contains entry with NULL user type. It should never be null. Username and password: %s, %s", username, password));
+                        userTypeCallback.onCompleted(DatabaseConstants.USER_TYPE.NULL);
+                        return;
+                    }
+                    Log.i(LOG_TAG,
+                            String.format("Successfully logged in user %s, password %s, with user type %s", username, password, userTypeStr));
+                    userTypeCallback.onCompleted(DatabaseConstants.USER_TYPE.valueOf(userTypeStr));
+                })
+                .addOnFailureListener((e) -> Log.i(LOG_TAG,
+                        String.format("Failed to login: %s", e)));
     }
 
     /**
@@ -229,7 +236,7 @@ public class FirebaseService {
             }
         });
 
-        users.addSnapshotListener((data, error) -> {
+        onWaitingList.addSnapshotListener((data, error) -> {
             if (data != null) {
                 ArrayList<OnWaitingListModel> onWaitingListModels = new ArrayList<>();
                 for (DocumentSnapshot documentSnapshot : data.getDocuments()) {

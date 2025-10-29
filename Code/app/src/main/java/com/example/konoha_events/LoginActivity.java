@@ -10,9 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import constants.DatabaseConstants;
 import constants.IntentConstants;
+import services.FirebaseService;
 
 public class LoginActivity extends AppCompatActivity {
-
+    private FirebaseService fbs;
     private EditText usernameInput, passwordInput;
     private Button signInButton;
     private TextView signUpLink, backToRole, loginSubtitle;
@@ -22,6 +23,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        fbs = FirebaseService.firebaseService;
 
         usernameInput = findViewById(R.id.usernameInput);
         passwordInput = findViewById(R.id.passwordInput);
@@ -42,22 +45,32 @@ public class LoginActivity extends AppCompatActivity {
             String username = usernameInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
 
-            // Placeholder logic for Admin (bypasses validation)
-            if (selectedRole == DatabaseConstants.USER_TYPE.ADMINISTRATOR) {
-                // TODO: Replace with actual admin authentication in future
-                Intent intent = new Intent(this, AdminActivity.class);
-                startActivity(intent);
-                Toast.makeText(this, "Admin login bypass (temporary)", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            fbs.login(username, password, userType -> {
+                if (username.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Please fill both fields",Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-            // Placeholder Organizer/Entrant logic
-            if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill both fields", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            Toast.makeText(this, selectedRole + " login placeholder", Toast.LENGTH_SHORT).show();
+                switch(userType) {
+                    case ADMINISTRATOR:
+                        Intent intent = new Intent(this, AdminActivity.class);
+                        startActivity(intent);
+                        Toast.makeText(LoginActivity.this, "Successfully logged in as administrator", Toast.LENGTH_SHORT).show();
+                        return;
+                    case ORGANIZER:
+                        //Add me!
+                        return;
+                    case ENTRANT:
+                        //Add me!
+                        return;
+                    case NULL:
+                        Toast.makeText(LoginActivity.this, "Login was unsuccessful", Toast.LENGTH_SHORT).show();
+                        return;
+                    default:
+                        Toast.makeText(LoginActivity.this,
+                                String.format("Unexpected enum value received %s", userType), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
         backToRole.setOnClickListener(v -> {

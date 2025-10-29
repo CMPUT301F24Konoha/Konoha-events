@@ -24,8 +24,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        init();
-
         // Inflate the layout using ViewBinding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -37,9 +35,5 @@ public class MainActivity extends AppCompatActivity {
         if (binding.placeholderText != null) {
             binding.placeholderText.setText("Main Activity Loaded Successfully");
         }
-    }
-
-    private void init() {
-        FirebaseService.init();
     }
 }
