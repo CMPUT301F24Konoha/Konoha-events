@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F9F9F9"
+    tools:context=".AdminActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <!-- Header -->
+        <TextView
+            android:id="@+id/dashboardTitle"
+            android:text="@string/admin_dashboard_title"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginBottom="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- Manage Events -->
+        <Button
+            android:id="@+id/manageEventsButton"
+            android:text="@string/manage_events"
+            android:backgroundTint="#4A90E2"
+            android:textColor="#FFFFFF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Manage Profiles -->
+        <Button
+            android:id="@+id/manageProfilesButton"
+            android:text="@string/manage_profiles"
+            android:backgroundTint="#34A853"
+            android:textColor="#FFFFFF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Manage Organizers -->
+        <Button
+            android:id="@+id/manageOrganizersButton"
+            android:text="@string/manage_organizers"
+            android:backgroundTint="#9C27B0"
+            android:textColor="#FFFFFF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Manage Images -->
+        <Button
+            android:id="@+id/manageImagesButton"
+            android:text="@string/manage_images"
+            android:backgroundTint="#FBC02D"
+            android:textColor="#FFFFFF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Manage Notifications -->
+        <Button
+            android:id="@+id/manageNotificationsButton"
+            android:text="@string/manage_notifications"
+            android:backgroundTint="#E53935"
+            android:textColor="#FFFFFF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- 🟩 Future placeholder section -->
+        <!-- TODO: Add RecyclerViews or cards for system stats -->
+        <!-- Example: recent actions, system summary, etc. -->
+
+    </LinearLayout>
+</ScrollView>

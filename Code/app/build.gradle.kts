@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "com.konoha.konoha_events"
-        minSdk = 25
-        targetSdk = 36
+        minSdk = 24
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -36,8 +36,8 @@ android {
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.42")
 
+    implementation(libs.activity)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
