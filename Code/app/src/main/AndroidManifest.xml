@@ -10,17 +10,44 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.KonohaEvents">
+        android:theme="@style/Theme.KonohaEvents"
+        tools:targetApi="34">
+
+        <!-- Home screen (Launcher) -->
         <activity
-            android:name=".MainActivity"
+            android:name=".HomeActivity"
             android:exported="true"
             android:theme="@style/Theme.KonohaEvents">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Login -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
+        <!-- Admin -->
+        <activity
+            android:name=".AdminActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
+
+
+
+        <!-- Main Activity -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
     </application>
 
 </manifest>
