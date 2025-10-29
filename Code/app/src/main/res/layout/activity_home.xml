@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="#F5F5F5"
+    android:padding="24dp"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomeActivity">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/welcomeText"
+        android:text="@string/welcome"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/subtitleText"
+        android:text="@string/choose_role"
+        android:textSize="16sp"
+        android:textColor="#666666"
+        android:gravity="center"
+        android:layout_marginBottom="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!-- Entrant Button -->
+    <Button
+        android:id="@+id/entrantButton"
+        android:text="@string/role_entrant"
+        android:backgroundTint="#4285F4"
+        android:textColor="#FFFFFF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Organizer Button -->
+    <Button
+        android:id="@+id/organizerButton"
+        android:text="@string/role_organizer"
+        android:backgroundTint="#34A853"
+        android:textColor="#FFFFFF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Admin Button -->
+    <Button
+        android:id="@+id/adminButton"
+        android:text="@string/role_admin"
+        android:backgroundTint="#A142F4"
+        android:textColor="#FFFFFF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp" />
+
+    <!-- Continue Button -->
+    <Button
+        android:id="@+id/continueButton"
+        android:text="@string/continue_button"
+        android:backgroundTint="#000000"
+        android:textColor="#FFFFFF"
+        android:enabled="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- 🟩 Future placeholders for navigation -->
+    <!-- TODO: Add EntrantDashboardActivity.java and OrganizerDashboardActivity.java later -->
+
+</LinearLayout>
