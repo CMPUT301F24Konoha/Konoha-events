@@ -12,7 +12,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import constants.DatabaseConstants;
 import lombok.Getter;
@@ -77,6 +79,31 @@ public class FirebaseService {
      */
     public DocumentReference getEventDocumentReference(@NonNull String eventId) {
         return events.document(eventId);
+    }
+
+    /**
+     * Creates a new user in the database with the given parameters.
+     * @param userType The desired user type of the new user
+     * @param username The desired username of the new user
+     * @param password The desired password of the new user
+     * @param deviceId The device ID of the new user, can be null
+     */
+    public void createUser(@NonNull DatabaseConstants.USER_TYPE userType,
+                      @NonNull String username, @NonNull String password,
+                      @Nullable String deviceId) {
+        // Potentially add check for duplicate username
+
+        Map<String, Object> userData = new HashMap<>();
+        userData.put(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD, userType.name());
+        userData.put(DatabaseConstants.COLLECTION_USERS_USERNAME_FIELD, username);
+        userData.put(DatabaseConstants.COLLECTION_USERS_PASSWORD_FIELD, password);
+        userData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
+
+        users.add(userData)
+                .addOnSuccessListener((v) -> Log.i(LOG_TAG,
+                        String.format("Created user %s successfully", username)))
+                .addOnFailureListener((e) -> Log.i(LOG_TAG,
+                        String.format("Didn't create user %s", username)));
     }
 
     /**
