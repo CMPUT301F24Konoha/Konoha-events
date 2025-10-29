@@ -7,6 +7,9 @@ import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import constants.DatabaseConstants;
+import constants.IntentConstants;
+
 /**
  * HomeActivity
  * ----------------------
@@ -21,7 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class HomeActivity extends AppCompatActivity {
 
     private Button entrantButton, organizerButton, adminButton, continueButton;
-    private String selectedRole = null;
+    private DatabaseConstants.USER_TYPE selectedRole = DatabaseConstants.USER_TYPE.NULL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +41,9 @@ public class HomeActivity extends AppCompatActivity {
             organizerButton.setAlpha(1f);
             adminButton.setAlpha(1f);
 
-            if (view == entrantButton) selectedRole = "Entrant";
-            else if (view == organizerButton) selectedRole = "Organizer";
-            else if (view == adminButton) selectedRole = "Admin";
+            if (view == entrantButton) selectedRole = DatabaseConstants.USER_TYPE.ENTRANT;
+            else if (view == organizerButton) selectedRole = DatabaseConstants.USER_TYPE.ORGANIZER;
+            else if (view == adminButton) selectedRole = DatabaseConstants.USER_TYPE.ADMINISTRATOR;
 
             view.setAlpha(0.7f);
             continueButton.setEnabled(true);
@@ -60,15 +63,15 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent;
 
             switch (selectedRole) {
-                case "Admin":
-                case "Organizer":
+                case ADMINISTRATOR:
+                case ORGANIZER:
                     //  Navigate to LoginActivity
                     intent = new Intent(this, LoginActivity.class);
-                    intent.putExtra("role", selectedRole);
+                    intent.putExtra(IntentConstants.INTENT_ROLE_NAME, selectedRole);
                     startActivity(intent);
                     break;
 
-                case "Entrant":
+                case ENTRANT:
                     // 🟡 Placeholder for Entrant flow
                     Toast.makeText(this, "Entrant dashboard navigation goes here", Toast.LENGTH_SHORT).show();
                     // TODO: startActivity(new Intent(this, EntrantDashboardActivity.class));

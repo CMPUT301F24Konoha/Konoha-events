@@ -8,12 +8,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import constants.DatabaseConstants;
+import constants.IntentConstants;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText usernameInput, passwordInput;
     private Button signInButton;
     private TextView signUpLink, backToRole, loginSubtitle;
-    private String selectedRole;
+    private DatabaseConstants.USER_TYPE selectedRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +30,8 @@ public class LoginActivity extends AppCompatActivity {
         backToRole = findViewById(R.id.backToRole);
         loginSubtitle = findViewById(R.id.loginSubtitle);
 
-        selectedRole = getIntent().getStringExtra("role");
+        selectedRole = (DatabaseConstants.USER_TYPE) getIntent()
+                .getSerializableExtra(IntentConstants.INTENT_ROLE_NAME);
 
         // Update subtitle dynamically
         if (selectedRole != null) {
@@ -39,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
             String password = passwordInput.getText().toString().trim();
 
             // Placeholder logic for Admin (bypasses validation)
-            if ("Admin".equals(selectedRole)) {
+            if (selectedRole == DatabaseConstants.USER_TYPE.ADMINISTRATOR) {
                 // TODO: Replace with actual admin authentication in future
                 Intent intent = new Intent(this, AdminActivity.class);
                 startActivity(intent);

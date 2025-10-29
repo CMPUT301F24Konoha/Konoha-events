@@ -1,5 +1,7 @@
 package constants;
 
+import androidx.annotation.NonNull;
+
 public class DatabaseConstants {
     public static final String COLLECTION_EVENTS_NAME = "events";
     public static final String COLLECTION_EVENTS_IMAGE_DATA_FIELD = "imageData";
@@ -17,7 +19,14 @@ public class DatabaseConstants {
         NULL,
         ENTRANT,
         ORGANIZER,
-        ADMINISTRATOR
+        ADMINISTRATOR;
+
+        @NonNull
+        @Override
+        public String toString() {
+            String lower = name().toLowerCase();
+            return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
+        }
     }
     public enum ON_WAITING_LIST_STATUS {
         NULL,
