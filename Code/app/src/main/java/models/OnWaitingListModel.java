@@ -16,7 +16,7 @@ public class OnWaitingListModel {
     @NonNull
     private DatabaseConstants.ON_WAITING_LIST_STATUS status;
     @NonNull
-    private UserModel user;
+    private String userId;
     @NonNull
-    private EventModel event;
+    private String eventId;
 }

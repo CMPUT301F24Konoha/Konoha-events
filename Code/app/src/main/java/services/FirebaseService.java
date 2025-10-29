@@ -4,14 +4,22 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import constants.DatabaseConstants;
+import lombok.Getter;
+import models.EventModel;
+import models.OnWaitingListModel;
+import models.UserModel;
+import util.ModelUtil;
 
 /**
  * Class providing methods to interact with the database.
@@ -23,6 +31,13 @@ public class FirebaseService {
     private final CollectionReference users;
     private final CollectionReference onWaitingList;
 
+    @Getter
+    private final MutableLiveData<ArrayList<EventModel>> eventsLiveData;
+    @Getter
+    private final MutableLiveData<ArrayList<UserModel>> usersLiveData;
+    @Getter
+    private final MutableLiveData<ArrayList<OnWaitingListModel>> onWaitingListLiveData;
+
     // Initializes the FirebaseService singleton instance, must be called before using the instance
     public static void init() {
         firebaseService = new FirebaseService();
@@ -30,9 +45,38 @@ public class FirebaseService {
 
     public FirebaseService() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         events = db.collection(DatabaseConstants.COLLECTION_EVENTS_NAME);
         users = db.collection(DatabaseConstants.COLLECTION_USERS_NAME);
         onWaitingList = db.collection(DatabaseConstants.COLLECTION_ON_WAITING_LIST_NAME);
+
+        eventsLiveData = new MutableLiveData<>();
+        usersLiveData = new MutableLiveData<>();
+        onWaitingListLiveData = new MutableLiveData<>();
+
+        setupListeners();
+    }
+
+    /**
+     * Returns the DocumentReference of a user with the given user ID.
+     * Use for when we only care about the data of one user changing. Attach a listener to this
+     * reference and convert it into a user model when data changes.
+     * @param userId    The ID of the user
+     * @return          The DocumentReference of the user
+     */
+    public DocumentReference getUserDocumentReference(@NonNull String userId) {
+        return users.document(userId);
+    }
+
+    /**
+     * Returns the DocumentReference of an event with the given event ID.
+     * Use for when we only care about the data of one event changing. Attach a listener to this
+     * reference and convert it into an event model when data changes.
+     * @param eventId   The ID of the event
+     * @return          The DocumentReference of the event
+     */
+    public DocumentReference getEventDocumentReference(@NonNull String eventId) {
+        return events.document(eventId);
     }
 
     /**
@@ -129,5 +173,44 @@ public class FirebaseService {
                 })
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
                         String.format("Didn't find or failed to update image of event %s", eventId)));
+    }
+
+    /**
+     * Sets up the listeners for the collections in the database. Whenever a change in the db occurs,
+     * the data will get updated.
+     */
+    private void setupListeners() {
+        events.addSnapshotListener((data, error) -> {
+            if (data != null) {
+                ArrayList<EventModel> eventModels = new ArrayList<>();
+                for (DocumentSnapshot documentSnapshot : data.getDocuments()) {
+                    EventModel eventModel = ModelUtil.toEventModel(documentSnapshot);
+                    eventModels.add(eventModel);
+                }
+                eventsLiveData.postValue(eventModels);
+            }
+        });
+
+        users.addSnapshotListener((data, error) -> {
+            if (data != null) {
+                ArrayList<UserModel> userModels = new ArrayList<>();
+                for (DocumentSnapshot documentSnapshot : data.getDocuments()) {
+                    UserModel userModel = ModelUtil.toUserModel(documentSnapshot);
+                    userModels.add(userModel);
+                }
+                usersLiveData.postValue(userModels);
+            }
+        });
+
+        users.addSnapshotListener((data, error) -> {
+            if (data != null) {
+                ArrayList<OnWaitingListModel> onWaitingListModels = new ArrayList<>();
+                for (DocumentSnapshot documentSnapshot : data.getDocuments()) {
+                    OnWaitingListModel onWaitingListModel = ModelUtil.toOnWaitingListModel(documentSnapshot);
+                    onWaitingListModels.add(onWaitingListModel);
+                }
+                onWaitingListLiveData.postValue(onWaitingListModels);
+            }
+        });
     }
 }
