@@ -47,6 +47,12 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".AdminProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"
+            android:parentActivityName=".AdminActivity"/>
+
 
     </application>
 

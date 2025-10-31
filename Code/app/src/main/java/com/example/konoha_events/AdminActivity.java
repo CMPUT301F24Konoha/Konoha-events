@@ -1,5 +1,6 @@
 package com.example.konoha_events;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
@@ -41,8 +42,10 @@ public class AdminActivity extends AppCompatActivity {
         manageEventsButton.setOnClickListener(v ->
                 Toast.makeText(this, "Manage Events screen (to be implemented)", Toast.LENGTH_SHORT).show());
 
-        manageProfilesButton.setOnClickListener(v ->
-                Toast.makeText(this, "Manage Profiles screen (to be implemented)", Toast.LENGTH_SHORT).show());
+        manageProfilesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AdminProfileActivity.class);
+            startActivity(intent);
+        });
 
         manageOrganizersButton.setOnClickListener(v ->
                 Toast.makeText(this, "Manage Organizers screen (to be implemented)", Toast.LENGTH_SHORT).show());
