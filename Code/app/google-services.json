@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "506082970207",
+    "project_id": "konoha-events",
+    "storage_bucket": "konoha-events.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506082970207:android:c66d04a1b2eecc05fa29ea",
+        "android_client_info": {
+          "package_name": "com.konoha.konoha_events"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDW3ScXGlzyxncPu_16tZt2KWRJMA0_u7o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

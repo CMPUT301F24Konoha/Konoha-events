@@ -13,6 +13,8 @@ import com.example.konoha_events.databinding.ActivityMainBinding;
  * You can later repurpose it for app initialization or splash logic.
  */
 
+import services.FirebaseService;
+
 public class MainActivity extends AppCompatActivity {
 
     // View binding for layout access
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        init();
 
         // Inflate the layout using ViewBinding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -33,5 +37,9 @@ public class MainActivity extends AppCompatActivity {
         if (binding.placeholderText != null) {
             binding.placeholderText.setText("Main Activity Loaded Successfully");
         }
+    }
+
+    private void init() {
+        FirebaseService.init();
     }
 }
