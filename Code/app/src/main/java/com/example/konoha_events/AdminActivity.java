@@ -39,8 +39,10 @@ public class AdminActivity extends AppCompatActivity {
         manageNotificationsButton = findViewById(R.id.manageNotificationsButton);
 
         // TODO: Replace Toasts with Intent navigation once sub-pages exist
-        manageEventsButton.setOnClickListener(v ->
-                Toast.makeText(this, "Manage Events screen (to be implemented)", Toast.LENGTH_SHORT).show());
+        manageEventsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AdminEventActivity.class);
+            startActivity(intent);
+        });
 
         manageProfilesButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, AdminProfileActivity.class);

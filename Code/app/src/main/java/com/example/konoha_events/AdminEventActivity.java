@@ -1,27 +1,26 @@
 package com.example.konoha_events;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ListView;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
-
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
 
-import models.UserModel;
+import models.EventModel;
 import services.FirebaseService;
 import util.ViewUtil;
+import views.EventAdminDashboardView;
 import views.UserAdminDashboardView;
 
-public class AdminProfileActivity extends AppCompatActivity {
-    private final String tag = "[AdminProfileActivity]";
+public class AdminEventActivity extends AppCompatActivity {
+    private final String tag = "[AdminEventActivity]";
     private FirebaseService fbs;
     private ListView listView;
-    private ArrayList<UserModel> userModelDataList;
-    private UserAdminDashboardView userAdminDashboardView;
+    private ArrayList<EventModel> eventModelDataList;
+    private EventAdminDashboardView eventAdminDashboardView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,12 +29,12 @@ public class AdminProfileActivity extends AppCompatActivity {
         fbs = FirebaseService.firebaseService;
 
         Toolbar toolbar = findViewById(R.id.activity_scroll_toolbar);
-        ViewUtil.setupToolbarWithBackButtonToParent(this, toolbar, "Manage Profiles");
+        ViewUtil.setupToolbarWithBackButtonToParent(this, toolbar, "Manage Events");
 
         listView = findViewById(R.id.activity_scroll_listview);
 
-        userModelDataList = fbs.getUsersLiveData().getValue();
-        userAdminDashboardView = new UserAdminDashboardView(this, userModelDataList);
-        listView.setAdapter(userAdminDashboardView);
+        eventModelDataList = fbs.getEventsLiveData().getValue();
+        eventAdminDashboardView = new EventAdminDashboardView(this, eventModelDataList);
+        listView.setAdapter(eventAdminDashboardView);
     }
 }
