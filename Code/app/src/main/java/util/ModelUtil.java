@@ -50,7 +50,7 @@ public class ModelUtil {
         return OnWaitingListModel.builder()
                 .id(documentSnapshot.getId())
                 .status(DatabaseConstants.ON_WAITING_LIST_STATUS.valueOf(
-                        documentSnapshot.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD)))
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD)))
                 .userId(Objects.requireNonNull(
                         documentSnapshot.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD)))
                 .eventId(Objects.requireNonNull(
