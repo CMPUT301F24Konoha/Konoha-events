@@ -33,6 +33,14 @@
             android:name=".AdminActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+        <activity
+            android:name=".OrganizerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
+        <activity
+            android:name=".CreateEventActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
 
 
 
