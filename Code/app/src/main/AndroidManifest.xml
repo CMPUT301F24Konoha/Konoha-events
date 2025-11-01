@@ -57,7 +57,11 @@
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents"
             android:parentActivityName=".AdminActivity"/>
-
+        <activity
+            android:name=".AdminImageActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"
+            android:parentActivityName=".AdminActivity"/>
 
 
     </application>

@@ -52,8 +52,10 @@ public class AdminActivity extends AppCompatActivity {
         manageOrganizersButton.setOnClickListener(v ->
                 Toast.makeText(this, "Manage Organizers screen (to be implemented)", Toast.LENGTH_SHORT).show());
 
-        manageImagesButton.setOnClickListener(v ->
-                Toast.makeText(this, "Manage Images screen (to be implemented)", Toast.LENGTH_SHORT).show());
+        manageImagesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AdminImageActivity.class);
+            startActivity(intent);
+        });
 
         manageNotificationsButton.setOnClickListener(v ->
                 Toast.makeText(this, "Manage Notifications screen (to be implemented)", Toast.LENGTH_SHORT).show());

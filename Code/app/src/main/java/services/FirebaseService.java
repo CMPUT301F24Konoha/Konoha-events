@@ -176,6 +176,19 @@ public class FirebaseService {
     }
 
     /**
+     * Sets the image url of the event with the given ID to null effectively deleting it.
+     * @param eventId The ID of the event to delete the image
+     */
+    public void deleteEventImage(@NonNull String eventId) {
+        events.document(eventId)
+                .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, null)
+                .addOnSuccessListener((v) -> Log.i(LOG_TAG,
+                        String.format("Deleted event image of event %s successfully", eventId)))
+                .addOnFailureListener((e) -> Log.i(LOG_TAG,
+                        String.format("Didn't find or failed to delete image of event %s", eventId)));
+    }
+
+    /**
      * Deletes an on waiting list entry with the given ID from the database.
      * @param onWaitingListId    The ID of the on waiting list entry to be deleted
      */

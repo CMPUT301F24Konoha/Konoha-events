@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,12 +17,13 @@ import com.example.konoha_events.R;
 import java.util.ArrayList;
 
 import models.EventModel;
-import models.UserModel;
 import services.FirebaseService;
 
 public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
     private static final String tag = "[EventAdminDashboardView]";
     private FirebaseService fbs;
+    private TextView eventNameTextView;
+    private Button removeEventButton;
 
     public EventAdminDashboardView(Context context, ArrayList<EventModel> eventModels) {
         super(context, 0, eventModels);
@@ -44,6 +47,16 @@ public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
             Log.e(tag, "Could not get event model at position " + position);
             return view;
         }
+
+        eventNameTextView = view.findViewById(R.id.event_admin_dashboard_view_name);
+        removeEventButton = view.findViewById(R.id.event_admin_dashboard_view_remove_button);
+
+        eventNameTextView.setText(eventModel.getId());
+        // We should also set other fields here once they're added to event model.
+
+        removeEventButton.setOnClickListener((v) -> {
+            fbs.deleteEvent(eventModel.getId());
+        });
         
         return view;
     }
