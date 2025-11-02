@@ -38,8 +38,17 @@ public class ImageAdminDashboardView extends ArrayAdapter<HasImage> {
         fbs = FirebaseService.firebaseService;
 
         HasImage hasImage = getItem(position);
-        if (hasImage == null || hasImage.getImageUrl() == null) {
+        if (hasImage == null) {
             Log.e(tag, "Could not get hasImage model at position " + position);
+            View emptyView = new View(getContext());
+            emptyView.setLayoutParams(new AbsListView.LayoutParams(
+                    AbsListView.LayoutParams.MATCH_PARENT, 0));
+            emptyView.setVisibility(View.GONE);
+            return emptyView;
+        }
+
+        if (hasImage.getImageUrl() == null) {
+            // No log because it's okay to not have an image
             View emptyView = new View(getContext());
             emptyView.setLayoutParams(new AbsListView.LayoutParams(
                     AbsListView.LayoutParams.MATCH_PARENT, 0));

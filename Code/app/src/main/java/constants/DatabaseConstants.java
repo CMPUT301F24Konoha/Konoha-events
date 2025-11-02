@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 public class DatabaseConstants {
     public static final String COLLECTION_EVENTS_NAME = "events";
-    public static final String COLLECTION_EVENTS_IMAGE_DATA_FIELD = "imageData";
+    public static final String COLLECTION_EVENTS_IMAGE_DATA_FIELD = "imageUrl";
     public static final String COLLECTION_USERS_NAME = "users";
     public static final String COLLECTION_USERS_USERNAME_FIELD = "username";
     public static final String COLLECTION_USERS_PASSWORD_FIELD = "password";

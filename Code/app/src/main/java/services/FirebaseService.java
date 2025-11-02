@@ -94,15 +94,17 @@ public class FirebaseService {
      */
     public void createUser(@NonNull DatabaseConstants.USER_TYPE userType,
                       @NonNull String username, @NonNull String password,
-                      @Nullable String deviceId) {
+                      @Nullable String deviceId, @Nullable String fullName,
+                      @Nullable String phoneNumber) {
         // Potentially add check for duplicate username
 
         Map<String, Object> userData = new HashMap<>();
         userData.put(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD, userType.name());
-        //Not sure here, I think username is email?
         userData.put(DatabaseConstants.COLLECTION_USERS_USERNAME_FIELD, username);
         userData.put(DatabaseConstants.COLLECTION_USERS_PASSWORD_FIELD, password);
         userData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
+        userData.put(DatabaseConstants.COLLECTION_USERS_FULL_NAME_FIELD, fullName);
+        userData.put(DatabaseConstants.COLLECTION_USERS_PHONE_FIELD, phoneNumber);
 
         users.add(userData)
                 .addOnSuccessListener((v) -> Log.i(LOG_TAG,
