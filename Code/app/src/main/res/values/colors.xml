@@ -9,4 +9,6 @@
     <color name="primary_color">#FF6200EE</color>
     <color name="primary_dark">#FF3700B3</color>
     <color name="accent_color">#FF03DAC5</color>
+    <color name="buttongrey">#4f4f4f4f</color>
+    <color name="buttonwhite">#C0C0C0C0</color>
 </resources>

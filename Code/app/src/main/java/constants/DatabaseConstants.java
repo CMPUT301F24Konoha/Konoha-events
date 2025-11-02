@@ -13,12 +13,16 @@ public class DatabaseConstants {
     public static final String COLLECTION_USERS_NAME = "users";
     public static final String COLLECTION_USERS_USERNAME_FIELD = "username";
     public static final String COLLECTION_USERS_PASSWORD_FIELD = "password";
+    public static final String COLLECTION_USERS_FULL_NAME_FIELD = "full_name";
+    public static final String COLLECTION_USERS_PHONE_FIELD     = "phone";
     public static final String COLLECTION_USERS_USER_TYPE_FIELD = "userType";
     public static final String COLLECTION_USERS_DEVICE_ID_FIELD = "deviceId";
     public static final String COLLECTION_ON_WAITING_LIST_NAME = "onWaitingList";
     public static final String COLLECTION_ON_WAITING_LIST_STATUS_FIELD = "status";
     public static final String COLLECTION_ON_WAITING_LIST_USER_ID_FIELD = "userId";
     public static final String COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD = "eventId";
+
+
 
 
     public enum USER_TYPE {

@@ -42,6 +42,16 @@
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
 
+        <activity
+            android:name=".EntrantActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
+
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
+
 
 
         <!-- Main Activity -->
