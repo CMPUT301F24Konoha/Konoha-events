@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Header -->
+        <TextView
+            android:id="@+id/createEventTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_event_header"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/createEventSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_event_subtitle"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Event Title Input -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/event_title_label"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/eventTitleInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/event_title_input_hint"
+            android:padding="12dp"
+            android:background="@drawable/input_background"
+            android:inputType="text"
+            android:maxLines="1"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Event Description Input -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/event_description_label"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/eventDescriptionInput"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:hint="@string/event_description_input_hint"
+            android:padding="12dp"
+            android:background="@drawable/input_background"
+            android:inputType="textMultiLine"
+            android:gravity="top"
+            android:maxLines="5"
+            android:scrollbars="vertical"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Registration Deadline (US 02.01.04) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/registration_deadline_label"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/selectDeadlineButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/select_deadline_button"
+            android:textColor="@color/black"
+            android:background="@drawable/button_secondary"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            android:drawableEnd="@android:drawable/ic_menu_my_calendar"
+            android:gravity="center_vertical"/>
+
+        <!-- Optional Entrant Limit (US 02.03.01) -->
+        <CheckBox
+            android:id="@+id/limitEntrantsCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/limit_entrants_checkbox"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/entrantLimitInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/entrant_limit_hint"
+            android:padding="12dp"
+            android:background="@drawable/input_background"
+            android:inputType="number"
+            android:enabled="false"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Event Poster Upload (US 02.04.01) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/event_poster_label"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/selectImageButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/upload_poster_button"
+            android:textColor="@color/black"
+            android:background="@drawable/button_secondary"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp"
+            android:drawableEnd="@android:drawable/ic_menu_gallery"
+            android:gravity="center_vertical"/>
+
+        <!-- Image Preview -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/image_preview_background"
+            android:layout_marginBottom="24dp">
+
+            <ImageView
+                android:id="@+id/eventPosterPreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/event_poster_description"/>
+
+            <TextView
+                android:id="@+id/noImageText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_image_selected"
+                android:textColor="@color/gray"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <!-- Create Event Button -->
+        <Button
+            android:id="@+id/createButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/create_event_button"
+            android:textColor="@color/white"
+            android:background="@drawable/button_primary"
+            android:padding="16dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Cancel Button -->
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel_button"
+            android:textColor="@color/gray"
+            android:background="@android:color/transparent"
+            android:padding="16dp"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+</ScrollView>
