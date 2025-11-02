@@ -28,6 +28,7 @@ public class EventModel implements HasImage {
     private String deviceId;
 
     // Images
+    @Nullable
     private Uri imageUri;
 
     // QR Code data - stores the unique identifier for the event
