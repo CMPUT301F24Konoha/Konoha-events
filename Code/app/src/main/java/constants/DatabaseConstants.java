@@ -4,7 +4,12 @@ import androidx.annotation.NonNull;
 
 public class DatabaseConstants {
     public static final String COLLECTION_EVENTS_NAME = "events";
-    public static final String COLLECTION_EVENTS_IMAGE_DATA_FIELD = "imageUrl";
+    public static final String COLLECTION_EVENTS_TITLE_FIELD = "eventTitle";
+    public static final String COLLECTION_EVENTS_IMAGE_DATA_FIELD = "imageUri";
+    public static final String COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD = "entrantLimit";
+    public static final String COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD = "registrationDeadline";
+    public static final String COLLECTION_EVENTS_DESCRIPTION_FIELD = "description";
+    public static final String COLLECTION_EVENTS_QR_CODE_DATA_FIELD = "qrCodeData";
     public static final String COLLECTION_USERS_NAME = "users";
     public static final String COLLECTION_USERS_USERNAME_FIELD = "username";
     public static final String COLLECTION_USERS_PASSWORD_FIELD = "password";

@@ -24,6 +24,28 @@
     <string name="manage_organizers">Manage Organizers</string>
     <string name="manage_images">Manage Images</string>
     <string name="manage_notifications">Manage Notifications</string>
+    <!-- Organizer Dashboard -->
+    <string name="organizer_dashboard_title">Organizer Dashboard</string>
+    <string name="create_event">Create Event</string>
+    <!-- Create Event Screen -->
+    <string name="create_event_header">Create New Event</string>
+    <string name="create_event_subtitle">Fill in the details below to create your event</string>
+    <string name="basic_info_section_header">Basic Information</string>
+    <string name="event_title_label">Event Title *</string>
+    <string name="event_title_input_hint">Enter event title</string>
+    <string name="event_description_label">Event Description *</string>
+    <string name="event_description_input_hint">Describe your event...</string>
+    <string name="registration_deadline_label">Registration Deadline *</string>
+    <string name="select_deadline_button">Select Deadline</string>
+    <string name="limit_entrants_checkbox">Limit number of entrants on waiting list</string>
+    <string name="entrant_limit_hint">Enter maximum number of entrants</string>
+    <string name="event_poster_label">Event Poster</string>
+    <string name="upload_poster_button">Upload Event Poster</string>
+    <string name="event_poster_description">Event poster preview</string>
+    <string name="no_image_selected">No image selected</string>
+    <string name="create_event_button">Create Event</string>
+    <string name="cancel_button">Cancel</string>
+
 
 
     <!-- Fragment placeholders -->

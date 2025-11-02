@@ -46,6 +46,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.firebase.storage)
 
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
