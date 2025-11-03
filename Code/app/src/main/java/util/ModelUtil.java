@@ -33,6 +33,8 @@ public class ModelUtil {
 
         return EventModel.builder()
                 .id(documentSnapshot.getId())
+                .organizerId(Objects.requireNonNull(
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_ORGANIZER_ID_FIELD)))
                 .imageUri(imageUri)
                 .eventTitle(documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD))
                 .description(documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD))

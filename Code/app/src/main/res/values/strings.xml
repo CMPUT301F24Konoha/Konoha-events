@@ -27,6 +27,7 @@
     <!-- Organizer Dashboard -->
     <string name="organizer_dashboard_title">Organizer Dashboard</string>
     <string name="create_event">Create Event</string>
+    <string name="activity_organizer_manage_event_button_text">Manage Events</string>
     <!-- Create Event Screen -->
     <string name="create_event_header">Create New Event</string>
     <string name="create_event_subtitle">Fill in the details below to create your event</string>

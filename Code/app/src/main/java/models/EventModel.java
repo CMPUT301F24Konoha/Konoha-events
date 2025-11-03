@@ -17,6 +17,9 @@ public class EventModel implements HasImage {
     @NonNull
     private String id;
 
+    @NonNull
+    private String organizerId;
+
     @Nullable
     private String eventTitle;
 

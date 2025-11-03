@@ -126,7 +126,7 @@ public class CreateEventActivity extends AppCompatActivity {
         }
 
         fbs.createEvent(deviceId, entrantLimit, selectedDeadline, title,
-                description, selectedImageUri);
+                description, selectedImageUri, fbs.getCurrentUserId());
 
         Toast.makeText(this, "Event created successfully!", Toast.LENGTH_SHORT).show();
         finish();

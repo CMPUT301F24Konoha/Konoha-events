@@ -19,6 +19,7 @@ import services.FirebaseService;
 
 public class OrganizerActivity extends AppCompatActivity {
     private Button createEventButton;
+    private Button manageEventsButton;
     private LinearLayout eventsContainer;
     private FirebaseService fbs;
     private String deviceId;
@@ -40,11 +41,13 @@ public class OrganizerActivity extends AppCompatActivity {
 
         initializeViews();
         setupCreateEventButton();
+        setupManageEventButton();
     }
 
     public void initializeViews() {
         // Initialize buttons
         createEventButton = findViewById(R.id.createEventButton);
+        manageEventsButton = findViewById(R.id.activity_organizer_create_event_button);
 
         // Get parent view of createEventButton
         LinearLayout parentLayout = (LinearLayout) createEventButton.getParent();
@@ -64,6 +67,13 @@ public class OrganizerActivity extends AppCompatActivity {
         createEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreateEventActivity.class);
             intent.putExtra("deviceId", deviceId);
+            startActivity(intent);
+        });
+    }
+
+    public void setupManageEventButton() {
+        manageEventsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, OrganizerViewEventListActivity.class);
             startActivity(intent);
         });
     }

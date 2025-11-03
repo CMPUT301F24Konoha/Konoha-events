@@ -12,15 +12,13 @@ import models.EventModel;
 import services.FirebaseService;
 import util.ViewUtil;
 import views.EventAdminDashboardView;
-import views.UserAdminDashboardView;
 
-public class AdminEventActivity extends AppCompatActivity {
-    private final String tag = "[AdminEventActivity]";
+public class OrganizerViewEventListActivity extends AppCompatActivity {
+    private final String tag = "[OrganizerViewEventListActivity]";
     private FirebaseService fbs;
     private ListView listView;
     private ArrayList<EventModel> eventModelDataList;
     private EventAdminDashboardView eventAdminDashboardView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +32,15 @@ public class AdminEventActivity extends AppCompatActivity {
         listView = findViewById(R.id.activity_scroll_listview);
 
         eventModelDataList = fbs.getEventsLiveData().getValue();
-        eventAdminDashboardView = new EventAdminDashboardView(this, eventModelDataList, this.getClass());
+
+        ArrayList<EventModel> organizerData = new ArrayList<EventModel>();
+        for (EventModel model : eventModelDataList) {
+            if (model.getOrganizerId().equals(fbs.getCurrentUserId())) {
+                organizerData.add(model);
+            }
+        }
+
+        eventAdminDashboardView = new EventAdminDashboardView(this, organizerData, this.getClass());
         listView.setAdapter(eventAdminDashboardView);
     }
 }

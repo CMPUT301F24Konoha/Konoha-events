@@ -189,9 +189,10 @@ public class FirebaseService {
     public void createEvent(@NonNull String deviceId, @NonNull int entrantLimit,
                             @NonNull Date registrationDeadline,
                             @NonNull String eventTitle, @NonNull String description,
-                            Uri imageUri) {
+                            Uri imageUri, @NonNull String organizerId) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_ORGANIZER_ID_FIELD, organizerId);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD, eventTitle);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageUri);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD, entrantLimit);
