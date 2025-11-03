@@ -1,28 +1,34 @@
 package services;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import constants.DatabaseConstants;
+import interfaces.UserTypeCallback;
 import lombok.Getter;
 import models.EventModel;
-import interfaces.UserTypeCallback;
 import models.OnWaitingListModel;
 import models.UserModel;
 import util.ModelUtil;
+import util.QRCodeUtil;
 
 /**
  * Class providing methods to interact with the database.
@@ -45,6 +51,9 @@ public class FirebaseService {
     public static void init() {
         firebaseService = new FirebaseService();
     }
+
+    private String currentUserId;
+    public String getCurrentUserId() { return currentUserId; }
 
     public FirebaseService() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -96,6 +105,7 @@ public class FirebaseService {
 
         Map<String, Object> userData = new HashMap<>();
         userData.put(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD, userType.name());
+        //Not sure here, I think username is email?
         userData.put(DatabaseConstants.COLLECTION_USERS_USERNAME_FIELD, username);
         userData.put(DatabaseConstants.COLLECTION_USERS_PASSWORD_FIELD, password);
         userData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
@@ -134,6 +144,9 @@ public class FirebaseService {
                                 String.format("Database contains multiple entries for given username and password: %s, %s", username, password));
                     }
 
+                    DocumentSnapshot doc = documentSnapshots.get(0);
+                    currentUserId = doc.getId();
+
                     String userTypeStr = documentSnapshots.get(0).getString(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD);
                     if (userTypeStr == null) {
                         Log.w(LOG_TAG,
@@ -160,6 +173,73 @@ public class FirebaseService {
                         String.format("Deleted user %s successfully", userId)))
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
                         String.format("Didn't find or failed to delete user %s", userId)));
+    }
+
+    /**
+     * Creates an event with a given organizer Id (device Id)
+     * @param deviceId      The ID of the organizer creating the event
+     * @param entrantLimit  An optional limit on entrants for the given event
+     * @param registrationDeadline     The last day of registration
+     * @param eventTitle     The name of the event
+     * @param imageUri     Image description for the event
+     * @param description   A description of the event
+     */
+    public void createEvent(@NonNull String deviceId, @NonNull int entrantLimit,
+                            @NonNull Date registrationDeadline,
+                            @NonNull String eventTitle, @NonNull String description,
+                            Uri imageUri) {
+        Map<String, Object> eventData = new HashMap<>();
+        eventData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD, eventTitle);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageUri);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD, entrantLimit);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD, new Timestamp(registrationDeadline));
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD, description);
+        events.add(eventData)
+                .addOnSuccessListener((documentReference) -> {
+                    String eventId = documentReference.getId();
+
+                    // Generate unique QR code data for this event
+                    String qrCodeData = QRCodeUtil.generateQRCodeData(eventId);
+
+                    documentReference.update(DatabaseConstants.COLLECTION_EVENTS_QR_CODE_DATA_FIELD, qrCodeData)
+                            .addOnSuccessListener(v -> {
+                                Log.i(LOG_TAG, String.format("Created event %s with QR code successfully", eventId));
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e(LOG_TAG, "Failed to add QR code to event", e);
+                            });
+                })
+                .addOnFailureListener((e) -> Log.i(LOG_TAG,
+                        String.format("Didn't create event %s", eventTitle)));
+    }
+
+    /**
+     * Uploads an event poster image to Firebase Storage (US 02.04.01)
+     * @param eventId The ID of the event
+     * @param imageUri The URI of the image to upload
+     */
+    private void uploadEventImage(@NonNull String eventId, @NonNull Uri imageUri) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference imageRef = storageRef.child("event_posters/" + eventId + ".jpg");
+
+        imageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Get download URL
+                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String downloadUrl = uri.toString();
+                        // Update Firestore with image URL
+                        events.document(eventId)
+                                .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, downloadUrl)
+                                .addOnSuccessListener(v ->
+                                        Log.i(LOG_TAG, "Event poster uploaded successfully"))
+                                .addOnFailureListener(e ->
+                                        Log.e(LOG_TAG, "Failed to update image URL", e));
+                    });
+                })
+                .addOnFailureListener(e ->
+                        Log.e(LOG_TAG, "Failed to upload event poster", e));
     }
 
     /**
@@ -208,6 +288,8 @@ public class FirebaseService {
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
                         String.format("Didn't find or failed to update image of event %s", eventId)));
     }
+
+
 
     /**
      * Sets up the listeners for the collections in the database. Whenever a change in the db occurs,

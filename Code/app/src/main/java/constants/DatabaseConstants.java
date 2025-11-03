@@ -4,16 +4,25 @@ import androidx.annotation.NonNull;
 
 public class DatabaseConstants {
     public static final String COLLECTION_EVENTS_NAME = "events";
-    public static final String COLLECTION_EVENTS_IMAGE_DATA_FIELD = "imageData";
+    public static final String COLLECTION_EVENTS_TITLE_FIELD = "eventTitle";
+    public static final String COLLECTION_EVENTS_IMAGE_DATA_FIELD = "imageUri";
+    public static final String COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD = "entrantLimit";
+    public static final String COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD = "registrationDeadline";
+    public static final String COLLECTION_EVENTS_DESCRIPTION_FIELD = "description";
+    public static final String COLLECTION_EVENTS_QR_CODE_DATA_FIELD = "qrCodeData";
     public static final String COLLECTION_USERS_NAME = "users";
     public static final String COLLECTION_USERS_USERNAME_FIELD = "username";
     public static final String COLLECTION_USERS_PASSWORD_FIELD = "password";
+    public static final String COLLECTION_USERS_FULL_NAME_FIELD = "full_name";
+    public static final String COLLECTION_USERS_PHONE_FIELD     = "phone";
     public static final String COLLECTION_USERS_USER_TYPE_FIELD = "userType";
     public static final String COLLECTION_USERS_DEVICE_ID_FIELD = "deviceId";
     public static final String COLLECTION_ON_WAITING_LIST_NAME = "onWaitingList";
     public static final String COLLECTION_ON_WAITING_LIST_STATUS_FIELD = "status";
     public static final String COLLECTION_ON_WAITING_LIST_USER_ID_FIELD = "userId";
     public static final String COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD = "eventId";
+
+
 
 
     public enum USER_TYPE {

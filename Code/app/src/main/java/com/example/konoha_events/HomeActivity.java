@@ -1,5 +1,6 @@
 package com.example.konoha_events;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -75,9 +76,9 @@ public class HomeActivity extends AppCompatActivity {
                     break;
 
                 case ENTRANT:
-                    // 🟡 Placeholder for Entrant flow
-                    Toast.makeText(this, "Entrant dashboard navigation goes here", Toast.LENGTH_SHORT).show();
-                    // TODO: startActivity(new Intent(this, EntrantDashboardActivity.class));
+                    Intent entrant = new Intent(this, LoginActivity.class);
+                    entrant.putExtra(IntentConstants.INTENT_ROLE_NAME, selectedRole);
+                    startActivity(entrant);
                     break;
 
                 default:

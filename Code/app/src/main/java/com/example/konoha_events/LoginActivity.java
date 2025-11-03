@@ -58,10 +58,14 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "Successfully logged in as administrator", Toast.LENGTH_SHORT).show();
                         return;
                     case ORGANIZER:
-                        //Add me!
+                        Intent orgIntent = new Intent(this, OrganizerActivity.class);
+                        startActivity(orgIntent);
+                        Toast.makeText(LoginActivity.this, "Successfully logged in as organizer", Toast.LENGTH_SHORT).show();
                         return;
                     case ENTRANT:
-                        //Add me!
+                        Intent entrant = new Intent(this, EntrantActivity.class);
+                        startActivity(entrant);
+                        Toast.makeText(LoginActivity.this, "Successfully logged in as entrant", Toast.LENGTH_SHORT).show();
                         return;
                     case NULL:
                         Toast.makeText(LoginActivity.this, "Login was unsuccessful", Toast.LENGTH_SHORT).show();
