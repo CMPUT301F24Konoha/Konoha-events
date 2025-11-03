@@ -45,4 +45,25 @@ public class ViewUtil {
             activity.finish();
         });
     }
+
+    public static void setupToolbarWithIntent(AppCompatActivity activity,
+                                              androidx.appcompat.widget.Toolbar toolbar,
+                                              String displayName,
+                                              Intent intent) {
+        activity.setSupportActionBar(toolbar);
+        ActionBar actionBar = activity.getSupportActionBar();
+        if(actionBar == null) {
+            Log.e(tag, "Failed to setup action bar. Could not find action bar.");
+            return;
+        }
+        actionBar.setTitle(displayName);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+
+        toolbar.setNavigationOnClickListener(v -> {
+            activity.startActivity(intent);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            activity.finish();
+        });
+    }
 }

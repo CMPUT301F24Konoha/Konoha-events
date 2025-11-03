@@ -16,4 +16,105 @@
         >
     </androidx.appcompat.widget.Toolbar>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/activity_event_toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <Switch
+                android:id="@+id/activity_event_view_geolocation_toggle_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            </Switch>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enable Geolocation Tracking">
+            </TextView>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/activity_event_view_total_on_list_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/activity_event_toolbar"
+            android:text="[TOTAL ON LIST]">
+        </TextView>
+
+        <TextView
+            android:id="@+id/activity_event_view_waiting_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/activity_event_view_total_on_list_text"
+            android:text="[WAITING]">
+        </TextView>
+
+        <TextView
+            android:id="@+id/activity_event_view_selected_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/activity_event_view_waiting_text"
+            android:text="[SELECTED]">
+        </TextView>
+
+        <TextView
+            android:id="@+id/activity_event_view_accepted_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/activity_event_view_selected_text"
+            android:text="[ACCEPTED]">
+        </TextView>
+
+        <TextView
+            android:id="@+id/activity_event_view_declined_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/activity_event_view_accepted_text"
+            android:text="[DECLINED]">
+        </TextView>
+
+        <TextView
+            android:id="@+id/activity_event_view_cancelled_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/activity_event_view_declined_text"
+            android:text="[CANCELLED]">
+        </TextView>
+
+        <Button
+            android:id="@+id/activity_event_view_entrants_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/activity_event_view_cancelled_text"
+            android:text="View Entrants">
+        </Button>
+
+        <Button
+            android:id="@+id/activity_event_view_draw_from_waitlist_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Draw from Waitlist">
+        </Button>
+
+        <Button
+            android:id="@+id/activity_event_view_notify_selected_entrants_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notify Selected Entrants">
+        </Button>
+
+        <Button
+            android:id="@+id/activity_event_view_notify_non_selected_entrants_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notify Non-Selected Entrants">
+        </Button>
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

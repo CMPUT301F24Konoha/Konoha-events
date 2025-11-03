@@ -93,8 +93,11 @@
         <activity
             android:name=".EventDetails"
             android:exported="false"
-            android:theme="@style/Theme.KonohaEvents"
-            android:parentActivityName=".OrganizerActivity"/>
+            android:theme="@style/Theme.KonohaEvents"/>
+        <activity
+            android:name=".EventEntrantDetails"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"/>
 
     </application>
 

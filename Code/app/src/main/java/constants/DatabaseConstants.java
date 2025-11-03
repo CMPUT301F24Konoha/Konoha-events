@@ -41,7 +41,8 @@ public class DatabaseConstants {
     }
     public enum ON_WAITING_LIST_STATUS {
         NULL,
-        PENDING,
+        WAITING,
+        SELECTED,
         ACCEPTED,
         DECLINED,
         CANCELLED

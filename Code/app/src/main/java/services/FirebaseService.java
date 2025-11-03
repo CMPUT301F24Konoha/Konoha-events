@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import constants.DatabaseConstants;
+import interfaces.OnWaitingListArrayListCallback;
+import interfaces.UserModelArrayListCallback;
 import interfaces.UserTypeCallback;
 import lombok.Getter;
 import models.EventModel;
@@ -243,6 +245,55 @@ public class FirebaseService {
                 })
                 .addOnFailureListener(e ->
                         Log.e(LOG_TAG, "Failed to upload event poster", e));
+    }
+
+    public void getUsersOfEventWithStatus(@NonNull String eventId,
+                                          @NonNull DatabaseConstants.ON_WAITING_LIST_STATUS status,
+                                          @NonNull UserModelArrayListCallback callback) {
+        onWaitingList
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD,
+                        eventId)
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD,
+                        status.name())
+                .get()
+                .addOnSuccessListener((v) -> {
+                    ArrayList<UserModel> userModels = new ArrayList<>();
+                    for (DocumentSnapshot documentSnapshot : v.getDocuments()) {
+                        UserModel userModel = ModelUtil.toUserModel(documentSnapshot);
+                        userModels.add(userModel);
+                    }
+                    callback.onCompleted(userModels);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(LOG_TAG,
+                            String.format("Failed to get  models of event %s with status %s",
+                                    eventId, status.name()));
+                    ArrayList<UserModel> userModels = new ArrayList<>();
+                    callback.onCompleted(userModels);
+                });
+
+    }
+
+    public void getOnWaitingListsOfEvent(@NonNull String eventId,
+                                        @NonNull OnWaitingListArrayListCallback callback) {
+        onWaitingList
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD,
+                        eventId)
+                .get()
+                .addOnSuccessListener((v) -> {
+                    ArrayList<OnWaitingListModel> onWaitingListModels = new ArrayList<>();
+                    for (DocumentSnapshot documentSnapshot : v.getDocuments()) {
+                        OnWaitingListModel onWaitingListModel = ModelUtil.toOnWaitingListModel(documentSnapshot);
+                        onWaitingListModels.add(onWaitingListModel);
+                    }
+                    callback.onCompleted(onWaitingListModels);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(LOG_TAG,
+                            String.format("Failed to get onWaitingList models of event %s", eventId));
+                    ArrayList<OnWaitingListModel> onWaitingListModels = new ArrayList<>();
+                    callback.onCompleted(onWaitingListModels);
+                });
     }
 
     /**

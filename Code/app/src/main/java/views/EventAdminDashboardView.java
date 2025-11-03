@@ -59,7 +59,8 @@ public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
         removeEventButton = view.findViewById(R.id.event_admin_dashboard_view_remove_button);
         editDetailsButton = view.findViewById(R.id.event_admin_dashboard_view_details_button);
 
-        eventNameTextView.setText(eventModel.getId());
+        eventNameTextView.setText(eventModel.getEventTitle());
+
         // We should also set other fields here once they're added to event model.
 
         editDetailsButton.setOnClickListener((v) -> {
