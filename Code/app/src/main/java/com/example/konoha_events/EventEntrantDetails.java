@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -32,6 +33,7 @@ public class EventEntrantDetails extends AppCompatActivity {
     private ArrayList<UserModel> entrantUserModels;
     private UserAdminDashboardView userAdminDashboardView;
     private String eventId;
+    private TextView userTypeTitleText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class EventEntrantDetails extends AppCompatActivity {
         fbs = FirebaseService.firebaseService;
 
         Toolbar toolbar = findViewById(R.id.activity_event_entrants_toolbar);
+        userTypeTitleText = findViewById(R.id.activity_event_entrants_title);
 
         String returnActivityName = getIntent().getStringExtra(IntentConstants.INTENT_VIEW_EVENT_CALLER_TYPE);
         eventId = getIntent().getStringExtra(IntentConstants.INTENT_VIEW_EVENT_EVENT_ID);
@@ -54,7 +57,7 @@ public class EventEntrantDetails extends AppCompatActivity {
         materialButtonToggleGroup = findViewById(R.id.activity_event_entrants_button_toggle_group);
 
         entrantUserModels = new ArrayList<UserModel>();
-        userAdminDashboardView = new UserAdminDashboardView(this, entrantUserModels);
+        userAdminDashboardView = new UserAdminDashboardView(this, entrantUserModels, eventId);
         entrantDetailsListView.setAdapter(userAdminDashboardView);
 
         materialButtonToggleGroup.addOnButtonCheckedListener((view, id, isChecked) -> {
@@ -62,16 +65,24 @@ public class EventEntrantDetails extends AppCompatActivity {
 
             if (id == R.id.activity_event_entrants_wait_button) {
                 displayEntrantsOfStatus(DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING);
+                userTypeTitleText.setText("Waiting Entrants");
             } else if (id == R.id.activity_event_entrants_select_button) {
                 displayEntrantsOfStatus(DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED);
+                userTypeTitleText.setText("Selected Entrants");
             } else if (id == R.id.activity_event_entrants_accept_button) {
                 displayEntrantsOfStatus(DatabaseConstants.ON_WAITING_LIST_STATUS.ACCEPTED);
+                userTypeTitleText.setText("Accepted Entrants");
             } else if (id == R.id.activity_event_entrants_decline_button) {
                 displayEntrantsOfStatus(DatabaseConstants.ON_WAITING_LIST_STATUS.DECLINED);
+                userTypeTitleText.setText("Declined Entrants");
             } else if (id == R.id.activity_event_entrants_cancel_button) {
                 displayEntrantsOfStatus(DatabaseConstants.ON_WAITING_LIST_STATUS.CANCELLED);
+                userTypeTitleText.setText("Cancelled Entrants");
             }
         });
+
+        displayEntrantsOfStatus(DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING);
+        userTypeTitleText.setText("Waiting Entrants");
     }
 
     private void displayEntrantsOfStatus(DatabaseConstants.ON_WAITING_LIST_STATUS status) {

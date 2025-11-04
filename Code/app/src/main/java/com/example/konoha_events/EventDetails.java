@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,8 @@ public class EventDetails extends AppCompatActivity {
     private TextView declinedTextView;
     private TextView cancelledTextView;
     private Button viewEntrantsButton;
+    private Button drawFromWaitlistButton;
+    private NumberPicker numberPicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,8 @@ public class EventDetails extends AppCompatActivity {
         declinedTextView = findViewById(R.id.activity_event_view_declined_text);
         cancelledTextView = findViewById(R.id.activity_event_view_cancelled_text);
         viewEntrantsButton = findViewById(R.id.activity_event_view_entrants_button);
+        drawFromWaitlistButton = findViewById(R.id.activity_event_view_draw_from_waitlist_button);
+        numberPicker = findViewById(R.id.activity_event_view_number_picker);
 
         DocumentReference eventDocument = fbs.getEventDocumentReference(eventId);
         Class<?> finalReturnActivityClass = returnActivityClass;
@@ -76,9 +81,16 @@ public class EventDetails extends AppCompatActivity {
                     Log.i(tag, String.format("Got event model of event %s successfully", eventId));
                     EventModel eventModel = ModelUtil.toEventModel(v);
                     ViewUtil.setupToolbarWithBackButtonToActivity(this, toolbar, eventModel.getEventTitle(), (Class<? extends Activity>) finalReturnActivityClass);
+                    drawFromWaitlistButton.setOnClickListener(vv -> {
+                        fbs.selectUsersForEvent(eventModel.getId(), numberPicker.getValue());
+                    });
                 })
                 .addOnFailureListener((e) -> Log.i(tag,
                         String.format("Didn't find or doesn't exist event %s", eventId)));
+
+        numberPicker.setMinValue(0);
+        numberPicker.setMaxValue(0);
+        numberPicker.setValue(0);
 
         fbs.getOnWaitingListsOfEvent(eventId, new OnWaitingListArrayListCallback() {
             @Override
@@ -119,6 +131,11 @@ public class EventDetails extends AppCompatActivity {
                 displayAccepted(acceptedCount);
                 displayDeclined(declinedCount);
                 displayCancelled(cancelledCount);
+
+                numberPicker.setMinValue(0);
+                numberPicker.setMaxValue(waitingCount);
+                numberPicker.setValue(0);
+                numberPicker.setWrapSelectorWheel(true);
             }
         });
 

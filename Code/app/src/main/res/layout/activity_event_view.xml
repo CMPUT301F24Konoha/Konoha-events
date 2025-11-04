@@ -94,6 +94,12 @@
             app:layout_constraintTop_toBottomOf="@+id/activity_event_view_cancelled_text"
             android:text="View Entrants">
         </Button>
+        
+        <NumberPicker
+            android:id="@+id/activity_event_view_number_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </NumberPicker>
 
         <Button
             android:id="@+id/activity_event_view_draw_from_waitlist_button"

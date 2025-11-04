@@ -35,7 +35,7 @@ public class AdminProfileActivity extends AppCompatActivity {
         listView = findViewById(R.id.activity_scroll_listview);
 
         userModelDataList = fbs.getUsersLiveData().getValue();
-        userAdminDashboardView = new UserAdminDashboardView(this, userModelDataList);
+        userAdminDashboardView = new UserAdminDashboardView(this, userModelDataList, null);
         listView.setAdapter(userAdminDashboardView);
     }
 }

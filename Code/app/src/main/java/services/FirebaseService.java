@@ -16,15 +16,20 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import constants.DatabaseConstants;
+import interfaces.BooleanCallback;
 import interfaces.OnWaitingListArrayListCallback;
+import interfaces.OnWaitingListCallback;
 import interfaces.UserModelArrayListCallback;
 import interfaces.UserTypeCallback;
+import lombok.Data;
 import lombok.Getter;
 import models.EventModel;
 import models.OnWaitingListModel;
@@ -48,14 +53,16 @@ public class FirebaseService {
     private final MutableLiveData<ArrayList<UserModel>> usersLiveData;
     @Getter
     private final MutableLiveData<ArrayList<OnWaitingListModel>> onWaitingListLiveData;
+    @Getter
+    private DatabaseConstants.USER_TYPE loggedInUserType;
 
     // Initializes the FirebaseService singleton instance, must be called before using the instance
     public static void init() {
         firebaseService = new FirebaseService();
     }
 
+    @Getter
     private String currentUserId;
-    public String getCurrentUserId() { return currentUserId; }
 
     public FirebaseService() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -151,6 +158,7 @@ public class FirebaseService {
                     DocumentSnapshot doc = documentSnapshots.get(0);
                     currentUserId = doc.getId();
 
+
                     String userTypeStr = documentSnapshots.get(0).getString(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD);
                     if (userTypeStr == null) {
                         Log.w(LOG_TAG,
@@ -158,9 +166,12 @@ public class FirebaseService {
                         userTypeCallback.onCompleted(DatabaseConstants.USER_TYPE.NULL);
                         return;
                     }
+
+                    loggedInUserType = DatabaseConstants.USER_TYPE.valueOf(userTypeStr);
+
                     Log.i(LOG_TAG,
                             String.format("Successfully logged in user %s, password %s, with user type %s", username, password, userTypeStr));
-                    userTypeCallback.onCompleted(DatabaseConstants.USER_TYPE.valueOf(userTypeStr));
+                    userTypeCallback.onCompleted(loggedInUserType);
                 })
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
                         String.format("Failed to login: %s", e)));
@@ -250,6 +261,7 @@ public class FirebaseService {
     public void getUsersOfEventWithStatus(@NonNull String eventId,
                                           @NonNull DatabaseConstants.ON_WAITING_LIST_STATUS status,
                                           @NonNull UserModelArrayListCallback callback) {
+        Log.i("[FirebaseService]", String.format("Called getusers of event with status %s", status));
         onWaitingList
                 .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD,
                         eventId)
@@ -258,9 +270,26 @@ public class FirebaseService {
                 .get()
                 .addOnSuccessListener((v) -> {
                     ArrayList<UserModel> userModels = new ArrayList<>();
+
+                    int size = v.getDocuments().size();
+                    AtomicReference<Integer> count = new AtomicReference<>(0);
                     for (DocumentSnapshot documentSnapshot : v.getDocuments()) {
-                        UserModel userModel = ModelUtil.toUserModel(documentSnapshot);
-                        userModels.add(userModel);
+                        OnWaitingListModel onWaitingListModel = ModelUtil.toOnWaitingListModel(documentSnapshot);
+                        String userId = onWaitingListModel.getUserId();
+
+                        users.document(userId)
+                                .get()
+                                .addOnSuccessListener(userDoc -> {
+                                    UserModel userModel = ModelUtil.toUserModel(userDoc);
+                                    userModels.add(userModel);
+                                    count.updateAndGet(v1 -> v1 + 1);
+                                    if (count.get() == size) {
+                                        callback.onCompleted(userModels);
+                                    }
+                                })
+                                .addOnFailureListener(doc -> {
+                                    count.updateAndGet(v1 -> v1 + 1);
+                                });
                     }
                     callback.onCompleted(userModels);
                 })
@@ -272,6 +301,66 @@ public class FirebaseService {
                     callback.onCompleted(userModels);
                 });
 
+    }
+
+    public void selectUsersForEvent(@NonNull String eventId,
+                                    int count) {
+        getOnWaitingListsOfEvent(eventId, new OnWaitingListArrayListCallback() {
+            @Override
+            public void onCompleted(ArrayList<OnWaitingListModel> onWaitingListModels) {
+                ArrayList<OnWaitingListModel> waitingWaitingListModels = new ArrayList<OnWaitingListModel>();
+                for (OnWaitingListModel model: onWaitingListModels) {
+                    if (model.getStatus() == DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING) {
+                        waitingWaitingListModels.add(model);
+                    }
+                }
+
+                int waitingCount = waitingWaitingListModels.size();
+                if (count >= waitingCount) {
+                    for (OnWaitingListModel model: waitingWaitingListModels) {
+                        updateStatusOfOnWaitingList(model.getId(),
+                                DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED,
+                                new BooleanCallback() {
+                                    @Override
+                                    public void onCompleted(boolean succeeded) {
+
+                                    }
+                                });
+                    }
+                    return;
+                }
+
+                Collections.shuffle(waitingWaitingListModels);
+                for (int i = 0; i < count; i++) {
+                    OnWaitingListModel model = waitingWaitingListModels.get(i);
+                    updateStatusOfOnWaitingList(model.getId(),
+                            DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED,
+                            new BooleanCallback() {
+                                @Override
+                                public void onCompleted(boolean succeeded) {
+                                    // Optional: handle success/failure
+                                }
+                            });
+                }
+            }
+        });
+    }
+
+    public void updateStatusOfOnWaitingList(@NonNull String onWaitingListId,
+                                            @NonNull DatabaseConstants.ON_WAITING_LIST_STATUS status,
+                                            @NonNull BooleanCallback callback) {
+        onWaitingList.document(onWaitingListId)
+                .update(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD, status)
+                .addOnSuccessListener(v -> {
+                    callback.onCompleted(true);
+                    Log.i(LOG_TAG,
+                            String.format("Successfully updated status of onWaitingList model %s", onWaitingListId));
+                })
+                .addOnFailureListener(e -> {
+                    callback.onCompleted(false);
+                    Log.e(LOG_TAG,
+                            String.format("Failed to update status of onWaitingList model %s", onWaitingListId));
+                });
     }
 
     public void getOnWaitingListsOfEvent(@NonNull String eventId,
@@ -293,6 +382,30 @@ public class FirebaseService {
                             String.format("Failed to get onWaitingList models of event %s", eventId));
                     ArrayList<OnWaitingListModel> onWaitingListModels = new ArrayList<>();
                     callback.onCompleted(onWaitingListModels);
+                });
+    }
+
+    public void getOnWaitingList(@NonNull String eventId,
+                                 @NonNull String userId,
+                                 @NonNull OnWaitingListCallback callback) {
+        onWaitingList
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD,
+                        eventId)
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD,
+                        userId)
+                .get()
+                .addOnSuccessListener((v) -> {
+                    if (v.getDocuments().size() == 1) {
+                        DocumentSnapshot snapshot = v.getDocuments().get(0);
+                        OnWaitingListModel model = ModelUtil.toOnWaitingListModel(snapshot);
+                        callback.onCompleted(model);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(LOG_TAG,
+                            String.format("Failed to get onWaitingList models of event %s", eventId));
+                    ArrayList<OnWaitingListModel> onWaitingListModels = new ArrayList<>();
+                    callback.onCompleted(null);
                 });
     }
 
