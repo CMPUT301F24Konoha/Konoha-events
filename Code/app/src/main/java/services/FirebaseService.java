@@ -235,7 +235,8 @@ public class FirebaseService {
      * @param eventId The ID of the event
      * @param imageUri The URI of the image to upload
      */
-    private void uploadEventImage(@NonNull String eventId, @NonNull Uri imageUri) {
+    public void uploadEventImage(@NonNull String eventId, @NonNull Uri imageUri,
+                                 @NonNull BooleanCallback callback) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference imageRef = storageRef.child("event_posters/" + eventId + ".jpg");

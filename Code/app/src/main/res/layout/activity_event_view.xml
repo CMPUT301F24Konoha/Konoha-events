@@ -108,6 +108,20 @@
             android:text="Draw from Waitlist">
         </Button>
 
+        <ImageView
+            android:id="@+id/activity_event_view_poster_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"/>
+
+        <Button
+            android:id="@+id/activity_event_view_upload_event_poster"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upload Event Poster">
+        </Button>
+
         <Button
             android:id="@+id/activity_event_view_notify_selected_entrants_button"
             android:layout_width="match_parent"

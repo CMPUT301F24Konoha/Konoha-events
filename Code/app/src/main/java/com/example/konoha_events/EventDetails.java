@@ -2,16 +2,21 @@ package com.example.konoha_events;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
@@ -35,7 +40,10 @@ public class EventDetails extends AppCompatActivity {
     private TextView cancelledTextView;
     private Button viewEntrantsButton;
     private Button drawFromWaitlistButton;
+    private Button uploadEventPosterButton;
     private NumberPicker numberPicker;
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
+    private ImageView posterImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +80,8 @@ public class EventDetails extends AppCompatActivity {
         viewEntrantsButton = findViewById(R.id.activity_event_view_entrants_button);
         drawFromWaitlistButton = findViewById(R.id.activity_event_view_draw_from_waitlist_button);
         numberPicker = findViewById(R.id.activity_event_view_number_picker);
+        uploadEventPosterButton = findViewById(R.id.activity_event_view_upload_event_poster);
+        posterImageView = findViewById(R.id.activity_event_view_poster_image_view);
 
         DocumentReference eventDocument = fbs.getEventDocumentReference(eventId);
         Class<?> finalReturnActivityClass = returnActivityClass;
@@ -84,6 +94,9 @@ public class EventDetails extends AppCompatActivity {
                     drawFromWaitlistButton.setOnClickListener(vv -> {
                         fbs.selectUsersForEvent(eventModel.getId(), numberPicker.getValue());
                     });
+                    Glide.with(this)
+                            .load(eventModel.getImageUri())
+                            .into(posterImageView);
                 })
                 .addOnFailureListener((e) -> Log.i(tag,
                         String.format("Didn't find or doesn't exist event %s", eventId)));
@@ -144,6 +157,29 @@ public class EventDetails extends AppCompatActivity {
             intent.putExtra(IntentConstants.INTENT_VIEW_EVENT_EVENT_ID, eventId);
             intent.putExtra(IntentConstants.INTENT_VIEW_EVENT_CALLER_TYPE, returnActivityName);
             startActivity(intent);
+        });
+
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri selectedImageUri = result.getData().getData();
+                        if (selectedImageUri != null) {
+                            fbs.uploadEventImage(eventId, selectedImageUri, b -> {
+                                Glide.with(this)
+                                        .load(selectedImageUri)
+                                        .into(posterImageView);
+                            });
+                        }
+                    }
+                }
+        );
+
+        uploadEventPosterButton.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            imagePickerLauncher.launch(intent);
         });
     }
 

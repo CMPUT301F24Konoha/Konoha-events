@@ -9,11 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.example.konoha_events.EventDetails;
 import com.example.konoha_events.R;
 
@@ -26,9 +28,6 @@ import services.FirebaseService;
 public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
     private static final String tag = "[EventAdminDashboardView]";
     private FirebaseService fbs;
-    private TextView eventNameTextView;
-    private Button editDetailsButton;
-    private Button removeEventButton;
     private Class<? extends Activity> returnActivity;
 
     public EventAdminDashboardView(Context context, ArrayList<EventModel> eventModels, Class<? extends Activity> returnActivity) {
@@ -55,9 +54,18 @@ public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
             return view;
         }
 
-        eventNameTextView = view.findViewById(R.id.event_admin_dashboard_view_name);
-        removeEventButton = view.findViewById(R.id.event_admin_dashboard_view_remove_button);
-        editDetailsButton = view.findViewById(R.id.event_admin_dashboard_view_details_button);
+        TextView eventNameTextView = view.findViewById(R.id.event_admin_dashboard_view_name);
+        Button removeEventButton = view.findViewById(R.id.event_admin_dashboard_view_remove_button);
+        Button editDetailsButton = view.findViewById(R.id.event_admin_dashboard_view_details_button);
+        ImageView posterView = view.findViewById(R.id.event_admin_dashboard_image_view);
+
+        Glide.with(getContext()).clear(posterView);
+        if (eventModel.getImageUri() != null) {
+            Log.i(tag, "Image found!");
+            Glide.with(getContext())
+                    .load(eventModel.getImageUri())
+                    .into(posterView);
+        }
 
         eventNameTextView.setText(eventModel.getEventTitle());
 
@@ -74,7 +82,7 @@ public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
         removeEventButton.setOnClickListener((v) -> {
             fbs.deleteEvent(eventModel.getId());
         });
-        
+
         return view;
     }
 }
