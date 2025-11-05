@@ -1,6 +1,6 @@
 package models;
 
-import android.net.Uri;
+import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
@@ -32,7 +32,7 @@ public class EventModel implements HasImage {
 
     // Images
     @Nullable
-    private Uri imageUri;
+    private Bitmap imageBitmap;
 
     // QR Code data - stores the unique identifier for the event
     @Nullable

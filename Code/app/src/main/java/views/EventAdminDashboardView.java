@@ -59,11 +59,9 @@ public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
         Button editDetailsButton = view.findViewById(R.id.event_admin_dashboard_view_details_button);
         ImageView posterView = view.findViewById(R.id.event_admin_dashboard_image_view);
 
-        Glide.with(getContext()).clear(posterView);
-        if (eventModel.getImageUri() != null) {
-            Log.i(tag, "Image found!");
-            Glide.with(getContext())
-                    .load(eventModel.getImageUri())
+        if (eventModel.getImageBitmap() != null) {
+            Glide.with(this.getContext())
+                    .load(eventModel.getImageBitmap())
                     .into(posterView);
         }
 

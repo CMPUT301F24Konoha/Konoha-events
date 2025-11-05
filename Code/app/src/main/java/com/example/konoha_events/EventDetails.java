@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -95,7 +94,7 @@ public class EventDetails extends AppCompatActivity {
                         fbs.selectUsersForEvent(eventModel.getId(), numberPicker.getValue());
                     });
                     Glide.with(this)
-                            .load(eventModel.getImageUri())
+                            .load(eventModel.getImageBitmap())
                             .into(posterImageView);
                 })
                 .addOnFailureListener((e) -> Log.i(tag,
@@ -165,11 +164,10 @@ public class EventDetails extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri selectedImageUri = result.getData().getData();
                         if (selectedImageUri != null) {
-                            fbs.uploadEventImage(eventId, selectedImageUri, b -> {
-                                Glide.with(this)
-                                        .load(selectedImageUri)
-                                        .into(posterImageView);
-                            });
+                            fbs.updateEventImage(eventId, selectedImageUri, getContentResolver());
+                            Glide.with(this)
+                                    .load(selectedImageUri)
+                                    .into(posterImageView);
                         }
                     }
                 }

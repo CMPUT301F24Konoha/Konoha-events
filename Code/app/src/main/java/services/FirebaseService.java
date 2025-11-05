@@ -1,6 +1,10 @@
 package services;
 
+import android.content.ContentResolver;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -15,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -29,7 +34,6 @@ import interfaces.OnWaitingListArrayListCallback;
 import interfaces.OnWaitingListCallback;
 import interfaces.UserModelArrayListCallback;
 import interfaces.UserTypeCallback;
-import lombok.Data;
 import lombok.Getter;
 import models.EventModel;
 import models.OnWaitingListModel;
@@ -452,12 +456,28 @@ public class FirebaseService {
     /**
      * Updates the image data of an event with the given event ID in the database. Can be used to
      * both update and remove the image data of an event.
-     * @param eventId   The ID of the event to be updated
-     * @param imageData The new image data of the event. If null, the image data will be removed
+     *
+     * @param eventId         The ID of the event to be updated
+     * @param imageData       The new image data of the event. If null, the image data will be removed
+     * @param contentResolver
      */
-    public void updateEventImage(@NonNull String eventId, @Nullable String imageData) {
+    public void updateEventImage(@NonNull String eventId, @Nullable Uri imageData, ContentResolver contentResolver) {
+        String base64String;
+        try {
+            Bitmap bitmap;
+            bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageData);
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            byte[] imageBytes = outputStream.toByteArray();
+            base64String = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error processing selected image: " + e.getMessage());
+            return;
+        }
+
         events.document(eventId)
-                .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageData)
+                .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, base64String)
                 .addOnSuccessListener((v) -> {
                     if (imageData == null) {
                         Log.i(LOG_TAG,
@@ -469,8 +489,6 @@ public class FirebaseService {
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
                         String.format("Didn't find or failed to update image of event %s", eventId)));
     }
-
-
 
     /**
      * Sets up the listeners for the collections in the database. Whenever a change in the db occurs,
