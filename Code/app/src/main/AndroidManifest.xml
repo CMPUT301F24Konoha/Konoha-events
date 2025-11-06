@@ -81,6 +81,9 @@
             android:theme="@style/Theme.KonohaEvents"
             android:parentActivityName=".AdminActivity"/>
 
+        <!-- Entrant Home screen for device-based login -->
+        <activity android:name="EntrantHomeActivity"
+            android:exported="true" />
 
     </application>
 
