@@ -23,4 +23,8 @@ public class UserModel {
     private String password;
     @Nullable
     private String deviceId;
+    @Nullable
+    private String fullName;
+    @Nullable
+    private String phoneNumber;
 }

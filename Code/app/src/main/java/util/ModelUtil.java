@@ -55,6 +55,10 @@ public class ModelUtil {
                         documentSnapshot.getString(DatabaseConstants.COLLECTION_USERS_USERNAME_FIELD)))
                 .password(Objects.requireNonNull(
                         documentSnapshot.getString(DatabaseConstants.COLLECTION_USERS_PASSWORD_FIELD)))
+                .fullName(
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_USERS_FULL_NAME_FIELD))
+                .phoneNumber(
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_USERS_PHONE_FIELD))
                 .userType(DatabaseConstants.USER_TYPE.valueOf(
                         documentSnapshot.getString(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD)))
                 .deviceId(documentSnapshot.getString(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD))

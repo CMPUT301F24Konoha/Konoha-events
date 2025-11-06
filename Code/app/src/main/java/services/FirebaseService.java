@@ -52,6 +52,9 @@ public class FirebaseService {
         firebaseService = new FirebaseService();
     }
 
+    private String currentUserId;
+    public String getCurrentUserId() { return currentUserId; }
+
     public FirebaseService() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -102,6 +105,7 @@ public class FirebaseService {
 
         Map<String, Object> userData = new HashMap<>();
         userData.put(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD, userType.name());
+        //Not sure here, I think username is email?
         userData.put(DatabaseConstants.COLLECTION_USERS_USERNAME_FIELD, username);
         userData.put(DatabaseConstants.COLLECTION_USERS_PASSWORD_FIELD, password);
         userData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
@@ -139,6 +143,9 @@ public class FirebaseService {
                         Log.w(LOG_TAG,
                                 String.format("Database contains multiple entries for given username and password: %s, %s", username, password));
                     }
+
+                    DocumentSnapshot doc = documentSnapshots.get(0);
+                    currentUserId = doc.getId();
 
                     String userTypeStr = documentSnapshots.get(0).getString(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD);
                     if (userTypeStr == null) {
