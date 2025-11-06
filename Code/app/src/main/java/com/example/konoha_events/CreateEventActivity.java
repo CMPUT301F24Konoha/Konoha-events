@@ -16,6 +16,12 @@ import java.util.Calendar;
 import java.util.Date;
 import services.FirebaseService;
 
+/**
+ * CreateEventActivity
+ * ----------------------
+ * - Allows the organizer to create an event
+ */
+
 public class CreateEventActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
 

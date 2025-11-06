@@ -33,10 +33,10 @@ public class OrganizerActivity extends AppCompatActivity {
         // Get deviceId from intent passed from LoginActivity
         deviceId = getIntent().getStringExtra("deviceId");
 
-        if (deviceId == null) {
-            deviceId = "12345"; // temporary fix
-            Toast.makeText(this, "Using temporary organizer ID", Toast.LENGTH_SHORT).show();
-        }
+//        if (deviceId == null) {
+//            deviceId = "12345"; // temporary fix
+//            Toast.makeText(this, "Using temporary organizer ID", Toast.LENGTH_SHORT).show();
+//        }
 
         initializeViews();
         setupCreateEventButton();
