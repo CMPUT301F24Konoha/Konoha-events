@@ -226,32 +226,23 @@ public class FirebaseService {
      */
     private void uploadEventImage(@NonNull String eventId, @NonNull Uri imageUri) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        StorageReference imageRef = storageRef.child("event_posters/" + eventId + ".jpg");
 
-        Log.i(LOG_TAG, "Uploading image for event " + eventId + " from URI: " + imageUri);
+        String filename = "poster_" + eventId + "_" + System.currentTimeMillis();
+        StorageReference ref = storage.getReference()
+                .child("public_uploads/" + eventId + "/" + filename);
 
-        imageRef.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    Log.i(LOG_TAG, "Image uploaded successfully, getting download URL...");
-
-                    // Get the permanent download URL
-                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        String downloadUrl = uri.toString();
-                        Log.i(LOG_TAG, "Got download URL: " + downloadUrl);
-
-                        // Update Firestore with the permanent URL
-                        events.document(eventId)
-                                .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, downloadUrl)
-                                .addOnSuccessListener(v ->
-                                        Log.i(LOG_TAG, "Event poster URL saved to Firestore successfully"))
-                                .addOnFailureListener(e ->
-                                        Log.e(LOG_TAG, "Failed to update image URL in Firestore", e));
-                    }).addOnFailureListener(e ->
-                            Log.e(LOG_TAG, "Failed to get download URL", e));
+        ref.putFile(imageUri)
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful()) throw task.getException();
+                    return ref.getDownloadUrl();
                 })
-                .addOnFailureListener(e ->
-                        Log.e(LOG_TAG, "Failed to upload event poster to Storage: " + e.getMessage(), e));
+                .addOnSuccessListener(downloadUri -> {
+                    Log.e(LOG_TAG, "Image Uploaded");
+                    updateEventImage(eventId, downloadUri.toString());
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(LOG_TAG, "Failed to upload event poster: " + e.getMessage(), e);
+                });
     }
 
     /**
