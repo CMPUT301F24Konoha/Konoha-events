@@ -71,14 +71,44 @@ public class ModelUtil {
      * @return  OnWaitingListModel built from the documentSnapshot
      */
     public static OnWaitingListModel toOnWaitingListModel(DocumentSnapshot documentSnapshot) {
+        String rawStatus = documentSnapshot.getString(
+                DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD
+        );
+
+        DatabaseConstants.ON_WAITING_LIST_STATUS status = parseOnWaitingListStatus(rawStatus);
+
         return OnWaitingListModel.builder()
                 .id(documentSnapshot.getId())
-                .status(DatabaseConstants.ON_WAITING_LIST_STATUS.valueOf(
-                        documentSnapshot.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD)))
+                .status(status)
                 .userId(Objects.requireNonNull(
                         documentSnapshot.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD)))
                 .eventId(Objects.requireNonNull(
                         documentSnapshot.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD)))
                 .build();
+    }
+    private static DatabaseConstants.ON_WAITING_LIST_STATUS parseOnWaitingListStatus(String value) {
+        if (value == null) {
+            return DatabaseConstants.ON_WAITING_LIST_STATUS.PENDING;
+        }
+
+        try {
+            return DatabaseConstants.ON_WAITING_LIST_STATUS.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            // Handle legacy or shorthand values
+            switch (value.toLowerCase()) {
+                case "p":
+                    return DatabaseConstants.ON_WAITING_LIST_STATUS.PENDING;
+                case "a":
+                    return DatabaseConstants.ON_WAITING_LIST_STATUS.ACCEPTED;
+                case "d":
+                    return DatabaseConstants.ON_WAITING_LIST_STATUS.DECLINED;
+                case "c":
+                    return DatabaseConstants.ON_WAITING_LIST_STATUS.CANCELLED;
+                case "n":
+                    return DatabaseConstants.ON_WAITING_LIST_STATUS.NULL;
+                default:
+                    return DatabaseConstants.ON_WAITING_LIST_STATUS.PENDING;
+            }
+        }
     }
 }
