@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Camera Permission -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -33,6 +37,8 @@
             android:name=".AdminActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+
+        <!-- Organizer -->
         <activity
             android:name=".OrganizerActivity"
             android:exported="false"
@@ -41,16 +47,27 @@
             android:name=".CreateEventActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+        <activity
+            android:name=".EventQRCodeActivity"
+            android:exported="false" />
 
+        <!-- Entrant -->
         <activity
             android:name=".EntrantActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
-
         <activity
             android:name=".ProfileActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+        <activity
+            android:name=".QRScannerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:exported="false" />
+        <activity
+            android:name=".EventDetailsActivity"
+            android:exported="false" />
 
 
 

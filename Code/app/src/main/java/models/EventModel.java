@@ -57,4 +57,13 @@ public class EventModel {
     public boolean hasEntrantLimit() {
         return entrantLimit != null && entrantLimit > 0;
     }
+
+    @Nullable
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public Uri getImageUri() {
+        return imageUri;
+    }
 }
