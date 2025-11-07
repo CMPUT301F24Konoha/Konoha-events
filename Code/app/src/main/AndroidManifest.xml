@@ -65,6 +65,9 @@
             </intent-filter>
         </activity>
 
+        <!-- Entrant Home screen for device-based login -->
+        <activity android:name="EntrantHomeActivity"
+            android:exported="true" />
 
     </application>
 
