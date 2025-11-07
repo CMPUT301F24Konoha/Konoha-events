@@ -12,6 +12,8 @@ import constants.DatabaseConstants;
 import constants.IntentConstants;
 import services.FirebaseService;
 
+import com.example.konoha_events.auth.EntrantDeviceIdStore;
+
 public class LoginActivity extends AppCompatActivity {
     private FirebaseService fbs;
     private EditText usernameInput, passwordInput;
@@ -36,12 +38,31 @@ public class LoginActivity extends AppCompatActivity {
         selectedRole = (DatabaseConstants.USER_TYPE) getIntent()
                 .getSerializableExtra(IntentConstants.INTENT_ROLE_NAME);
 
+        // if user chose entrant and we have a device id, skip login UI.
+        if (selectedRole == DatabaseConstants.USER_TYPE.ENTRANT){
+            String existingId = EntrantDeviceIdStore.getIdOrNull(this);
+            if (existingId != null){
+                startActivity(new Intent(this, EntrantHomeActivity.class));
+                finish();
+                return;
+            }
+        }
+
         // Update subtitle dynamically
         if (selectedRole != null) {
             loginSubtitle.setText("Sign in as " + selectedRole);
         }
 
         signInButton.setOnClickListener(v -> {
+            // Entrant flow: no username or password
+            if (selectedRole == DatabaseConstants.USER_TYPE.ENTRANT){
+                String id = EntrantDeviceIdStore.getOrCreateId(this);
+                startActivity(new Intent(this, EntrantHomeActivity.class));
+                Toast.makeText(LoginActivity.this, "Signed in as entrant (device ID)", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+
             String username = usernameInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
 
