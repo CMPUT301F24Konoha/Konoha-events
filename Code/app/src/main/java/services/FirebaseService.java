@@ -191,7 +191,6 @@ public class FirebaseService {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD, eventTitle);
-        eventData.put(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageUri);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD, entrantLimit);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD, new Timestamp(registrationDeadline));
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD, description);
@@ -205,6 +204,12 @@ public class FirebaseService {
                     documentReference.update(DatabaseConstants.COLLECTION_EVENTS_QR_CODE_DATA_FIELD, qrCodeData)
                             .addOnSuccessListener(v -> {
                                 Log.i(LOG_TAG, String.format("Created event %s with QR code successfully", eventId));
+
+                                if (imageUri != null) {
+                                    uploadEventImage(eventId, imageUri);
+                                } else {
+                                    Log.i(LOG_TAG, "No image selected for event");
+                                }
                             })
                             .addOnFailureListener(e -> {
                                 Log.e(LOG_TAG, "Failed to add QR code to event", e);
@@ -224,22 +229,29 @@ public class FirebaseService {
         StorageReference storageRef = storage.getReference();
         StorageReference imageRef = storageRef.child("event_posters/" + eventId + ".jpg");
 
+        Log.i(LOG_TAG, "Uploading image for event " + eventId + " from URI: " + imageUri);
+
         imageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> {
-                    // Get download URL
+                    Log.i(LOG_TAG, "Image uploaded successfully, getting download URL...");
+
+                    // Get the permanent download URL
                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String downloadUrl = uri.toString();
-                        // Update Firestore with image URL
+                        Log.i(LOG_TAG, "Got download URL: " + downloadUrl);
+
+                        // Update Firestore with the permanent URL
                         events.document(eventId)
                                 .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, downloadUrl)
                                 .addOnSuccessListener(v ->
-                                        Log.i(LOG_TAG, "Event poster uploaded successfully"))
+                                        Log.i(LOG_TAG, "Event poster URL saved to Firestore successfully"))
                                 .addOnFailureListener(e ->
-                                        Log.e(LOG_TAG, "Failed to update image URL", e));
-                    });
+                                        Log.e(LOG_TAG, "Failed to update image URL in Firestore", e));
+                    }).addOnFailureListener(e ->
+                            Log.e(LOG_TAG, "Failed to get download URL", e));
                 })
                 .addOnFailureListener(e ->
-                        Log.e(LOG_TAG, "Failed to upload event poster", e));
+                        Log.e(LOG_TAG, "Failed to upload event poster to Storage: " + e.getMessage(), e));
     }
 
     /**

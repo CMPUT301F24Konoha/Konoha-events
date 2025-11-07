@@ -11,4 +11,23 @@
     <color name="accent_color">#FF03DAC5</color>
     <color name="buttongrey">#4f4f4f4f</color>
     <color name="buttonwhite">#C0C0C0C0</color>
+
+    <!-- QR Scanner Colors -->
+    <color name="scanner_overlay">#80000000</color>
+    <color name="scanner_frame">#00FF00</color>
+    <color name="scanner_background">#FF000000</color>
+
+    <!-- Event Details Colors -->
+    <color name="success_green">#4CAF50</color>
+    <color name="info_blue">#2196F3</color>
+    <color name="divider_color">#E0E0E0</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_tertiary">#999999</color>
+    <color name="text_primary">#000000</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- Status Colors -->
+    <color name="status_open">#4CAF50</color>
+    <color name="status_closed">#F44336</color>
+    <color name="warning_orange">#FF9800</color>
 </resources>
