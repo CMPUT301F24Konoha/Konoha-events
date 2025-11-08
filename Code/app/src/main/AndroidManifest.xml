@@ -2,6 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Location permissions for Entrant geolocation feature -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,6 +22,16 @@
         android:theme="@style/Theme.KonohaEvents"
         tools:targetApi="34">
 
+        <meta-data
+            android:name="org.osmdroid.config"
+            android:resource="@xml/osm_config" />
+        <activity
+            android:name=".OrganizerMapActivity"
+            android:exported="true"
+            android:theme="@style/Theme.KonohaEvents" />
+
+
+
         <!-- Home screen (Launcher) -->
         <activity
             android:name=".HomeActivity"
@@ -23,20 +42,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <!-- Login -->
         <activity
             android:name=".LoginActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+
         <!-- Admin -->
         <activity
             android:name=".AdminActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+
         <activity
             android:name=".OrganizerActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+
         <activity
             android:name=".CreateEventActivity"
             android:exported="false"
@@ -52,10 +75,7 @@
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
 
-
-
         <!-- Main Activity -->
-
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -66,9 +86,9 @@
         </activity>
 
         <!-- Entrant Home screen for device-based login -->
-        <activity android:name="EntrantHomeActivity"
+        <activity
+            android:name="EntrantHomeActivity"
             android:exported="true" />
 
     </application>
-
 </manifest>
