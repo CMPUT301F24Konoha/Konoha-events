@@ -8,8 +8,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
 
     <application
         android:allowBackup="true"
@@ -22,15 +20,16 @@
         android:theme="@style/Theme.KonohaEvents"
         tools:targetApi="34">
 
+        <!-- OpenStreetMap config -->
         <meta-data
             android:name="org.osmdroid.config"
             android:resource="@xml/osm_config" />
+
+        <!-- Organizer Map Activity -->
         <activity
             android:name=".OrganizerMapActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
-
-
 
         <!-- Home screen (Launcher) -->
         <activity
@@ -43,33 +42,38 @@
             </intent-filter>
         </activity>
 
-        <!-- Login -->
+        <!-- Login Activity -->
         <activity
             android:name=".LoginActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
 
-        <!-- Admin -->
+        <!-- Admin Activity -->
         <activity
             android:name=".AdminActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
 
+        <!-- Organizer Activity -->
         <activity
             android:name=".OrganizerActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
 
+        <!-- Create Event Activity -->
         <activity
             android:name=".CreateEventActivity"
-            android:exported="false"
-            android:theme="@style/Theme.KonohaEvents" />
+            android:exported="true"
+            android:theme="@style/Theme.KonohaEvents"
+            tools:node="replace"/>
 
+        <!-- Entrant Activity -->
         <activity
             android:name=".EntrantActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
 
+        <!-- Profile Activity -->
         <activity
             android:name=".ProfileActivity"
             android:exported="false"
@@ -87,8 +91,10 @@
 
         <!-- Entrant Home screen for device-based login -->
         <activity
-            android:name="EntrantHomeActivity"
-            android:exported="true" />
+            android:name=".EntrantHomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
 
     </application>
+
 </manifest>

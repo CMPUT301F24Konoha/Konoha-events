@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Switch;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -23,6 +24,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private Button selectDeadlineButton, selectImageButton, createButton;
     private CheckBox limitEntrantsCheckbox;
     private ImageView eventPosterPreview;
+    private Switch geolocationSwitch; //  new
     private String deviceId;
     private Date selectedDeadline;
     private Uri selectedImageUri;
@@ -49,6 +51,7 @@ public class CreateEventActivity extends AppCompatActivity {
         selectImageButton = findViewById(R.id.selectImageButton);
         createButton = findViewById(R.id.createButton);
         eventPosterPreview = findViewById(R.id.eventPosterPreview);
+        geolocationSwitch = findViewById(R.id.switchGeolocationRequired); //  new line
     }
 
     private void setupListeners() {
@@ -125,8 +128,15 @@ public class CreateEventActivity extends AppCompatActivity {
             }
         }
 
+        //  New: Check if geolocation is required
+        boolean geolocationRequired = false;
+        if (geolocationSwitch != null) {
+            geolocationRequired = geolocationSwitch.isChecked();
+        }
+
+        //  Pass to Firebase
         fbs.createEvent(deviceId, entrantLimit, selectedDeadline, title,
-                description, selectedImageUri);
+                description, selectedImageUri, geolocationRequired);
 
         Toast.makeText(this, "Event created successfully!", Toast.LENGTH_SHORT).show();
         finish();
