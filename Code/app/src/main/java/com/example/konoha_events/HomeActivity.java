@@ -69,16 +69,16 @@ public class HomeActivity extends AppCompatActivity {
             switch (selectedRole) {
                 case ADMINISTRATOR:
                 case ORGANIZER:
-                    //  Navigate to LoginActivity
+
+                    //goes into LoginActivity
                     intent = new Intent(this, LoginActivity.class);
                     intent.putExtra(IntentConstants.INTENT_ROLE_NAME, selectedRole);
                     startActivity(intent);
                     break;
 
                 case ENTRANT:
-                    Intent entrant = new Intent(this, LoginActivity.class);
-                    entrant.putExtra(IntentConstants.INTENT_ROLE_NAME, selectedRole);
-                    startActivity(entrant);
+                    Intent entrantIntent = new Intent(this, EntrantHomeActivity.class);
+                    startActivity(entrantIntent);
                     break;
 
                 default:

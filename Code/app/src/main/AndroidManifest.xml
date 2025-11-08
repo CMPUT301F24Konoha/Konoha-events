@@ -74,6 +74,12 @@
             android:name=".GuidelinesActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+
+        <!-- Entrant Invitations -->
+        <activity
+            android:name=".EntrantInvitationsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
     </application>
 
 </manifest>

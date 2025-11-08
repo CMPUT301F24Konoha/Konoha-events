@@ -26,5 +26,12 @@ public class EntrantHomeActivity extends AppCompatActivity {
             Intent intent = new Intent(EntrantHomeActivity.this, GuidelinesActivity.class);
             startActivity(intent);
         });
+
+        // button for the invitation
+        Button btnInvitations = findViewById(R.id.button_view_invitations);
+        btnInvitations.setOnClickListener(v ->{
+            Intent intent = new Intent(EntrantHomeActivity.this, EntrantInvitationsActivity.class);
+            startActivity(intent);
+        });
     }
 }

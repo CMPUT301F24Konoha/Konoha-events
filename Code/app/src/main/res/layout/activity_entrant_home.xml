@@ -19,4 +19,11 @@
         android:layout_height="wrap_content"
         android:text="View Lottery Guidelines" />
 
+    <Button
+        android:id="@+id/button_view_invitations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Invitations"
+        android:layout_marginTop="1dp"/>
+
 </LinearLayout>
