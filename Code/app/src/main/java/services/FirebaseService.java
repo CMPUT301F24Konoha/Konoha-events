@@ -329,4 +329,45 @@ public class FirebaseService {
             }
         });
     }
+    /**
+     *Joins the waiting list in firebase
+     * @param eventId ID of the event
+     * @param userId ID of the user trying to join the event.
+     */
+    public void joinWaitingList(@NonNull String eventId, @NonNull String userId) {
+        Map<String, Object> data = new HashMap<>();
+        data.put(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD, eventId);
+        data.put(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD, userId);
+        data.put(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD,
+                //Change pending if that's not correct, I would assume there would be one for waiting but there wasn't when I checked last
+                DatabaseConstants.ON_WAITING_LIST_STATUS.PENDING.name());
+
+        onWaitingList.add(data)
+                .addOnSuccessListener(ref -> Log.i(LOG_TAG, "Joined waiting list: " + ref.getId()))
+                .addOnFailureListener(e -> Log.e(LOG_TAG, "Failed to join waiting list", e));
+    }
+    /**
+     *Leave the waiting list in firebase
+     * @param eventId ID of the event
+     * @param userId ID of the user trying to join the event.
+     */
+    public void leaveWaitingList(@NonNull String eventId, @NonNull String userId) {
+        onWaitingList
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD, eventId)
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD, userId)
+                .get()
+                .addOnSuccessListener(qs -> {
+                    if (qs.isEmpty()) {
+                        Log.i(LOG_TAG, "No waitlist entry to remove for eventId=" + eventId + ", userId=" + userId);
+                        return;
+                    }
+                    for (DocumentSnapshot doc : qs.getDocuments()) {
+                        doc.getReference().delete()
+                                .addOnSuccessListener(v -> Log.i(LOG_TAG, "Removed waitlist entry: " + doc.getId()))
+                                .addOnFailureListener(e -> Log.e(LOG_TAG, "Failed to remove waitlist entry: " + doc.getId(), e));
+                    }
+                })
+                .addOnFailureListener(e -> Log.e(LOG_TAG, "Query failed in leaveWaitingList", e));
+    }
+
 }

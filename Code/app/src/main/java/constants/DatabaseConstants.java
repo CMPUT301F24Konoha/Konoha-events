@@ -43,6 +43,7 @@ public class DatabaseConstants {
         PENDING,
         ACCEPTED,
         DECLINED,
+        SELECTED,
         CANCELLED
     }
 }
