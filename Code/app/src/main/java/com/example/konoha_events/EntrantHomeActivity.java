@@ -9,6 +9,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.konoha_events.auth.EntrantDeviceIdStore;
 
+/**
+ * EntrantHomeActivity
+ * -----------------------------------
+ * home screen for entrant users identified by device ID.
+ * Provides navigation to view guidelines and invitations.
+ *
+ * Implements US 01.07.01 (Device login)
+ */
 public class EntrantHomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

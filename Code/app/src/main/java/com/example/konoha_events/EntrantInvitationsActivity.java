@@ -15,6 +15,17 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import constants.DatabaseConstants;
 
+/**
+ * EntrantInvitationsActivity
+ * -----------------------------------
+ * when status is pending, shows all peding invitations(status = PENDING).
+ * entrants can accept or decline invitation cards, and firestor db updates
+ * the Firestore "onWaitingList" collection.
+ *
+ * Stories covered:
+ *  - US 01.05.02 (Accept invitation)
+ *  - US 01.05.03 (Decline invitation)
+ */
 public class EntrantInvitationsActivity extends AppCompatActivity {
 
     private LinearLayout container;
@@ -43,12 +54,14 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
 
         loadPendingInvitations();
     }
-
+    /**
+     * Loads all invitations for the current entrant with status = PENDING.
+     */
     private void loadPendingInvitations() {
-        // Clear any old views
+        // remove old views
         container.removeAllViews();
 
-        // Query: invitations for this entrant with PENDING status
+        // query: invitations for this entrant with pending status
         db.collection(DatabaseConstants.COLLECTION_ON_WAITING_LIST_NAME)
                 .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD, entrantId)
                 .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD,
@@ -68,43 +81,49 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
                 .addOnFailureListener(e ->
                         showMessage("Failed to load invitations: " + e.getMessage()));
     }
-
+    /**
+     * adds a card to the screen for a single invitation.
+     * @param docId The Firestore document ID of this invitation.
+     * @param eventId The event ID tied to the invitation.
+     */
     private void addInvitationCard(String docId, String eventId) {
         if (eventId == null) eventId = "(unknown event)";
 
-        // Card layout
+        // card layout
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         int pad = (int) (16 * getResources().getDisplayMetrics().density);
         card.setPadding(pad, pad, pad, pad);
         card.setBackgroundResource(android.R.drawable.dialog_holo_light_frame);
 
-        // Event label
+        // event label
         TextView title = new TextView(this);
         title.setText("Event ID: " + eventId);
         title.setTextSize(16f);
 
-        // Accept button
+        // accept button
         Button acceptBtn = new Button(this);
         acceptBtn.setText("Accept");
         acceptBtn.setOnClickListener(v ->
                 updateInvitationStatus(docId, DatabaseConstants.ON_WAITING_LIST_STATUS.ACCEPTED, card));
 
-        // Decline button
+        // decline button
         Button declineBtn = new Button(this);
         declineBtn.setText("Decline");
         declineBtn.setOnClickListener(v ->
                 updateInvitationStatus(docId, DatabaseConstants.ON_WAITING_LIST_STATUS.DECLINED, card));
 
-        // Add views into card
+        // add views into card
         card.addView(title);
         card.addView(acceptBtn);
         card.addView(declineBtn);
 
-        // Add card into container
+        // add card into container
         container.addView(card);
     }
-
+    /**
+     * Updates the invitation status in Firestore for accepted or declined
+     */
     private void updateInvitationStatus(String docId,
                                         DatabaseConstants.ON_WAITING_LIST_STATUS newStatus,
                                         View cardView) {
@@ -124,7 +143,10 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
                                 "Failed to update: " + e.getMessage(),
                                 Toast.LENGTH_SHORT).show());
     }
-
+    /**
+     * shows a simple toast or message.
+     * @param msg The message to display.
+     */
     private void showMessage(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
