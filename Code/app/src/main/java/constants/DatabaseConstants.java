@@ -45,7 +45,6 @@ public class DatabaseConstants {
         SELECTED,
         ACCEPTED,
         DECLINED,
-        SELECTED,
         CANCELLED
     }
 }

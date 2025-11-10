@@ -65,7 +65,7 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
         db.collection(DatabaseConstants.COLLECTION_ON_WAITING_LIST_NAME)
                 .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD, entrantId)
                 .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD,
-                        DatabaseConstants.ON_WAITING_LIST_STATUS.PENDING.name())
+                        DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING.name())
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (querySnapshot.isEmpty()) {

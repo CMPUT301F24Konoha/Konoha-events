@@ -1,6 +1,7 @@
 package com.example.konoha_events;
 import com.bumptech.glide.Glide;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,7 +63,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             h.deadline.setText("Registration always open");
         }
         //Image uploading, some pictures are working. Not super familiar with glide so this can change if we need it to.
-        Uri img = e.getImageUri();
+        Bitmap img = e.getImageBitmap();
         if (img != null) {
             Glide.with(h.image.getContext())
                     .load(img.toString())

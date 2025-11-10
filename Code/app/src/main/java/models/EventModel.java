@@ -67,8 +67,4 @@ public class EventModel implements HasImage {
     public String getDeviceId() {
         return deviceId;
     }
-
-    public Uri getImageUri() {
-        return imageUri;
-    }
 }

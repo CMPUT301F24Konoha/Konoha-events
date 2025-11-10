@@ -543,8 +543,7 @@ public class FirebaseService {
         data.put(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD, eventId);
         data.put(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD, userId);
         data.put(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD,
-                //Change pending if that's not correct, I would assume there would be one for waiting but there wasn't when I checked last
-                DatabaseConstants.ON_WAITING_LIST_STATUS.PENDING.name());
+                DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING.name());
 
         onWaitingList.add(data)
                 .addOnSuccessListener(ref -> Log.i(LOG_TAG, "Joined waiting list: " + ref.getId()))

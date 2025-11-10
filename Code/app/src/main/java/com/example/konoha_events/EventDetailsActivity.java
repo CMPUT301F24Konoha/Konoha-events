@@ -156,18 +156,18 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
         // Load event poster if available
-        if (currentEvent.getImageUri() != null) {
-            loadEventImage(currentEvent.getImageUri());
+        if (currentEvent.getImageBitmap() != null) {
+            loadEventImage(currentEvent.getImageBitmap());
         } else {
             eventPoster.setVisibility(View.GONE);
         }
     }
 
-    private void loadEventImage(Uri imageUri) {
+    private void loadEventImage(Bitmap imageBitmap) {
         eventPoster.setVisibility(View.VISIBLE);
 
         Glide.with(this)
-                .load(imageUri)
+                .load(imageBitmap)
                 .centerCrop()
                 .placeholder(R.drawable.ic_launcher_background) // Shows while loading
                 .error(R.drawable.ic_launcher_background) // Shows if load fails

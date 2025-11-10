@@ -101,7 +101,7 @@ public class ModelUtil {
     }
     private static DatabaseConstants.ON_WAITING_LIST_STATUS parseOnWaitingListStatus(String value) {
         if (value == null) {
-            return DatabaseConstants.ON_WAITING_LIST_STATUS.PENDING;
+            return DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING;
         }
 
         try {
@@ -110,7 +110,7 @@ public class ModelUtil {
             // Handle legacy or shorthand values
             switch (value.toLowerCase()) {
                 case "p":
-                    return DatabaseConstants.ON_WAITING_LIST_STATUS.PENDING;
+                    return DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING;
                 case "a":
                     return DatabaseConstants.ON_WAITING_LIST_STATUS.ACCEPTED;
                 case "d":
@@ -120,7 +120,7 @@ public class ModelUtil {
                 case "n":
                     return DatabaseConstants.ON_WAITING_LIST_STATUS.NULL;
                 default:
-                    return DatabaseConstants.ON_WAITING_LIST_STATUS.PENDING;
+                    return DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING;
             }
         }
     }

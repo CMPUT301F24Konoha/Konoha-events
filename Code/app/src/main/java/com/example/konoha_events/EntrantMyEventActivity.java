@@ -98,7 +98,7 @@ public class EntrantMyEventActivity extends AppCompatActivity {
             //TODO: Add any extra waiting list status
             //Find all onWaitingList entries that the user is on, add the events to the Hashset.
             if (uid.equals(userId)
-                    && (status == DatabaseConstants.ON_WAITING_LIST_STATUS.PENDING
+                    && (status == DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING
                     || status == DatabaseConstants.ON_WAITING_LIST_STATUS.ACCEPTED
                     || status == DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED)) {
                 myEventIds.add(eid);
