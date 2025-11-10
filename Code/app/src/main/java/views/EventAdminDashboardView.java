@@ -1,32 +1,38 @@
 package views;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+import com.example.konoha_events.EventDetails;
 import com.example.konoha_events.R;
 
 import java.util.ArrayList;
 
+import constants.IntentConstants;
 import models.EventModel;
 import services.FirebaseService;
 
 public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
     private static final String tag = "[EventAdminDashboardView]";
     private FirebaseService fbs;
-    private TextView eventNameTextView;
-    private Button removeEventButton;
+    private Class<? extends Activity> returnActivity;
 
-    public EventAdminDashboardView(Context context, ArrayList<EventModel> eventModels) {
+    public EventAdminDashboardView(Context context, ArrayList<EventModel> eventModels, Class<? extends Activity> returnActivity) {
         super(context, 0, eventModels);
+        this.returnActivity = returnActivity;
     }
 
     @NonNull
@@ -48,16 +54,33 @@ public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
             return view;
         }
 
-        eventNameTextView = view.findViewById(R.id.event_admin_dashboard_view_name);
-        removeEventButton = view.findViewById(R.id.event_admin_dashboard_view_remove_button);
+        TextView eventNameTextView = view.findViewById(R.id.event_admin_dashboard_view_name);
+        Button removeEventButton = view.findViewById(R.id.event_admin_dashboard_view_remove_button);
+        Button editDetailsButton = view.findViewById(R.id.event_admin_dashboard_view_details_button);
+        ImageView posterView = view.findViewById(R.id.event_admin_dashboard_image_view);
 
-        eventNameTextView.setText(eventModel.getId());
+        if (eventModel.getImageBitmap() != null) {
+            Glide.with(this.getContext())
+                    .load(eventModel.getImageBitmap())
+                    .into(posterView);
+        }
+
+        eventNameTextView.setText(eventModel.getEventTitle());
+
         // We should also set other fields here once they're added to event model.
+
+        editDetailsButton.setOnClickListener((v) -> {
+            Context context = getContext();
+            Intent intent = new Intent(context, EventDetails.class);
+            intent.putExtra(IntentConstants.INTENT_VIEW_EVENT_CALLER_TYPE, returnActivity.getName());
+            intent.putExtra(IntentConstants.INTENT_VIEW_EVENT_EVENT_ID, eventModel.getId());
+            context.startActivity(intent);
+        });
 
         removeEventButton.setOnClickListener((v) -> {
             fbs.deleteEvent(eventModel.getId());
         });
-        
+
         return view;
     }
 }

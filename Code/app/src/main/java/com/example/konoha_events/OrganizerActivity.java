@@ -33,6 +33,7 @@ import services.FirebaseService;
 public class OrganizerActivity extends AppCompatActivity {
     private Button createEventButton;
     private Button viewEntrantLocationsButton;
+    private Button manageEventsButton;
     private LinearLayout eventsContainer;
     private FirebaseService fbs;
     private String deviceId;
@@ -49,6 +50,7 @@ public class OrganizerActivity extends AppCompatActivity {
 
         initializeViews();
         setupCreateEventButton();
+        setupManageEventButton();
         loadOrganizerEvents();
         setupViewEntrantLocationsButton();
     }
@@ -60,11 +62,12 @@ public class OrganizerActivity extends AppCompatActivity {
         // Initialize buttons
         createEventButton = findViewById(R.id.createEventButton);
         viewEntrantLocationsButton = findViewById(R.id.btnViewEntrantLocations);
+        manageEventsButton = findViewById(R.id.activity_organizer_create_event_button);
 
-        // Get parent layout of the createEventButton
+        // Get parent view of createEventButton
         LinearLayout parentLayout = (LinearLayout) createEventButton.getParent();
 
-        // Create a container for dynamically loaded events
+        // Create container for events
         eventsContainer = new LinearLayout(this);
         eventsContainer.setOrientation(LinearLayout.VERTICAL);
         eventsContainer.setLayoutParams(new LinearLayout.LayoutParams(
@@ -252,5 +255,12 @@ public class OrganizerActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Map button not found in layout", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void setupManageEventButton() {
+        manageEventsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, OrganizerViewEventListActivity.class);
+            startActivity(intent);
+        });
     }
 }

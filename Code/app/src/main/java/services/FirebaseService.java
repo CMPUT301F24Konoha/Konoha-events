@@ -1,6 +1,10 @@
 package services;
 
+import android.content.ContentResolver;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -15,13 +19,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import constants.DatabaseConstants;
+import interfaces.BooleanCallback;
+import interfaces.OnWaitingListArrayListCallback;
+import interfaces.OnWaitingListCallback;
+import interfaces.UserModelArrayListCallback;
 import interfaces.UserTypeCallback;
 import lombok.Getter;
 import models.EventModel;
@@ -46,14 +57,16 @@ public class FirebaseService {
     private final MutableLiveData<ArrayList<UserModel>> usersLiveData;
     @Getter
     private final MutableLiveData<ArrayList<OnWaitingListModel>> onWaitingListLiveData;
+    @Getter
+    private DatabaseConstants.USER_TYPE loggedInUserType;
 
     // Initializes the FirebaseService singleton instance, must be called before using the instance
     public static void init() {
         firebaseService = new FirebaseService();
     }
 
+    @Getter
     private String currentUserId;
-    public String getCurrentUserId() { return currentUserId; }
 
     public FirebaseService() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -156,9 +169,12 @@ public class FirebaseService {
                         userTypeCallback.onCompleted(DatabaseConstants.USER_TYPE.NULL);
                         return;
                     }
+
+                    loggedInUserType = DatabaseConstants.USER_TYPE.valueOf(userTypeStr);
+
                     Log.i(LOG_TAG,
                             String.format("Successfully logged in user %s, password %s, with user type %s", username, password, userTypeStr));
-                    userTypeCallback.onCompleted(DatabaseConstants.USER_TYPE.valueOf(userTypeStr));
+                    userTypeCallback.onCompleted(loggedInUserType);
                 })
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
                         String.format("Failed to login: %s", e)));
@@ -166,6 +182,7 @@ public class FirebaseService {
 
     /**
      * Deletes a user with the given user ID from the database.
+     * @param userId    The ID of the user to be deleted
      */
     public void deleteUser(@NonNull String userId) {
         users.document(userId)
@@ -191,19 +208,17 @@ public class FirebaseService {
                             @NonNull String eventTitle,
                             @NonNull String description,
                             @Nullable Uri imageUri,
+                            @NonNull String organizerId,
                             boolean geolocationRequired) {
-
         Map<String, Object> eventData = new HashMap<>();
         eventData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_ORGANIZER_ID_FIELD, organizerId);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD, eventTitle);
-        eventData.put(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD, description);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageUri);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD, entrantLimit);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD, new Timestamp(registrationDeadline));
-        eventData.put("geolocationRequired", geolocationRequired); // ✅ Added flag
-
-        if (imageUri != null) {
-            eventData.put(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageUri.toString());
-        }
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD, description);
+        eventData.put("geolocationRequired", geolocationRequired);
 
         events.add(eventData)
                 .addOnSuccessListener((documentReference) -> {
@@ -215,18 +230,13 @@ public class FirebaseService {
                     documentReference.update(DatabaseConstants.COLLECTION_EVENTS_QR_CODE_DATA_FIELD, qrCodeData)
                             .addOnSuccessListener(v -> {
                                 Log.i(LOG_TAG, String.format("Created event %s with QR code successfully", eventId));
-                                if (imageUri != null) {
-                                    uploadEventImage(eventId, imageUri);
-                                } else {
-                                    Log.i(LOG_TAG, "No image selected for event");
-                                }
                             })
                             .addOnFailureListener(e -> {
                                 Log.e(LOG_TAG, "Failed to add QR code to event", e);
                             });
                 })
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
-                        String.format("Failed to create event %s", eventTitle)));
+                        String.format("Didn't create event %s", eventTitle)));
     }
 
     /**
@@ -234,26 +244,177 @@ public class FirebaseService {
      * @param eventId The ID of the event
      * @param imageUri The URI of the image to upload
      */
-    private void uploadEventImage(@NonNull String eventId, @NonNull Uri imageUri) {
+    public void uploadEventImage(@NonNull String eventId, @NonNull Uri imageUri) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference imageRef = storageRef.child("event_posters/" + eventId + ".jpg");
 
-        String filename = "poster_" + eventId + "_" + System.currentTimeMillis();
-        StorageReference ref = storage.getReference()
-                .child("public_uploads/" + eventId + "/" + filename);
-
-        ref.putFile(imageUri)
-                .continueWithTask(task -> {
-                    if (!task.isSuccessful()) throw task.getException();
-                    return ref.getDownloadUrl();
+        imageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Get download URL
+                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String downloadUrl = uri.toString();
+                        // Update Firestore with image URL
+                        events.document(eventId)
+                                .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, downloadUrl)
+                                .addOnSuccessListener(v ->
+                                        Log.i(LOG_TAG, "Event poster uploaded successfully"))
+                                .addOnFailureListener(e ->
+                                        Log.e(LOG_TAG, "Failed to update image URL", e));
+                    });
                 })
-                .addOnSuccessListener(downloadUri -> {
-                    Log.e(LOG_TAG, "Image Uploaded");
-                    updateEventImage(eventId, downloadUri.toString());
+                .addOnFailureListener(e ->
+                        Log.e(LOG_TAG, "Failed to upload event poster", e));
+    }
+
+    public void getUsersOfEventWithStatus(@NonNull String eventId,
+                                          @NonNull DatabaseConstants.ON_WAITING_LIST_STATUS status,
+                                          @NonNull UserModelArrayListCallback callback) {
+        Log.i("[FirebaseService]", String.format("Called getusers of event with status %s", status));
+        onWaitingList
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD,
+                        eventId)
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD,
+                        status.name())
+                .get()
+                .addOnSuccessListener((v) -> {
+                    ArrayList<UserModel> userModels = new ArrayList<>();
+
+                    int size = v.getDocuments().size();
+                    AtomicReference<Integer> count = new AtomicReference<>(0);
+                    for (DocumentSnapshot documentSnapshot : v.getDocuments()) {
+                        OnWaitingListModel onWaitingListModel = ModelUtil.toOnWaitingListModel(documentSnapshot);
+                        String userId = onWaitingListModel.getUserId();
+
+                        users.document(userId)
+                                .get()
+                                .addOnSuccessListener(userDoc -> {
+                                    UserModel userModel = ModelUtil.toUserModel(userDoc);
+                                    userModels.add(userModel);
+                                    count.updateAndGet(v1 -> v1 + 1);
+                                    if (count.get() == size) {
+                                        callback.onCompleted(userModels);
+                                    }
+                                })
+                                .addOnFailureListener(doc -> {
+                                    count.updateAndGet(v1 -> v1 + 1);
+                                });
+                    }
+                    callback.onCompleted(userModels);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(LOG_TAG, "Failed to upload event poster: " + e.getMessage(), e);
+                    Log.e(LOG_TAG,
+                            String.format("Failed to get  models of event %s with status %s",
+                                    eventId, status.name()));
+                    ArrayList<UserModel> userModels = new ArrayList<>();
+                    callback.onCompleted(userModels);
+                });
+
+    }
+
+    public void selectUsersForEvent(@NonNull String eventId,
+                                    int count) {
+        getOnWaitingListsOfEvent(eventId, new OnWaitingListArrayListCallback() {
+            @Override
+            public void onCompleted(ArrayList<OnWaitingListModel> onWaitingListModels) {
+                ArrayList<OnWaitingListModel> waitingWaitingListModels = new ArrayList<OnWaitingListModel>();
+                for (OnWaitingListModel model: onWaitingListModels) {
+                    if (model.getStatus() == DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING) {
+                        waitingWaitingListModels.add(model);
+                    }
+                }
+
+                int waitingCount = waitingWaitingListModels.size();
+                if (count >= waitingCount) {
+                    for (OnWaitingListModel model: waitingWaitingListModels) {
+                        updateStatusOfOnWaitingList(model.getId(),
+                                DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED,
+                                new BooleanCallback() {
+                                    @Override
+                                    public void onCompleted(boolean succeeded) {
+
+                                    }
+                                });
+                    }
+                    return;
+                }
+
+                Collections.shuffle(waitingWaitingListModels);
+                for (int i = 0; i < count; i++) {
+                    OnWaitingListModel model = waitingWaitingListModels.get(i);
+                    updateStatusOfOnWaitingList(model.getId(),
+                            DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED,
+                            new BooleanCallback() {
+                                @Override
+                                public void onCompleted(boolean succeeded) {
+                                    // Optional: handle success/failure
+                                }
+                            });
+                }
+            }
+        });
+    }
+
+    public void updateStatusOfOnWaitingList(@NonNull String onWaitingListId,
+                                            @NonNull DatabaseConstants.ON_WAITING_LIST_STATUS status,
+                                            @NonNull BooleanCallback callback) {
+        onWaitingList.document(onWaitingListId)
+                .update(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD, status)
+                .addOnSuccessListener(v -> {
+                    callback.onCompleted(true);
+                    Log.i(LOG_TAG,
+                            String.format("Successfully updated status of onWaitingList model %s", onWaitingListId));
+                })
+                .addOnFailureListener(e -> {
+                    callback.onCompleted(false);
+                    Log.e(LOG_TAG,
+                            String.format("Failed to update status of onWaitingList model %s", onWaitingListId));
+                });
+    }
+
+    public void getOnWaitingListsOfEvent(@NonNull String eventId,
+                                        @NonNull OnWaitingListArrayListCallback callback) {
+        onWaitingList
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD,
+                        eventId)
+                .get()
+                .addOnSuccessListener((v) -> {
+                    ArrayList<OnWaitingListModel> onWaitingListModels = new ArrayList<>();
+                    for (DocumentSnapshot documentSnapshot : v.getDocuments()) {
+                        OnWaitingListModel onWaitingListModel = ModelUtil.toOnWaitingListModel(documentSnapshot);
+                        onWaitingListModels.add(onWaitingListModel);
+                    }
+                    callback.onCompleted(onWaitingListModels);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(LOG_TAG,
+                            String.format("Failed to get onWaitingList models of event %s", eventId));
+                    ArrayList<OnWaitingListModel> onWaitingListModels = new ArrayList<>();
+                    callback.onCompleted(onWaitingListModels);
+                });
+    }
+
+    public void getOnWaitingList(@NonNull String eventId,
+                                 @NonNull String userId,
+                                 @NonNull OnWaitingListCallback callback) {
+        onWaitingList
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD,
+                        eventId)
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD,
+                        userId)
+                .get()
+                .addOnSuccessListener((v) -> {
+                    if (v.getDocuments().size() == 1) {
+                        DocumentSnapshot snapshot = v.getDocuments().get(0);
+                        OnWaitingListModel model = ModelUtil.toOnWaitingListModel(snapshot);
+                        callback.onCompleted(model);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(LOG_TAG,
+                            String.format("Failed to get onWaitingList models of event %s", eventId));
+                    ArrayList<OnWaitingListModel> onWaitingListModels = new ArrayList<>();
+                    callback.onCompleted(null);
                 });
     }
 
@@ -299,12 +460,28 @@ public class FirebaseService {
     /**
      * Updates the image data of an event with the given event ID in the database. Can be used to
      * both update and remove the image data of an event.
-     * @param eventId   The ID of the event to be updated
-     * @param imageData The new image data of the event. If null, the image data will be removed
+     *
+     * @param eventId         The ID of the event to be updated
+     * @param imageData       The new image data of the event. If null, the image data will be removed
+     * @param contentResolver
      */
-    public void updateEventImage(@NonNull String eventId, @Nullable String imageData) {
+    public void updateEventImage(@NonNull String eventId, @Nullable Uri imageData, ContentResolver contentResolver) {
+        String base64String;
+        try {
+            Bitmap bitmap;
+            bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageData);
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            byte[] imageBytes = outputStream.toByteArray();
+            base64String = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error processing selected image: " + e.getMessage());
+            return;
+        }
+
         events.document(eventId)
-                .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageData)
+                .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, base64String)
                 .addOnSuccessListener((v) -> {
                     if (imageData == null) {
                         Log.i(LOG_TAG,

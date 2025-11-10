@@ -1,8 +1,8 @@
 package interfaces;
 
-import android.net.Uri;
+import android.graphics.Bitmap;
 
 public interface HasImage {
     String getId();
-    Uri getImageUri();
+    Bitmap getImageBitmap();
 }

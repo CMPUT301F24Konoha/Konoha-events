@@ -47,7 +47,7 @@ public class ImageAdminDashboardView extends ArrayAdapter<HasImage> {
             return emptyView;
         }
 
-        if (hasImage.getImageUri() == null) {
+        if (hasImage.getImageBitmap() == null) {
             // No log because it's okay to not have an image
             View emptyView = new View(getContext());
             emptyView.setLayoutParams(new AbsListView.LayoutParams(
@@ -68,7 +68,7 @@ public class ImageAdminDashboardView extends ArrayAdapter<HasImage> {
         removeImageButton = view.findViewById(R.id.image_admin_dashboard_view_remove_button);
 
         Glide.with(getContext())
-                .load(hasImage.getImageUri())
+                .load(hasImage.getImageBitmap())
                 .into(imageView);
 
         removeImageButton.setOnClickListener((v) -> {

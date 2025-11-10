@@ -1,6 +1,9 @@
 package util;
 
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+import android.util.Log;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -12,36 +15,46 @@ import constants.DatabaseConstants;
 import models.EventModel;
 import models.OnWaitingListModel;
 import models.UserModel;
+
 public class ModelUtil {
+    private static String TAG = "[ModelUtil]";
     /**
      * Builds an EventModel from a DocumentSnapshot.
      * @param   documentSnapshot Snapshot of an event document
      * @return  EventModel built from the documentSnapshot
      */
-    public static EventModel toEventModel(DocumentSnapshot documentSnapshot) {
-        String imageDataString = documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD);
-        Uri imageUri = null;
-        if (imageDataString != null && !imageDataString.isEmpty()) {
-            imageUri = Uri.parse(imageDataString);
+        public static EventModel toEventModel(DocumentSnapshot documentSnapshot) {
+            // Get the bitmap from base64 string of image
+            String imageDataString = documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD);
+            Bitmap imageBitmap = null;
+            if (imageDataString != null && !imageDataString.isEmpty()) {
+                try {
+                    byte[] decodedBytes = Base64.decode(imageDataString, Base64.DEFAULT);
+                    imageBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                } catch (Exception e) {
+                    Log.e(ModelUtil.TAG, "Failed to decode image data for event ID: " + documentSnapshot.getId());
+                }
+            }
+
+            Long entrantLimitLong = documentSnapshot.getLong(DatabaseConstants.COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD);
+            Integer entrantLimit = entrantLimitLong != null ? entrantLimitLong.intValue() : null;
+
+            Timestamp timestamp = documentSnapshot.getTimestamp(DatabaseConstants.COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD);
+            Date registrationDeadline = timestamp != null ? timestamp.toDate() : null;
+
+            return EventModel.builder()
+                    .id(documentSnapshot.getId())
+                    .organizerId(Objects.requireNonNull(
+                            documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_ORGANIZER_ID_FIELD)))
+                    .imageBitmap(imageBitmap)
+                    .eventTitle(documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD))
+                    .description(documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD))
+                    .deviceId(documentSnapshot.getString(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD))
+                    .qrCodeData(documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_QR_CODE_DATA_FIELD))
+                    .entrantLimit(entrantLimit)
+                    .registrationDeadline(registrationDeadline)
+                    .build();
         }
-
-        Long entrantLimitLong = documentSnapshot.getLong(DatabaseConstants.COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD);
-        Integer entrantLimit = entrantLimitLong != null ? entrantLimitLong.intValue() : null;
-
-        Timestamp timestamp = documentSnapshot.getTimestamp(DatabaseConstants.COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD);
-        Date registrationDeadline = timestamp != null ? timestamp.toDate() : null;
-
-        return EventModel.builder()
-                .id(documentSnapshot.getId())
-                .imageUri(imageUri)
-                .eventTitle(documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD))
-                .description(documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD))
-                .deviceId(documentSnapshot.getString(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD))
-                .qrCodeData(documentSnapshot.getString(DatabaseConstants.COLLECTION_EVENTS_QR_CODE_DATA_FIELD))
-                .entrantLimit(entrantLimit)
-                .registrationDeadline(registrationDeadline)
-                .build();
-    }
 
     /**
      * Builds a UserModel from a DocumentSnapshot.

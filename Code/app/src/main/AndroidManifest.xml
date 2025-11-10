@@ -127,6 +127,23 @@
             android:theme="@style/Theme.KonohaEvents"
             android:parentActivityName=".AdminActivity"/>
 
+        <!-- Organizer Activities -->
+        <activity
+            android:name=".OrganizerViewEventListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"
+            android:parentActivityName=".OrganizerActivity"/>
+
+        <!-- Organizer/Admin Activities-->
+        <activity
+            android:name=".EventDetails"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"/>
+        <activity
+            android:name=".EventEntrantDetails"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"/>
+
         <!-- Entrant Home screen for device-based login -->
         <activity
             android:name=".EntrantHomeActivity"
