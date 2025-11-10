@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.Button;
@@ -13,9 +14,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.konoha_events.auth.EntrantDeviceIdStore;
+
 import java.util.Calendar;
 import java.util.Date;
 import services.FirebaseService;
+
+/**
+ * CreateEventActivity
+ * ----------------------
+ * - Allows the organizer to create an event
+ */
 
 public class CreateEventActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -29,14 +39,13 @@ public class CreateEventActivity extends AppCompatActivity {
     private Date selectedDeadline;
     private Uri selectedImageUri;
     private FirebaseService fbs;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
 
         fbs = FirebaseService.firebaseService;
-        deviceId = getIntent().getStringExtra("deviceId");
+        deviceId = EntrantDeviceIdStore.getOrCreateId(this);
 
         initializeViews();
         setupListeners();
