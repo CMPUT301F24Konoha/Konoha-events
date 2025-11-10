@@ -100,7 +100,8 @@ public class FirebaseService {
      */
     public void createUser(@NonNull DatabaseConstants.USER_TYPE userType,
                       @NonNull String username, @NonNull String password,
-                      @Nullable String deviceId) {
+                      @Nullable String deviceId, @Nullable String fullName,
+                      @Nullable String phoneNumber) {
         // Potentially add check for duplicate username
 
         Map<String, Object> userData = new HashMap<>();
@@ -108,6 +109,8 @@ public class FirebaseService {
         userData.put(DatabaseConstants.COLLECTION_USERS_USERNAME_FIELD, username);
         userData.put(DatabaseConstants.COLLECTION_USERS_PASSWORD_FIELD, password);
         userData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
+        userData.put(DatabaseConstants.COLLECTION_USERS_FULL_NAME_FIELD, fullName);
+        userData.put(DatabaseConstants.COLLECTION_USERS_PHONE_FIELD, phoneNumber);
 
         users.add(userData)
                 .addOnSuccessListener((v) -> Log.i(LOG_TAG,
@@ -265,6 +268,19 @@ public class FirebaseService {
                         String.format("Deleted event %s successfully", eventId)))
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
                         String.format("Didn't find or failed to delete event %s", eventId)));
+    }
+
+    /**
+     * Sets the image url of the event with the given ID to null effectively deleting it.
+     * @param eventId The ID of the event to delete the image
+     */
+    public void deleteEventImage(@NonNull String eventId) {
+        events.document(eventId)
+                .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, null)
+                .addOnSuccessListener((v) -> Log.i(LOG_TAG,
+                        String.format("Deleted event image of event %s successfully", eventId)))
+                .addOnFailureListener((e) -> Log.i(LOG_TAG,
+                        String.format("Didn't find or failed to delete image of event %s", eventId)));
     }
 
     /**

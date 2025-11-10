@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.firebase.storage)
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("org.osmdroid:osmdroid-android:6.1.18")
@@ -54,6 +55,7 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
     // ZXing for QR code scanning
     implementation("com.google.zxing:core:3.5.2")

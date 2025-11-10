@@ -4,6 +4,7 @@ import android.net.Uri;
 
 import androidx.annotation.Nullable;
 
+import interfaces.HasImage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.Date;
 @Getter
 @AllArgsConstructor
 @Builder
-public class EventModel {
+public class EventModel implements HasImage {
     @NonNull
     private String id;
 
@@ -27,6 +28,7 @@ public class EventModel {
     private String deviceId;
 
     // Images
+    @Nullable
     private Uri imageUri;
 
     // QR Code data - stores the unique identifier for the event
