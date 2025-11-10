@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<osmdroid
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<osmdroid xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:tileSource="MAPNIK"
-    android:cachePath="osmdroid"
-    android:debugMode="false"
-    android:hardwareAccelerated="true"
     tools:ignore="MissingPrefix" />

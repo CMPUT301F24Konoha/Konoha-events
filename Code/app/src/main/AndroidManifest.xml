@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Location permissions for Entrant geolocation feature -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,6 +17,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KonohaEvents"
         tools:targetApi="34">
+
+        <!-- OpenStreetMap config -->
+        <meta-data
+            android:name="org.osmdroid.config"
+            android:resource="@xml/osm_config" />
+
+        <!-- Organizer Map Activity -->
+        <activity
+            android:name=".OrganizerMapActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
 
         <!-- Home screen (Launcher) -->
         <activity
@@ -21,39 +39,45 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Login -->
+
+        <!-- Login Activity -->
         <activity
             android:name=".LoginActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
-        <!-- Admin -->
+
+        <!-- Admin Activity -->
         <activity
             android:name=".AdminActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+
+        <!-- Organizer Activity -->
         <activity
             android:name=".OrganizerActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+
+        <!-- Create Event Activity -->
         <activity
             android:name=".CreateEventActivity"
-            android:exported="false"
-            android:theme="@style/Theme.KonohaEvents" />
+            android:exported="true"
+            android:theme="@style/Theme.KonohaEvents"
+            tools:node="replace"/>
 
+        <!-- Entrant Activity -->
         <activity
             android:name=".EntrantActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
 
+        <!-- Profile Activity -->
         <activity
             android:name=".ProfileActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
 
-
-
         <!-- Main Activity -->
-
         <activity
             android:name=".MainActivity"
             android:exported="true">

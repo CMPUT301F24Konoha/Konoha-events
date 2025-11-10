@@ -71,10 +71,6 @@ public class FirebaseService {
 
     /**
      * Returns the DocumentReference of a user with the given user ID.
-     * Use for when we only care about the data of one user changing. Attach a listener to this
-     * reference and convert it into a user model when data changes.
-     * @param userId    The ID of the user
-     * @return          The DocumentReference of the user
      */
     public DocumentReference getUserDocumentReference(@NonNull String userId) {
         return users.document(userId);
@@ -82,10 +78,6 @@ public class FirebaseService {
 
     /**
      * Returns the DocumentReference of an event with the given event ID.
-     * Use for when we only care about the data of one event changing. Attach a listener to this
-     * reference and convert it into an event model when data changes.
-     * @param eventId   The ID of the event
-     * @return          The DocumentReference of the event
      */
     public DocumentReference getEventDocumentReference(@NonNull String eventId) {
         return events.document(eventId);
@@ -93,19 +85,13 @@ public class FirebaseService {
 
     /**
      * Creates a new user in the database with the given parameters.
-     * @param userType The desired user type of the new user
-     * @param username The desired username of the new user
-     * @param password The desired password of the new user
-     * @param deviceId The device ID of the new user, can be null
      */
     public void createUser(@NonNull DatabaseConstants.USER_TYPE userType,
-                      @NonNull String username, @NonNull String password,
-                      @Nullable String deviceId) {
-        // Potentially add check for duplicate username
+                           @NonNull String username, @NonNull String password,
+                           @Nullable String deviceId) {
 
         Map<String, Object> userData = new HashMap<>();
         userData.put(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD, userType.name());
-        //Not sure here, I think username is email?
         userData.put(DatabaseConstants.COLLECTION_USERS_USERNAME_FIELD, username);
         userData.put(DatabaseConstants.COLLECTION_USERS_PASSWORD_FIELD, password);
         userData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
@@ -118,11 +104,7 @@ public class FirebaseService {
     }
 
     /**
-     * Checks if a user with the given username and password pair exists in the database. If it does,
-     * returns the user type of that user. If it doesn't, returns NULL user type.
-     * @param username  The username of the user being logged in
-     * @param password  The password of the user being logged in
-     * @param userTypeCallback   The callback to be called when the login is completed
+     * Checks if a user with the given username and password pair exists in the database.
      */
     public void login(@NonNull String username, @NonNull String password,
                       @NonNull UserTypeCallback userTypeCallback) {
@@ -150,12 +132,12 @@ public class FirebaseService {
                     String userTypeStr = documentSnapshots.get(0).getString(DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD);
                     if (userTypeStr == null) {
                         Log.w(LOG_TAG,
-                                String.format("Database contains entry with NULL user type. It should never be null. Username and password: %s, %s", username, password));
+                                String.format("Database entry with NULL user type. Username: %s", username));
                         userTypeCallback.onCompleted(DatabaseConstants.USER_TYPE.NULL);
                         return;
                     }
                     Log.i(LOG_TAG,
-                            String.format("Successfully logged in user %s, password %s, with user type %s", username, password, userTypeStr));
+                            String.format("Successfully logged in user %s, type %s", username, userTypeStr));
                     userTypeCallback.onCompleted(DatabaseConstants.USER_TYPE.valueOf(userTypeStr));
                 })
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
@@ -164,7 +146,6 @@ public class FirebaseService {
 
     /**
      * Deletes a user with the given user ID from the database.
-     * @param userId    The ID of the user to be deleted
      */
     public void deleteUser(@NonNull String userId) {
         users.document(userId)
@@ -172,52 +153,54 @@ public class FirebaseService {
                 .addOnSuccessListener((v) -> Log.i(LOG_TAG,
                         String.format("Deleted user %s successfully", userId)))
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
-                        String.format("Didn't find or failed to delete user %s", userId)));
+                        String.format("Failed to delete user %s", userId)));
     }
 
     /**
      * Creates an event with a given organizer Id (device Id)
-     * @param deviceId      The ID of the organizer creating the event
-     * @param entrantLimit  An optional limit on entrants for the given event
-     * @param registrationDeadline     The last day of registration
-     * @param eventTitle     The name of the event
-     * @param imageUri     Image description for the event
-     * @param description   A description of the event
      */
-    public void createEvent(@NonNull String deviceId, @NonNull int entrantLimit,
+    public void createEvent(@NonNull String deviceId,
+                            @NonNull int entrantLimit,
                             @NonNull Date registrationDeadline,
-                            @NonNull String eventTitle, @NonNull String description,
-                            Uri imageUri) {
+                            @NonNull String eventTitle,
+                            @NonNull String description,
+                            @Nullable Uri imageUri,
+                            boolean geolocationRequired) {
+
         Map<String, Object> eventData = new HashMap<>();
         eventData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD, eventTitle);
-        eventData.put(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageUri);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD, description);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD, entrantLimit);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD, new Timestamp(registrationDeadline));
-        eventData.put(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD, description);
+        eventData.put("geolocationRequired", geolocationRequired); // ✅ Added flag
+
+        if (imageUri != null) {
+            eventData.put(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageUri.toString());
+        }
+
         events.add(eventData)
                 .addOnSuccessListener((documentReference) -> {
                     String eventId = documentReference.getId();
-
-                    // Generate unique QR code data for this event
                     String qrCodeData = QRCodeUtil.generateQRCodeData(eventId);
 
                     documentReference.update(DatabaseConstants.COLLECTION_EVENTS_QR_CODE_DATA_FIELD, qrCodeData)
                             .addOnSuccessListener(v -> {
                                 Log.i(LOG_TAG, String.format("Created event %s with QR code successfully", eventId));
+                                if (imageUri != null) {
+                                    uploadEventImage(eventId, imageUri);
+                                }
                             })
                             .addOnFailureListener(e -> {
                                 Log.e(LOG_TAG, "Failed to add QR code to event", e);
                             });
                 })
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
-                        String.format("Didn't create event %s", eventTitle)));
+                        String.format("Failed to create event %s", eventTitle)));
     }
 
     /**
-     * Uploads an event poster image to Firebase Storage (US 02.04.01)
-     * @param eventId The ID of the event
-     * @param imageUri The URI of the image to upload
+     * Uploads an event poster image to Firebase Storage.
      */
     private void uploadEventImage(@NonNull String eventId, @NonNull Uri imageUri) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -226,10 +209,8 @@ public class FirebaseService {
 
         imageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> {
-                    // Get download URL
                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String downloadUrl = uri.toString();
-                        // Update Firestore with image URL
                         events.document(eventId)
                                 .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, downloadUrl)
                                 .addOnSuccessListener(v ->
@@ -242,38 +223,24 @@ public class FirebaseService {
                         Log.e(LOG_TAG, "Failed to upload event poster", e));
     }
 
-    /**
-     * Deletes an event with the given event ID from the database.
-     * @param eventId   The ID of the event to be deleted
-     */
     public void deleteEvent(@NonNull String eventId) {
         events.document(eventId)
                 .delete()
                 .addOnSuccessListener((v) -> Log.i(LOG_TAG,
                         String.format("Deleted event %s successfully", eventId)))
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
-                        String.format("Didn't find or failed to delete event %s", eventId)));
+                        String.format("Failed to delete event %s", eventId)));
     }
 
-    /**
-     * Deletes an on waiting list entry with the given ID from the database.
-     * @param onWaitingListId    The ID of the on waiting list entry to be deleted
-     */
     public void deleteOnWaitingList(@NonNull String onWaitingListId) {
         onWaitingList.document(onWaitingListId)
                 .delete()
                 .addOnSuccessListener((v) -> Log.i(LOG_TAG,
                         String.format("Deleted on waiting list %s successfully", onWaitingListId)))
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
-                        String.format("Didn't find or failed to delete on waiting list %s", onWaitingListId)));
+                        String.format("Failed to delete on waiting list %s", onWaitingListId)));
     }
 
-    /**
-     * Updates the image data of an event with the given event ID in the database. Can be used to
-     * both update and remove the image data of an event.
-     * @param eventId   The ID of the event to be updated
-     * @param imageData The new image data of the event. If null, the image data will be removed
-     */
     public void updateEventImage(@NonNull String eventId, @Nullable String imageData) {
         events.document(eventId)
                 .update(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageData)
@@ -286,14 +253,11 @@ public class FirebaseService {
                             String.format("Updated event image of event %s successfully", eventId));
                 })
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
-                        String.format("Didn't find or failed to update image of event %s", eventId)));
+                        String.format("Failed to update image of event %s", eventId)));
     }
 
-
-
     /**
-     * Sets up the listeners for the collections in the database. Whenever a change in the db occurs,
-     * the data will get updated.
+     * Sets up snapshot listeners for Firestore collections.
      */
     private void setupListeners() {
         events.addSnapshotListener((data, error) -> {
