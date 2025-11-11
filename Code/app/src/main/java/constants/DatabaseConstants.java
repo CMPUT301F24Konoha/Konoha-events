@@ -22,7 +22,10 @@ public class DatabaseConstants {
     public static final String COLLECTION_ON_WAITING_LIST_STATUS_FIELD = "status";
     public static final String COLLECTION_ON_WAITING_LIST_USER_ID_FIELD = "userId";
     public static final String COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD = "eventId";
-
+    public static final String COLLECTION_NOTIFICATIONS_NAME = "notifications";
+    public static final String COLLECTION_NOTIFICATIONS_USER_ID_FIELD = "userId";
+    public static final String COLLECTION_NOTIFICATIONS_EVENT_ID_FIELD = "eventId";
+    public static final String COLLECTION_NOTIFICATIONS_MESSAGE_FIELD = "message";
 
 
 

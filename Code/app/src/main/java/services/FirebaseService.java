@@ -36,6 +36,7 @@ import interfaces.UserModelArrayListCallback;
 import interfaces.UserTypeCallback;
 import lombok.Getter;
 import models.EventModel;
+import models.NotificationModel;
 import models.OnWaitingListModel;
 import models.UserModel;
 import util.ModelUtil;
@@ -50,6 +51,7 @@ public class FirebaseService {
     private final CollectionReference events;
     private final CollectionReference users;
     private final CollectionReference onWaitingList;
+    private final CollectionReference notifications;
 
     @Getter
     private final MutableLiveData<ArrayList<EventModel>> eventsLiveData;
@@ -57,6 +59,8 @@ public class FirebaseService {
     private final MutableLiveData<ArrayList<UserModel>> usersLiveData;
     @Getter
     private final MutableLiveData<ArrayList<OnWaitingListModel>> onWaitingListLiveData;
+    @Getter
+    private final MutableLiveData<ArrayList<NotificationModel>> notificationsLiveData;
     @Getter
     private DatabaseConstants.USER_TYPE loggedInUserType;
 
@@ -74,10 +78,12 @@ public class FirebaseService {
         events = db.collection(DatabaseConstants.COLLECTION_EVENTS_NAME);
         users = db.collection(DatabaseConstants.COLLECTION_USERS_NAME);
         onWaitingList = db.collection(DatabaseConstants.COLLECTION_ON_WAITING_LIST_NAME);
+        notifications = db.collection(DatabaseConstants.COLLECTION_NOTIFICATIONS_NAME);
 
         eventsLiveData = new MutableLiveData<>();
         usersLiveData = new MutableLiveData<>();
         onWaitingListLiveData = new MutableLiveData<>();
+        notificationsLiveData = new MutableLiveData<>();
 
         setupListeners();
     }
@@ -457,6 +463,15 @@ public class FirebaseService {
                         String.format("Didn't find or failed to delete on waiting list %s", onWaitingListId)));
     }
 
+    public void deleteNotification(@NonNull String notificationId) {
+        notifications.document(notificationId)
+                .delete()
+                .addOnSuccessListener((v) -> Log.i(LOG_TAG,
+                        String.format("Deleted on notification %s successfully", notificationId)))
+                .addOnFailureListener((e) -> Log.i(LOG_TAG,
+                        String.format("Didn't find or failed to delete notification %s", notificationId)));
+    }
+
     /**
      * Updates the image data of an event with the given event ID in the database. Can be used to
      * both update and remove the image data of an event.
@@ -529,6 +544,17 @@ public class FirebaseService {
                     onWaitingListModels.add(onWaitingListModel);
                 }
                 onWaitingListLiveData.postValue(onWaitingListModels);
+            }
+        });
+
+        notifications.addSnapshotListener((data, error) -> {
+            if (data != null) {
+                ArrayList<NotificationModel> notificationModels = new ArrayList<>();
+                for (DocumentSnapshot documentSnapshot : data.getDocuments()) {
+                    NotificationModel notificationModel = ModelUtil.toNotificationModel(documentSnapshot);
+                    notificationModels.add(notificationModel);
+                }
+                notificationsLiveData.postValue(notificationModels);
             }
         });
     }

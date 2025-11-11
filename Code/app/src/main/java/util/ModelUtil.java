@@ -13,6 +13,7 @@ import java.util.Objects;
 
 import constants.DatabaseConstants;
 import models.EventModel;
+import models.NotificationModel;
 import models.OnWaitingListModel;
 import models.UserModel;
 
@@ -99,6 +100,19 @@ public class ModelUtil {
                         documentSnapshot.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD)))
                 .build();
     }
+
+    public static NotificationModel toNotificationModel(DocumentSnapshot documentSnapshot) {
+        return NotificationModel.builder()
+                .id(documentSnapshot.getId())
+                .userId(Objects.requireNonNull(
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_NOTIFICATIONS_USER_ID_FIELD)))
+                .eventId(Objects.requireNonNull(
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_NOTIFICATIONS_EVENT_ID_FIELD)))
+                .message(Objects.requireNonNull(
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_NOTIFICATIONS_MESSAGE_FIELD)))
+                .build();
+    }
+
     private static DatabaseConstants.ON_WAITING_LIST_STATUS parseOnWaitingListStatus(String value) {
         if (value == null) {
             return DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING;

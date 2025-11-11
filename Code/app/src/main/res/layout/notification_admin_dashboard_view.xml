@@ -1,0 +1,49 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/notification_admin_dashboard_view_event_id_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="[EVENT_ID]">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/notification_admin_dashboard_view_organizer_id_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="[ORGANIZER_ID]">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/notification_admin_dashboard_view_user_id_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="[USER_ID]">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/notification_admin_dashboard_view_message_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="[MESSAGE]">
+
+    </TextView>
+
+    <Button
+        android:id="@+id/notification_admin_dashboard_view_delete_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete Notification"
+        android:layout_marginTop="10dp">
+
+    </Button>
+
+</LinearLayout>

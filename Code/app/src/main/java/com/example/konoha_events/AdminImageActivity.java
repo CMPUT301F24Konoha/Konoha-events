@@ -18,7 +18,7 @@ import views.ImageAdminDashboardView;
 import views.UserAdminDashboardView;
 
 public class AdminImageActivity extends AppCompatActivity {
-    private final String tag = "[ImageProfileActivity]";
+    private final String tag = "[AdminImageActivity]";
     private FirebaseService fbs;
     private ListView listView;
     private ArrayList<HasImage> imageModelDataList = new ArrayList<HasImage>();
