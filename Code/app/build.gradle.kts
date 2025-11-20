@@ -75,6 +75,10 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation("org.robolectric:robolectric:4.10")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("com.google.firebase:firebase-firestore:24.3.0")
     androidTestImplementation("org.mockito:mockito-android:5.11.0")
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
