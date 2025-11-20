@@ -83,6 +83,22 @@ public class FirebaseService {
         setupListeners();
     }
 
+    // Extra constructor for mocking
+    public FirebaseService(CollectionReference events,
+                           CollectionReference users,
+                           CollectionReference onWaitingList,
+                           MutableLiveData<ArrayList<EventModel>> eventsLiveData,
+                           MutableLiveData<ArrayList<UserModel>> usersLiveData,
+                           MutableLiveData<ArrayList<OnWaitingListModel>> onWaitingListLiveData){
+        this.events = events;
+        this.users = users;
+        this.onWaitingList = onWaitingList;
+
+        this.eventsLiveData = eventsLiveData;
+        this.usersLiveData = usersLiveData;
+        this.onWaitingListLiveData = onWaitingListLiveData;
+    }
+
     /**
      * Returns the DocumentReference of a user with the given user ID.
      * Use for when we only care about the data of one user changing. Attach a listener to this
