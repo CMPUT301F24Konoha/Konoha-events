@@ -101,12 +101,12 @@ public class EntrantHomeActivity extends AppCompatActivity {
         mainLayout.addView(viewEventsButton);
 
         // Profile Button
-        profileButton = new Button(this);
-        profileButton.setText("My Profile");
-        profileButton.setTextSize(18f);
-        profileButton.setLayoutParams(buttonParams);
-        profileButton.setOnClickListener(v -> openProfile());
-        mainLayout.addView(profileButton);
+//        profileButton = new Button(this);
+//        profileButton.setText("My Profile");
+//        profileButton.setTextSize(18f);
+//        profileButton.setLayoutParams(buttonParams);
+//        profileButton.setOnClickListener(v -> openProfile());
+//        mainLayout.addView(profileButton);
 
         setContentView(mainLayout);
 

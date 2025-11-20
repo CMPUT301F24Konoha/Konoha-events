@@ -6,6 +6,7 @@ import android.provider.CalendarContract;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +24,7 @@ import services.FirebaseService;
 public class EntrantActivity extends AppCompatActivity {
     private RecyclerView recyclerEvents;
     private EventsAdapter eventsAdapter;
+    private Button scanQRCodeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,19 +65,25 @@ public class EntrantActivity extends AppCompatActivity {
         );
 
         ImageButton profileButton = findViewById(R.id.profile);
-                profileButton.setOnClickListener(v -> {
+        profileButton.setOnClickListener(v -> {
             Intent intent = new Intent(EntrantActivity.this, ProfileActivity.class);
             startActivity(intent);
 
         });
 
         Button my_events_button = findViewById(R.id.My_Events_Button);
-            my_events_button.setOnClickListener(v -> {
+        my_events_button.setOnClickListener(v -> {
             Intent intent = new Intent(EntrantActivity.this, EntrantMyEventActivity.class);
             startActivity(intent);
 
         });
 
+        scanQRCodeButton = findViewById(R.id.scan_qr_code_button);
+        scanQRCodeButton.setOnClickListener(v -> openQRScanner());
+    }
 
+    private void openQRScanner() {
+        Intent intent = new Intent(this, QRScannerActivity.class);
+        startActivity(intent);
     }
 }
