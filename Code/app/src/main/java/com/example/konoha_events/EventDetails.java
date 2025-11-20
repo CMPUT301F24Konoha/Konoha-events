@@ -40,6 +40,7 @@ public class EventDetails extends AppCompatActivity {
     private Button viewEntrantsButton;
     private Button drawFromWaitlistButton;
     private Button uploadEventPosterButton;
+    private Button showQRCodeButton;
     private NumberPicker numberPicker;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ImageView posterImageView;
@@ -81,6 +82,7 @@ public class EventDetails extends AppCompatActivity {
         numberPicker = findViewById(R.id.activity_event_view_number_picker);
         uploadEventPosterButton = findViewById(R.id.activity_event_view_upload_event_poster);
         posterImageView = findViewById(R.id.activity_event_view_poster_image_view);
+        showQRCodeButton = findViewById(R.id.activity_event_view_show_qr_code_button);
 
         DocumentReference eventDocument = fbs.getEventDocumentReference(eventId);
         Class<?> finalReturnActivityClass = returnActivityClass;
@@ -178,6 +180,12 @@ public class EventDetails extends AppCompatActivity {
             intent.setType("image/*");
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             imagePickerLauncher.launch(intent);
+        });
+
+        showQRCodeButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, EventQRCodeActivity.class);
+            intent.putExtra(IntentConstants.INTENT_EVENT_ID, eventId);
+            startActivity(intent);
         });
     }
 

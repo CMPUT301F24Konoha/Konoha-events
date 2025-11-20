@@ -38,6 +38,7 @@ import lombok.Getter;
 import models.EventModel;
 import models.OnWaitingListModel;
 import models.UserModel;
+import util.ConversionUtil;
 import util.ModelUtil;
 import util.QRCodeUtil;
 
@@ -209,12 +210,20 @@ public class FirebaseService {
                             @NonNull String description,
                             @Nullable Uri imageUri,
                             @NonNull String organizerId,
-                            boolean geolocationRequired) {
+                            boolean geolocationRequired,
+                            ContentResolver contentResolver) {
+        String base64ImageString;
+        try {
+            base64ImageString = ConversionUtil.convertUriToBase64(imageUri, contentResolver);
+        } catch (Exception e) {
+            base64ImageString = null;
+        }
+
         Map<String, Object> eventData = new HashMap<>();
         eventData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_ORGANIZER_ID_FIELD, organizerId);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD, eventTitle);
-        eventData.put(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageUri);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, base64ImageString);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD, entrantLimit);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD, new Timestamp(registrationDeadline));
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD, description);
@@ -468,13 +477,7 @@ public class FirebaseService {
     public void updateEventImage(@NonNull String eventId, @Nullable Uri imageData, ContentResolver contentResolver) {
         String base64String;
         try {
-            Bitmap bitmap;
-            bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageData);
-
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-            byte[] imageBytes = outputStream.toByteArray();
-            base64String = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+            base64String = ConversionUtil.convertUriToBase64(imageData, contentResolver);
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error processing selected image: " + e.getMessage());
             return;

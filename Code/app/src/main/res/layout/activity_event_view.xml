@@ -135,6 +135,13 @@
             android:layout_height="wrap_content"
             android:text="Notify Non-Selected Entrants">
         </Button>
+
+        <Button
+            android:id="@+id/activity_event_view_show_qr_code_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Show QR Code">
+        </Button>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
