@@ -77,7 +77,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
 
                 case ENTRANT:
-                    Intent entrantIntent = new Intent(this, EntrantHomeActivity.class);
+                    Intent entrantIntent = new Intent(this, LoginActivity.class);
                     startActivity(entrantIntent);
                     break;
 
