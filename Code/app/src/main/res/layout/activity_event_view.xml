@@ -40,10 +40,18 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/activity_event_view_total_on_list_text"
+            android:id="@+id/activity_event_view_deadline_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/activity_event_toolbar"
+            android:text="[Deadline]">
+        </TextView>
+
+        <TextView
+            android:id="@+id/activity_event_view_total_on_list_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/activity_event_view_deadline_text"
             android:text="[TOTAL ON LIST]">
         </TextView>
 

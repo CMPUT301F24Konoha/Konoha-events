@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import constants.IntentConstants;
 import interfaces.OnWaitingListArrayListCallback;
@@ -31,6 +32,7 @@ import util.ViewUtil;
 public class EventDetails extends AppCompatActivity {
     private final String tag = "[EventDetails]";
     private FirebaseService fbs;
+    private TextView deadlineTextView;
     private TextView totalOnListTextView;
     private TextView waitingTextView;
     private TextView selectedTextView;
@@ -71,6 +73,7 @@ public class EventDetails extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+        deadlineTextView = findViewById(R.id.activity_event_view_deadline_text);
         totalOnListTextView = findViewById(R.id.activity_event_view_total_on_list_text);
         waitingTextView = findViewById(R.id.activity_event_view_waiting_text);
         selectedTextView = findViewById(R.id.activity_event_view_selected_text);
@@ -92,6 +95,10 @@ public class EventDetails extends AppCompatActivity {
                     Log.i(tag, String.format("Got event model of event %s successfully", eventId));
                     EventModel eventModel = ModelUtil.toEventModel(v);
                     ViewUtil.setupToolbarWithBackButtonToActivity(this, toolbar, eventModel.getEventTitle(), (Class<? extends Activity>) finalReturnActivityClass);
+                    if (eventModel.getRegistrationDeadline() != null) {
+                        displayDeadline(eventModel.getRegistrationDeadline());
+                    }
+
                     drawFromWaitlistButton.setOnClickListener(vv -> {
                         fbs.selectUsersForEvent(eventModel.getId(), numberPicker.getValue());
                     });
@@ -187,6 +194,11 @@ public class EventDetails extends AppCompatActivity {
             intent.putExtra(IntentConstants.INTENT_EVENT_ID, eventId);
             startActivity(intent);
         });
+    }
+
+    private void displayDeadline(Date deadline) {
+        deadlineTextView.setText(
+                String.format("Registration Deadline: %s", deadline.toString()));
     }
 
     private void displayTotals(int total) {
