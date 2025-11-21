@@ -5,9 +5,6 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="givenRealUser_whenLogin_thenGetCorrectUserType()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="FirebaseServiceTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

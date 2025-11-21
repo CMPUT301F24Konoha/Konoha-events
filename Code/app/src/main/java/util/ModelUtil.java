@@ -8,6 +8,7 @@ import android.util.Log;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.sql.Time;
 import java.util.Date;
 import java.util.Objects;
 
@@ -39,8 +40,14 @@ public class ModelUtil {
             Long entrantLimitLong = documentSnapshot.getLong(DatabaseConstants.COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD);
             Integer entrantLimit = entrantLimitLong != null ? entrantLimitLong.intValue() : null;
 
-            Timestamp timestamp = documentSnapshot.getTimestamp(DatabaseConstants.COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD);
-            Date registrationDeadline = timestamp != null ? timestamp.toDate() : null;
+            Timestamp timestamp;
+            Date registrationDeadline = null;
+            try {
+                timestamp = documentSnapshot.getTimestamp(DatabaseConstants.COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD);
+                registrationDeadline = timestamp != null ? timestamp.toDate() : null;
+            } catch (Exception e) {
+                Log.e(TAG, String.format("Failed to read timestamp for event Id: %s", documentSnapshot.getId()));
+            }
 
             return EventModel.builder()
                     .id(documentSnapshot.getId())
