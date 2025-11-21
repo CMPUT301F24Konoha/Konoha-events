@@ -211,11 +211,9 @@ public class QRScannerActivity extends AppCompatActivity {
                 Toast.makeText(this, "QR Code detected!", Toast.LENGTH_SHORT).show();
 
                 // Navigate to EventDetailsActivity with the scanned event ID
-                Intent intent = new Intent(this, EventDetails.class);
-                intent.putExtra(IntentConstants.INTENT_VIEW_EVENT_EVENT_ID, eventId);
-                intent.putExtra(IntentConstants.INTENT_VIEW_EVENT_CALLER_TYPE, this.getClass());
+                Intent intent = new Intent(this, EventDetailsActivity.class);
+                intent.putExtra(IntentConstants.INTENT_EVENT_ID, eventId);
                 startActivity(intent);
-
                 finish(); // Close scanner after successful scan
             } else {
                 Toast.makeText(this, "Invalid QR code format", Toast.LENGTH_SHORT).show();
