@@ -1,17 +1,26 @@
 package com.example.konoha_events;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -21,8 +30,10 @@ import com.google.firebase.firestore.DocumentReference;
 import java.util.ArrayList;
 import java.util.Date;
 
+import constants.DatabaseConstants;
 import constants.IntentConstants;
 import interfaces.OnWaitingListArrayListCallback;
+import lombok.val;
 import models.EventModel;
 import models.OnWaitingListModel;
 import services.FirebaseService;
@@ -51,9 +62,36 @@ public class EventDetails extends AppCompatActivity {
     private Button uploadEventPosterButton;
     private Button deleteEventPosterButton;
     private Button showQRCodeButton;
+    private Button showSendNotificationMenuButton;
     private NumberPicker numberPicker;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ImageView posterImageView;
+
+    public enum SEND_NOTIFICATION_OPTIONS {
+        EVERYONE(null),
+        WAITING(DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING),
+        SELECTED(DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED),
+        ACCEPTED(DatabaseConstants.ON_WAITING_LIST_STATUS.ACCEPTED),
+        DECLINED(DatabaseConstants.ON_WAITING_LIST_STATUS.DECLINED),
+        CANCELLED(DatabaseConstants.ON_WAITING_LIST_STATUS.CANCELLED);
+
+        private final DatabaseConstants.ON_WAITING_LIST_STATUS mappedStatus;
+
+        SEND_NOTIFICATION_OPTIONS(DatabaseConstants.ON_WAITING_LIST_STATUS status) {
+            this.mappedStatus = status;
+        }
+
+        public DatabaseConstants.ON_WAITING_LIST_STATUS toWaitingListStatus() {
+            return mappedStatus;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            String lower = name().toLowerCase();
+            return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +133,7 @@ public class EventDetails extends AppCompatActivity {
         deleteEventPosterButton = findViewById(R.id.activity_event_view_delete_event_poster);
         posterImageView = findViewById(R.id.activity_event_view_poster_image_view);
         showQRCodeButton = findViewById(R.id.activity_event_view_show_qr_code_button);
+        showSendNotificationMenuButton = findViewById(R.id.activity_event_view_start_send_notification_menu_button);
 
         DocumentReference eventDocument = fbs.getEventDocumentReference(eventId);
         Class<?> finalReturnActivityClass = returnActivityClass;
@@ -206,6 +245,52 @@ public class EventDetails extends AppCompatActivity {
             Intent intent = new Intent(this, EventQRCodeActivity.class);
             intent.putExtra(IntentConstants.INTENT_EVENT_ID, eventId);
             startActivity(intent);
+        });
+
+        showSendNotificationMenuButton.setOnClickListener(v -> {
+            LayoutInflater inflater = LayoutInflater.from(this);
+            View dialogView = inflater.inflate(R.layout.organizer_send_notification_dialog, null);
+            Spinner spinner = dialogView.findViewById(R.id.organizer_send_notification_event_spinner);
+            EditText editText = dialogView.findViewById(R.id.organizer_send_notification_edit_text);
+
+            SEND_NOTIFICATION_OPTIONS[] notificationOptions = SEND_NOTIFICATION_OPTIONS.values();
+            ArrayAdapter<SEND_NOTIFICATION_OPTIONS> adapter = new ArrayAdapter<>(
+                    this,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    notificationOptions
+            );
+            spinner.setAdapter(adapter);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Send Notification");
+            builder.setView(dialogView);
+
+            builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    SEND_NOTIFICATION_OPTIONS chosenOption = (SEND_NOTIFICATION_OPTIONS) spinner.getSelectedItem();
+                    String enteredText = editText.getText().toString();
+
+                    if (chosenOption == SEND_NOTIFICATION_OPTIONS.EVERYONE) {
+                        fbs.createNotificationForAllUsersOfEvent(
+                                eventId,
+                                enteredText,
+                                DatabaseConstants.NOTIFICATION_TYPE.INFO
+                        );
+                    } else {
+                        fbs.createNotificationForUsersOfStatusOfEvent(
+                                eventId,
+                                chosenOption.toWaitingListStatus(),
+                                enteredText,
+                                DatabaseConstants.NOTIFICATION_TYPE.INFO
+                        );
+                    }
+                }
+            });
+
+            builder.setNegativeButton("Cancel", null);
+
+            builder.create().show();
         });
     }
 

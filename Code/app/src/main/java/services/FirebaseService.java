@@ -34,6 +34,7 @@ import interfaces.OnWaitingListArrayListCallback;
 import interfaces.OnWaitingListCallback;
 import interfaces.UserModelArrayListCallback;
 import interfaces.UserTypeCallback;
+import lombok.Data;
 import lombok.Getter;
 import models.EventModel;
 import models.NotificationModel;
@@ -553,6 +554,70 @@ public class FirebaseService {
                         String.format("Deleted on notification %s successfully", notificationId)))
                 .addOnFailureListener((e) -> Log.i(LOG_TAG,
                         String.format("Didn't find or failed to delete notification %s", notificationId)));
+    }
+
+    public void createNotification(@NonNull String eventId,
+                                   @NonNull String userId,
+                                   @NonNull String message,
+                                   @NonNull DatabaseConstants.NOTIFICATION_TYPE type) {
+        Map<String, Object> notificationData = new HashMap<>();
+        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_EVENT_ID_FIELD, eventId);
+        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_USER_ID_FIELD, userId);
+        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_MESSAGE_FIELD, message);
+        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_TYPE_FIELD, type.name());
+        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_DATE_CREATED_FIELD, new Timestamp(new Date()));
+
+        notifications.add(notificationData)
+                .addOnSuccessListener((v) -> Log.i(LOG_TAG,
+                        String.format("Created notification for user %s successfully", userId)))
+                .addOnFailureListener((e) -> Log.i(LOG_TAG,
+                        String.format("Failed to create notification for user %s", userId)));
+    }
+
+    public void createNotificationForUsersOfStatusOfEvent(@NonNull String eventId,
+                                                        @NonNull DatabaseConstants.ON_WAITING_LIST_STATUS onWaitingListStatus,
+                                                        @NonNull String message,
+                                                        @NonNull DatabaseConstants.NOTIFICATION_TYPE type) {
+        onWaitingList
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD, eventId)
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD, onWaitingListStatus.name())
+                .get()
+                .addOnSuccessListener(query -> {
+                    for (DocumentSnapshot doc : query) {
+                        String userId = doc.getString("userId");
+                        if (userId != null) {
+                            createNotification(eventId, userId, message, type);
+                        }
+                    }
+
+                    Log.i(LOG_TAG, "Created notifications for "
+                            + query.size() + " users of status " + onWaitingListStatus);
+                })
+                .addOnFailureListener(e ->
+                        Log.e(LOG_TAG, "Failed to query waiting list for event " + eventId, e)
+                );
+    }
+
+    public void createNotificationForAllUsersOfEvent(@NonNull String eventId,
+                                                  @NonNull String message,
+                                                  @NonNull DatabaseConstants.NOTIFICATION_TYPE type) {
+        onWaitingList
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD, eventId)
+                .get()
+                .addOnSuccessListener(query -> {
+                    for (DocumentSnapshot doc : query) {
+                        String userId = doc.getString("userId");
+                        if (userId != null) {
+                            createNotification(eventId, userId, message, type);
+                        }
+                    }
+
+                    Log.i(LOG_TAG, "Created notifications for "
+                            + query.size() + " users of event " + eventId);
+                })
+                .addOnFailureListener(e ->
+                        Log.e(LOG_TAG, "Failed to query waiting list for event " + eventId, e)
+                );
     }
 
     /**
