@@ -27,6 +27,7 @@
     <!-- Organizer Dashboard -->
     <string name="organizer_dashboard_title">Organizer Dashboard</string>
     <string name="create_event">Create Event</string>
+    <string name="activity_organizer_manage_event_button_text">Manage Events</string>
     <!-- Create Event Screen -->
     <string name="create_event_header">Create New Event</string>
     <string name="create_event_subtitle">Fill in the details below to create your event</string>
@@ -45,6 +46,47 @@
     <string name="no_image_selected">No image selected</string>
     <string name="create_event_button">Create Event</string>
     <string name="cancel_button">Cancel</string>
+
+    <!-- QR Code Scanner Strings -->
+    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="qr_scanner_title">Scan QR Code</string>
+    <string name="qr_scanner_instructions">Point your camera at the event QR code</string>
+    <string name="qr_code_invalid">Invalid QR code</string>
+    <string name="camera_permission_required">Camera permission is required to scan QR codes</string>
+    <string name="camera_error">Error starting camera</string>
+    <string name="qr_scan_failed">Failed to scan QR code</string>
+
+    <!-- Event Details Strings -->
+    <string name="event_details_title">Event Details</string>
+    <string name="back_button">Back</string>
+    <string name="event_poster_desc">Event Poster</string>
+    <string name="registration_deadline">Registration Deadline: %s</string>
+    <string name="registration_closed">(CLOSED)</string>
+    <string name="entrant_limit_text">Entrant Limit: %d</string>
+    <string name="description_header">Description</string>
+    <string name="join_waitlist_button">Join Waitlist</string>
+    <string name="on_waitlist">On Waitlist</string>
+    <string name="registration_deadline_passed">Registration deadline has passed</string>
+    <string name="event_not_found">Event not found</string>
+    <string name="failed_to_load_event">Failed to load event</string>
+    <string name="please_login_to_join">Please log in to join the waitlist</string>
+    <string name="successfully_joined_waitlist">Successfully joined waitlist!</string>
+    <string name="failed_to_join_waitlist">Failed to join waitlist</string>
+    <string name="loading">Loading…</string>
+
+    <!-- QR Code Display Strings (Organizer) -->
+    <string name="view_qr_code">View QR Code</string>
+    <string name="event_qr_code_title">Event QR Code</string>
+    <string name="qr_share_instructions">Share this QR code for attendees to scan and view event details</string>
+    <string name="share_qr_code_button">Share QR Code</string>
+    <string name="qr_code_description">Event QR Code</string>
+    <string name="qr_code_not_available">QR code not available</string>
+    <string name="failed_to_generate_qr">Failed to generate QR code</string>
+    <string name="failed_to_save_qr">Failed to save QR code</string>
+    <string name="error_sharing_qr">Error sharing QR code</string>
+    <string name="share_qr_via">Share QR Code</string>
+    <string name="scan_to_view_details">Entrants can scan this code to view event details and join the waitlist</string>
+    <string name="invalid_event">Invalid event</string>
 
 
 

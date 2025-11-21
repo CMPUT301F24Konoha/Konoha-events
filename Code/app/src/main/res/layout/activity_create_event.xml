@@ -119,6 +119,17 @@
             android:enabled="false"
             android:layout_marginBottom="16dp"/>
 
+        <!-- Event geolocation preference (US 02.02.03) -->
+        <Switch
+            android:id="@+id/switchGeolocationRequired"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Require Entrant Geolocation"
+            android:textSize="16sp"
+            android:checked="true"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp" />
+
         <!-- Event Poster Upload (US 02.04.01) -->
         <TextView
             android:layout_width="wrap_content"

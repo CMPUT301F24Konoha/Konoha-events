@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/image_admin_dashboard_view_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ImageView>
+
+    <Button
+        android:id="@+id/image_admin_dashboard_view_remove_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Remove Image"
+        android:layout_marginTop="10dp">
+    </Button>
+
+</LinearLayout>

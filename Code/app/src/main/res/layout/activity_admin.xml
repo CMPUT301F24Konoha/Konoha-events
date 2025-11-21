@@ -44,16 +44,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp" />
 
-        <!-- Manage Organizers -->
-        <Button
-            android:id="@+id/manageOrganizersButton"
-            android:text="@string/manage_organizers"
-            android:backgroundTint="#9C27B0"
-            android:textColor="#FFFFFF"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
-
         <!-- Manage Images -->
         <Button
             android:id="@+id/manageImagesButton"
