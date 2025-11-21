@@ -95,7 +95,9 @@ public class FirebaseService {
                            CollectionReference onWaitingList,
                            MutableLiveData<ArrayList<EventModel>> eventsLiveData,
                            MutableLiveData<ArrayList<UserModel>> usersLiveData,
-                           MutableLiveData<ArrayList<OnWaitingListModel>> onWaitingListLiveData){
+                           MutableLiveData<ArrayList<OnWaitingListModel>> onWaitingListLiveData,
+                           CollectionReference notifications,
+                           MutableLiveData<ArrayList<NotificationModel>> notificationsLiveData) {
         this.events = events;
         this.users = users;
         this.onWaitingList = onWaitingList;
@@ -103,6 +105,9 @@ public class FirebaseService {
         this.eventsLiveData = eventsLiveData;
         this.usersLiveData = usersLiveData;
         this.onWaitingListLiveData = onWaitingListLiveData;
+
+        this.notifications = notifications;
+        this.notificationsLiveData = notificationsLiveData;
     }
 
     /**

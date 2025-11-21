@@ -1,5 +1,8 @@
 package models;
 
+import java.util.Date;
+
+import constants.DatabaseConstants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,4 +20,8 @@ public class NotificationModel {
     private String userId;
     @NonNull
     private String message;
+    @NonNull
+    private DatabaseConstants.NOTIFICATION_TYPE notificationType;
+    @NonNull
+    private Date dateCreated;
 }

@@ -109,6 +109,9 @@ public class ModelUtil {
     }
 
     public static NotificationModel toNotificationModel(DocumentSnapshot documentSnapshot) {
+        Timestamp timestamp = documentSnapshot.getTimestamp(DatabaseConstants.COLLECTION_NOTIFICATIONS_DATE_CREATED_FIELD);
+        Date dateCreated = timestamp != null ? timestamp.toDate() : null;
+
         return NotificationModel.builder()
                 .id(documentSnapshot.getId())
                 .userId(Objects.requireNonNull(
@@ -117,6 +120,9 @@ public class ModelUtil {
                         documentSnapshot.getString(DatabaseConstants.COLLECTION_NOTIFICATIONS_EVENT_ID_FIELD)))
                 .message(Objects.requireNonNull(
                         documentSnapshot.getString(DatabaseConstants.COLLECTION_NOTIFICATIONS_MESSAGE_FIELD)))
+                .notificationType(DatabaseConstants.NOTIFICATION_TYPE.valueOf(
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_NOTIFICATIONS_TYPE_FIELD)))
+                .dateCreated(Objects.requireNonNull(dateCreated))
                 .build();
     }
 

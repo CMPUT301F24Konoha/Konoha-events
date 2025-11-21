@@ -51,6 +51,7 @@ public class NotificationAdminDashboardView extends ArrayAdapter<NotificationMod
             return view;
         }
 
+        TextView dateCreatedTextView = view.findViewById(R.id.notification_admin_dashboard_view_date_created_text_view);
         TextView userIdTextView = view.findViewById(R.id.notification_admin_dashboard_view_user_id_text_view);
         TextView eventIdTextView = view.findViewById(R.id.notification_admin_dashboard_view_event_id_text_view);
         TextView organizerIdTextView = view.findViewById(R.id.notification_admin_dashboard_view_organizer_id_text_view);
@@ -70,6 +71,8 @@ public class NotificationAdminDashboardView extends ArrayAdapter<NotificationMod
                             "Failed to get event: %s to display organizer for notification: %s", notificationModel.getEventId(), notificationModel.getId()));
                 });
 
+        dateCreatedTextView.setText(
+                String.format("DateCreated: %s", notificationModel.getDateCreated().toString()));
         userIdTextView.setText(
                 String.format("UserId: %s", notificationModel.getUserId()));
         eventIdTextView.setText(

@@ -14,6 +14,13 @@
     </TextView>
 
     <TextView
+        android:id="@+id/notification_admin_dashboard_view_date_created_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="[DATE_CREATED]">
+    </TextView>
+
+    <TextView
         android:id="@+id/notification_admin_dashboard_view_organizer_id_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
