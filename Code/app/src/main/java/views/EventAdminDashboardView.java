@@ -63,6 +63,9 @@ public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
             Glide.with(this.getContext())
                     .load(eventModel.getImageBitmap())
                     .into(posterView);
+        } else {
+            Glide.with(getContext()).clear(posterView);
+            posterView.setImageDrawable(null);
         }
 
         eventNameTextView.setText(eventModel.getEventTitle());

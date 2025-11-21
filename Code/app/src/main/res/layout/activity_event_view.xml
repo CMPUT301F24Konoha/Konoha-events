@@ -131,6 +131,13 @@
         </Button>
 
         <Button
+            android:id="@+id/activity_event_view_delete_event_poster"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Delete Event Poster">
+        </Button>
+
+        <Button
             android:id="@+id/activity_event_view_notify_selected_entrants_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
