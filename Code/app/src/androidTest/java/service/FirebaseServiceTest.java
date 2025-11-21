@@ -2,6 +2,7 @@ package service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import android.content.Context;
@@ -11,11 +12,14 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +28,8 @@ import services.FirebaseService;
 
 public class FirebaseServiceTest {
     private FirebaseService firebaseService;
+    private CollectionReference waitingList;
+
 
     @Before
     public void setup() {
@@ -31,11 +37,12 @@ public class FirebaseServiceTest {
         if (FirebaseApp.getApps(context).isEmpty()) {
             FirebaseApp.initializeApp(context);
         }
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         CollectionReference users = FirebaseFirestore.getInstance().collection("users");
         CollectionReference events = FirebaseFirestore.getInstance().collection("events");
-        CollectionReference waitingList = FirebaseFirestore.getInstance().collection("onWaitingList");
-
+        //CollectionReference waitingList = FirebaseFirestore.getInstance().collection("onWaitingList");
+        waitingList = db.collection(DatabaseConstants.COLLECTION_ON_WAITING_LIST_NAME);
         firebaseService = new FirebaseService(
                 events,
                 users,
@@ -80,6 +87,47 @@ public class FirebaseServiceTest {
 
         if (!latch.await(10, TimeUnit.SECONDS)) {
             fail("Firebase login callback timed out");
+        }
+    }
+
+    @Test
+    public void givenEventAndUser_whenJoinWaitingList_thenEntryCreated() throws InterruptedException {
+        String eventId = "testEvent_join_" + System.currentTimeMillis();
+        String userId = "testUser_join_" + System.currentTimeMillis();
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        firebaseService.joinWaitingList(eventId, userId);
+
+        waitingList.whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD, eventId)
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD, userId)
+                .get()
+                .addOnSuccessListener(qs -> {
+                    try {
+                        assertEquals("Expected exactly one waitlist entry", 1, qs.size());
+                        DocumentSnapshot doc = qs.getDocuments().get(0);
+
+                        String storedEventId = doc.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD);
+                        String storedUserId = doc.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD);
+                        String status = doc.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD);
+
+                        assertEquals(eventId, storedEventId);
+                        assertEquals(userId, storedUserId);
+                        assertEquals(
+                                DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING.name(),
+                                status
+                        );
+                    } finally {
+                        latch.countDown();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    fail("Query failed in join waitlist test: " + e);
+                    latch.countDown();
+                });
+
+        if (!latch.await(10, TimeUnit.SECONDS)) {
+            fail("joinWaitingList test timed out");
         }
     }
 }
