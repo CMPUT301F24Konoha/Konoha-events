@@ -68,7 +68,7 @@
         <!-- Entrant Activity -->
         <activity
             android:name=".EntrantActivity"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.KonohaEvents" />
 
         <!-- Profile Activity -->
