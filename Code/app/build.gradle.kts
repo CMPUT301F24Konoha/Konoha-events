@@ -46,7 +46,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation("com.google.firebase:firebase-firestore")
     implementation(libs.firebase.storage)
-
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
 
