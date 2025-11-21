@@ -5,12 +5,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -18,6 +24,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -25,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 
 import constants.DatabaseConstants;
 import services.FirebaseService;
+import util.ConversionUtil;
+import util.QRCodeUtil;
 
 public class FirebaseServiceTest {
     private FirebaseService firebaseService;
@@ -129,5 +140,40 @@ public class FirebaseServiceTest {
         if (!latch.await(10, TimeUnit.SECONDS)) {
             fail("joinWaitingList test timed out");
         }
+    }
+
+    @Test
+    public void createEventWithoutImage() {
+        Map<String, Object> eventData = new HashMap<>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference events = db.collection(DatabaseConstants.COLLECTION_EVENTS_NAME);
+
+        Instant instant = Instant.now();
+        long currentTimestamp = instant.toEpochMilli();
+
+        eventData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, "12345");
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_ORGANIZER_ID_FIELD, "12345");
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD, "TEST EVENT");
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD, 10);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD, currentTimestamp);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD, "This is a test event");
+
+        events.add(eventData)
+                .addOnSuccessListener((documentReference) -> {
+                    String eventId = documentReference.getId();
+
+                    // Generate unique QR code data for this event
+                    String qrCodeData = QRCodeUtil.generateQRCodeData(eventId);
+
+                    documentReference.update(DatabaseConstants.COLLECTION_EVENTS_QR_CODE_DATA_FIELD, qrCodeData)
+                            .addOnSuccessListener(v -> {
+                                Log.i("Firebase Service Test", String.format("Created event %s with QR code successfully", eventId));
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("Firebase Service Test", "Failed to add QR code to event", e);
+                            });
+                })
+                .addOnFailureListener((e) -> Log.i("Firebase Service Test",
+                        String.format("Didn't create event %s")));
     }
 }
