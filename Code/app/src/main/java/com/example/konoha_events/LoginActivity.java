@@ -38,14 +38,22 @@ public class LoginActivity extends AppCompatActivity {
         selectedRole = (DatabaseConstants.USER_TYPE) getIntent()
                 .getSerializableExtra(IntentConstants.INTENT_ROLE_NAME);
 
-        // if user chose entrant and we have a device id, skip login UI.
-        if (selectedRole == DatabaseConstants.USER_TYPE.ENTRANT){
-            String existingId = EntrantDeviceIdStore.getIdOrNull(this);
-            if (existingId != null){
-                startActivity(new Intent(this, EntrantHomeActivity.class));
-                finish();
-                return;
-            }
+        if (selectedRole == DatabaseConstants.USER_TYPE.ENTRANT) {
+            String deviceId = EntrantDeviceIdStore.getOrCreateId(this);
+
+
+            // Try to find user with this deviceId in Firebase
+            fbs.loginWithDeviceId(deviceId, succeeded -> {
+                if (succeeded) {
+                    // Device matches an existing user, go straight to EntrantActivity
+                    Intent i = new Intent(LoginActivity.this, EntrantActivity.class);
+                    startActivity(i);
+                    finish();
+                } else {
+                    // Device not known yet → just let the user log in normally
+                    // (UI is already set up below)
+                }
+            });
         }
 
         // Update subtitle dynamically
@@ -54,24 +62,16 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         signInButton.setOnClickListener(v -> {
-            // Entrant flow: no username or password
-            if (selectedRole == DatabaseConstants.USER_TYPE.ENTRANT){
-                String id = EntrantDeviceIdStore.getOrCreateId(this);
-                startActivity(new Intent(this, EntrantHomeActivity.class));
-                Toast.makeText(LoginActivity.this, "Signed in as entrant (device ID)", Toast.LENGTH_SHORT).show();
-                finish();
-                return;
-            }
 
             String username = usernameInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
 
-            fbs.login(username, password, userType -> {
-                if (username.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(LoginActivity.this, "Please fill both fields",Toast.LENGTH_SHORT).show();
-                    return;
-                }
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(LoginActivity.this, "Please fill both fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
+            fbs.login(username, password, userType -> {
                 switch(userType) {
                     case ADMINISTRATOR:
                         Intent intent = new Intent(this, AdminActivity.class);
@@ -87,6 +87,8 @@ public class LoginActivity extends AppCompatActivity {
                         Intent entrant = new Intent(this, EntrantActivity.class);
                         startActivity(entrant);
                         Toast.makeText(LoginActivity.this, "Successfully logged in as entrant", Toast.LENGTH_SHORT).show();
+                        String deviceId = EntrantDeviceIdStore.getOrCreateId(LoginActivity.this);
+                        fbs.updateDeviceIdForCurrentUser(deviceId);
                         return;
                     case NULL:
                         Toast.makeText(LoginActivity.this, "Login was unsuccessful", Toast.LENGTH_SHORT).show();
