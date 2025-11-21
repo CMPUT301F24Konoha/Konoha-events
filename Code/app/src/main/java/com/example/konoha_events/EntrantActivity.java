@@ -80,6 +80,13 @@ public class EntrantActivity extends AppCompatActivity {
 
         scanQRCodeButton = findViewById(R.id.scan_qr_code_button);
         scanQRCodeButton.setOnClickListener(v -> openQRScanner());
+
+        // notification button
+        ImageButton messagesButton = findViewById(R.id.imageButton2);
+        messagesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(EntrantActivity.this, EntrantInvitationsActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void openQRScanner() {
