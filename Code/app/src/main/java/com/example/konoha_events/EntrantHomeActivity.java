@@ -1,9 +1,11 @@
 package com.example.konoha_events;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,39 +21,64 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * EntrantHomeActivity
+ * -----------------------------------
+ * Home screen for entrant users identified by device ID.
+ * - Shows the device ID (US 01.07.01)
+ * - Provides navigation to guidelines and invitations
+ * - Captures and uploads entrant location for organizer geolocation feature
+ */
 public class EntrantHomeActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient fusedLocationClient;
     private FirebaseFirestore db;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_entrant_home);
 
         // Retrieve or create the device ID
         String id = EntrantDeviceIdStore.getOrCreateId(this);
 
-        // Basic UI
-        TextView tv = new TextView(this);
+        // Show the device ID in the layout TextView
+        TextView tv = findViewById(R.id.text_device_id);
         tv.setText("Entrant Home\n\nDevice ID:\n" + (id == null ? "(none yet)" : id));
-        tv.setTextSize(18f);
-        int pad = (int) (24 * getResources().getDisplayMetrics().density);
-        tv.setPadding(pad, pad, pad, pad);
-        setContentView(tv);
 
         // Initialize Firebase and Location services
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         db = FirebaseFirestore.getInstance();
 
-        // Fetch and upload location directly — assumes permission is already granted
+        // Fetch and upload location directly — assumes permission is already granted in settings
         fetchAndUploadLocation(id);
+
+        // Handle viewGuidelines button
+        Button btnGuidelines = findViewById(R.id.button_view_guidelines);
+        btnGuidelines.setOnClickListener(v -> {
+            Intent intent = new Intent(EntrantHomeActivity.this, GuidelinesActivity.class);
+            startActivity(intent);
+        });
+
+        // Handle invitations button
+        Button btnInvitations = findViewById(R.id.button_view_invitations);
+        btnInvitations.setOnClickListener(v -> {
+            Intent intent = new Intent(EntrantHomeActivity.this, EntrantInvitationsActivity.class);
+            startActivity(intent);
+        });
     }
 
+    /**
+     * Attempts to fetch the device's last known location and upload it to Firestore
+     * under the current entrant's document. Assumes location permission has been
+     * granted in system settings.
+     *
+     * @param deviceId The unique ID associated with this entrant device.
+     */
     private void fetchAndUploadLocation(String deviceId) {
-        // Skip runtime permission request completely
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            // Do nothing (or optionally toast)
+            // Location permission not granted – skip upload
             Toast.makeText(this, "Location permission not granted in settings.", Toast.LENGTH_SHORT).show();
             return;
         }
