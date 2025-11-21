@@ -78,6 +78,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 case ENTRANT:
                     Intent entrantIntent = new Intent(this, LoginActivity.class);
+                    entrantIntent.putExtra(IntentConstants.INTENT_ROLE_NAME, selectedRole);  // ✅ IMPORTANT
                     startActivity(entrantIntent);
                     break;
 
