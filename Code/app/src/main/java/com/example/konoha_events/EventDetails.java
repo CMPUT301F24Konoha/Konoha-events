@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import constants.IntentConstants;
 import interfaces.OnWaitingListArrayListCallback;
@@ -28,9 +29,17 @@ import services.FirebaseService;
 import util.ModelUtil;
 import util.ViewUtil;
 
+/*
+* Activity displaying details about events. This view is used by organizers and adminstrators.
+* Requires two intent constants to be filled to function correctly:
+*   - IntentConstants.INTENT_VIEW_EVENT_CALLER_TYPE: The Activity that the back button should return
+*     to. This is needed to know what view to go back to since it's used in various places.
+*   - IntentConstants.INTENT_VIEW_EVENT_EVENT_ID: The eventId of the event to display details for
+* */
 public class EventDetails extends AppCompatActivity {
     private final String tag = "[EventDetails]";
     private FirebaseService fbs;
+    private TextView deadlineTextView;
     private TextView totalOnListTextView;
     private TextView waitingTextView;
     private TextView selectedTextView;
@@ -40,6 +49,8 @@ public class EventDetails extends AppCompatActivity {
     private Button viewEntrantsButton;
     private Button drawFromWaitlistButton;
     private Button uploadEventPosterButton;
+    private Button deleteEventPosterButton;
+    private Button showQRCodeButton;
     private NumberPicker numberPicker;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ImageView posterImageView;
@@ -70,6 +81,7 @@ public class EventDetails extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+        deadlineTextView = findViewById(R.id.activity_event_view_deadline_text);
         totalOnListTextView = findViewById(R.id.activity_event_view_total_on_list_text);
         waitingTextView = findViewById(R.id.activity_event_view_waiting_text);
         selectedTextView = findViewById(R.id.activity_event_view_selected_text);
@@ -80,7 +92,9 @@ public class EventDetails extends AppCompatActivity {
         drawFromWaitlistButton = findViewById(R.id.activity_event_view_draw_from_waitlist_button);
         numberPicker = findViewById(R.id.activity_event_view_number_picker);
         uploadEventPosterButton = findViewById(R.id.activity_event_view_upload_event_poster);
+        deleteEventPosterButton = findViewById(R.id.activity_event_view_delete_event_poster);
         posterImageView = findViewById(R.id.activity_event_view_poster_image_view);
+        showQRCodeButton = findViewById(R.id.activity_event_view_show_qr_code_button);
 
         DocumentReference eventDocument = fbs.getEventDocumentReference(eventId);
         Class<?> finalReturnActivityClass = returnActivityClass;
@@ -90,6 +104,10 @@ public class EventDetails extends AppCompatActivity {
                     Log.i(tag, String.format("Got event model of event %s successfully", eventId));
                     EventModel eventModel = ModelUtil.toEventModel(v);
                     ViewUtil.setupToolbarWithBackButtonToActivity(this, toolbar, eventModel.getEventTitle(), (Class<? extends Activity>) finalReturnActivityClass);
+                    if (eventModel.getRegistrationDeadline() != null) {
+                        displayDeadline(eventModel.getRegistrationDeadline());
+                    }
+
                     drawFromWaitlistButton.setOnClickListener(vv -> {
                         fbs.selectUsersForEvent(eventModel.getId(), numberPicker.getValue());
                     });
@@ -179,6 +197,21 @@ public class EventDetails extends AppCompatActivity {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             imagePickerLauncher.launch(intent);
         });
+
+        deleteEventPosterButton.setOnClickListener(v -> {
+            fbs.deleteEventImage(eventId);
+        });
+
+        showQRCodeButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, EventQRCodeActivity.class);
+            intent.putExtra(IntentConstants.INTENT_EVENT_ID, eventId);
+            startActivity(intent);
+        });
+    }
+
+    private void displayDeadline(Date deadline) {
+        deadlineTextView.setText(
+                String.format("Registration Deadline: %s", deadline.toString()));
     }
 
     private void displayTotals(int total) {

@@ -66,7 +66,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         Bitmap img = e.getImageBitmap();
         if (img != null) {
             Glide.with(h.image.getContext())
-                    .load(img.toString())
+                    .load(img)
                     .placeholder(R.drawable.ic_launcher_background)
                     .error(R.drawable.ic_launcher_background)
                     .into(h.image);

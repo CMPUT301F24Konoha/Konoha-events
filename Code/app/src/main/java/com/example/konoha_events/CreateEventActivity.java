@@ -142,7 +142,8 @@ public class CreateEventActivity extends AppCompatActivity {
 
         //  Pass to Firebase
         fbs.createEvent(deviceId, entrantLimit, selectedDeadline, title,
-                description, selectedImageUri, fbs.getCurrentUserId(), geolocationRequired);
+                description, selectedImageUri, fbs.getCurrentUserId(), geolocationRequired,
+                getContentResolver());
 
         Toast.makeText(this, "Event created successfully!", Toast.LENGTH_SHORT).show();
         finish();

@@ -39,6 +39,7 @@ import models.EventModel;
 import models.NotificationModel;
 import models.OnWaitingListModel;
 import models.UserModel;
+import util.ConversionUtil;
 import util.ModelUtil;
 import util.QRCodeUtil;
 
@@ -86,6 +87,22 @@ public class FirebaseService {
         notificationsLiveData = new MutableLiveData<>();
 
         setupListeners();
+    }
+
+    // Extra constructor for mocking
+    public FirebaseService(CollectionReference events,
+                           CollectionReference users,
+                           CollectionReference onWaitingList,
+                           MutableLiveData<ArrayList<EventModel>> eventsLiveData,
+                           MutableLiveData<ArrayList<UserModel>> usersLiveData,
+                           MutableLiveData<ArrayList<OnWaitingListModel>> onWaitingListLiveData){
+        this.events = events;
+        this.users = users;
+        this.onWaitingList = onWaitingList;
+
+        this.eventsLiveData = eventsLiveData;
+        this.usersLiveData = usersLiveData;
+        this.onWaitingListLiveData = onWaitingListLiveData;
     }
 
     /**
@@ -187,6 +204,59 @@ public class FirebaseService {
     }
 
     /**
+     * Attempts to log in a user using only their deviceId.
+     * If a user with this deviceId is found in the users collection,
+     * currentUserId and loggedInUserType are set, and callback is called with true.
+     * Otherwise, callback is called with false.
+     * This is used for device-based auto login for entrants.
+     */
+    public void loginWithDeviceId(@NonNull String deviceId,
+                                  @NonNull BooleanCallback callback) {
+        if (deviceId.isEmpty()) {
+            Log.i(LOG_TAG, "Device login failed: empty deviceId");
+            callback.onCompleted(false);
+            return;
+        }
+
+        users
+                .whereEqualTo(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(v -> {
+                    if (v.getDocuments().isEmpty()) {
+                        Log.i(LOG_TAG,
+                                "No user found for deviceId " + deviceId);
+                        callback.onCompleted(false);
+                        return;
+                    }
+
+                    DocumentSnapshot doc = v.getDocuments().get(0);
+                    currentUserId = doc.getId();
+
+                    String userTypeStr = doc.getString(
+                            DatabaseConstants.COLLECTION_USERS_USER_TYPE_FIELD);
+                    if (userTypeStr != null) {
+                        try {
+                            loggedInUserType = DatabaseConstants.USER_TYPE.valueOf(userTypeStr);
+                        } catch (IllegalArgumentException e) {
+                            Log.w(LOG_TAG,
+                                    "Invalid userType for device login: " + userTypeStr);
+                        }
+                    }
+
+                    Log.i(LOG_TAG,
+                            "Device login succeeded for user " + currentUserId
+                                    + " (deviceId=" + deviceId + ")");
+                    callback.onCompleted(true);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(LOG_TAG,
+                            "Device login query failed for deviceId=" + deviceId, e);
+                    callback.onCompleted(false);
+                });
+    }
+
+    /**
      * Deletes a user with the given user ID from the database.
      * @param userId    The ID of the user to be deleted
      */
@@ -215,12 +285,20 @@ public class FirebaseService {
                             @NonNull String description,
                             @Nullable Uri imageUri,
                             @NonNull String organizerId,
-                            boolean geolocationRequired) {
+                            boolean geolocationRequired,
+                            ContentResolver contentResolver) {
+        String base64ImageString;
+        try {
+            base64ImageString = ConversionUtil.convertUriToBase64(imageUri, contentResolver);
+        } catch (Exception e) {
+            base64ImageString = null;
+        }
+
         Map<String, Object> eventData = new HashMap<>();
         eventData.put(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_ORGANIZER_ID_FIELD, organizerId);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD, eventTitle);
-        eventData.put(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, imageUri);
+        eventData.put(DatabaseConstants.COLLECTION_EVENTS_IMAGE_DATA_FIELD, base64ImageString);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_ENTRANT_LIMIT_FIELD, entrantLimit);
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_REGISTRATION_DEADLINE_FIELD, new Timestamp(registrationDeadline));
         eventData.put(DatabaseConstants.COLLECTION_EVENTS_DESCRIPTION_FIELD, description);
@@ -483,13 +561,7 @@ public class FirebaseService {
     public void updateEventImage(@NonNull String eventId, @Nullable Uri imageData, ContentResolver contentResolver) {
         String base64String;
         try {
-            Bitmap bitmap;
-            bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageData);
-
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-            byte[] imageBytes = outputStream.toByteArray();
-            base64String = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+            base64String = ConversionUtil.convertUriToBase64(imageData, contentResolver);
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error processing selected image: " + e.getMessage());
             return;
@@ -597,5 +669,23 @@ public class FirebaseService {
                     }
                 })
                 .addOnFailureListener(e -> Log.e(LOG_TAG, "Query failed in leaveWaitingList", e));
+    }
+
+    /**
+     * Updates the deviceId field for the currently logged-in user in Firestore.
+     * Used after a successful username/password login so future device logins work.
+     */
+    public void updateDeviceIdForCurrentUser(@NonNull String deviceId) {
+        if (currentUserId == null || deviceId.isEmpty()) {
+            Log.w(LOG_TAG, "updateDeviceIdForCurrentUser: missing currentUserId or deviceId");
+            return;
+        }
+
+        users.document(currentUserId)
+                .update(DatabaseConstants.COLLECTION_USERS_DEVICE_ID_FIELD, deviceId)
+                .addOnSuccessListener(v ->
+                        Log.i(LOG_TAG, "Updated deviceId for user " + currentUserId))
+                .addOnFailureListener(e ->
+                        Log.e(LOG_TAG, "Failed to update deviceId for user " + currentUserId, e));
     }
 }
