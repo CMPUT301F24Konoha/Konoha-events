@@ -88,6 +88,8 @@ public class FirebaseService {
         notificationsLiveData = new MutableLiveData<>();
 
         setupListeners();
+
+        cleanDatabase();
     }
 
     // Extra constructor for mocking
@@ -109,6 +111,74 @@ public class FirebaseService {
 
         this.notifications = notifications;
         this.notificationsLiveData = notificationsLiveData;
+    }
+
+    /**
+     * Startup function to ensure that the database data is valid. Added to fix duplicate onWaitingList
+     * statuses/references to deleted users. If other DB issues occur from delets add other cleanups here.
+     */
+    public void cleanDatabase() {
+        try {
+            onWaitingList
+                    .get()
+                    .addOnSuccessListener(qs -> {
+                        List<DocumentSnapshot> onWaitingListDocuments = qs.getDocuments();
+                        Map<String, String> uniquePairs = new HashMap<>();
+                        for (DocumentSnapshot ds : onWaitingListDocuments) {
+                            OnWaitingListModel onWaitingListModel = ModelUtil.toOnWaitingListModel(ds);
+
+                            // Check and remove duplicate entries for eventId and userId pairs
+                            String key = onWaitingListModel.getEventId() + "_" + onWaitingListModel.getUserId();
+                            if (uniquePairs.containsKey(key)) {
+                                deleteOnWaitingList(onWaitingListModel.getId());
+                                continue;
+                            }
+                            uniquePairs.put(key, onWaitingListModel.getId());
+
+                            // Check that referenced users exist
+                            users.document(onWaitingListModel.getUserId())
+                                    .get()
+                                    .addOnSuccessListener(userSnapshot -> {
+                                        if (!userSnapshot.exists()) {
+                                            deleteOnWaitingList(onWaitingListModel.getId());
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(LOG_TAG, "Failed to get onWaitingList data for cleaning.", e);
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(LOG_TAG, "Failed to get onWaitingList data for cleaning.");
+                    });
+
+            notifications
+                    .get()
+                    .addOnSuccessListener(qs -> {
+                        List<DocumentSnapshot> notificationDocuments = qs.getDocuments();
+                        for (DocumentSnapshot ds : notificationDocuments) {
+                            NotificationModel notificationModel = ModelUtil.toNotificationModel(ds);
+
+                            // Check that referenced users exist
+                            users.document(notificationModel.getUserId())
+                                    .get()
+                                    .addOnSuccessListener(userSnapshot -> {
+                                        if (!userSnapshot.exists()) {
+                                            deleteNotification(notificationModel.getId());
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(LOG_TAG, "Failed to get notification data for cleaning.", e);
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(LOG_TAG, "Failed to get notification data for cleaning.");
+                    });
+        } catch (Exception e) {
+            Log.e(LOG_TAG, String.format("Error while cleaning database. Exception: %s", e));
+        }
+
     }
 
     /**
@@ -379,11 +449,20 @@ public class FirebaseService {
                         users.document(userId)
                                 .get()
                                 .addOnSuccessListener(userDoc -> {
-                                    UserModel userModel = ModelUtil.toUserModel(userDoc);
-                                    userModels.add(userModel);
-                                    count.updateAndGet(v1 -> v1 + 1);
-                                    if (count.get() == size) {
-                                        callback.onCompleted(userModels);
+                                    if (userDoc != null) {
+                                        try {
+                                            UserModel userModel = ModelUtil.toUserModel(userDoc);
+                                            userModels.add(userModel);
+                                            count.updateAndGet(v1 -> v1 + 1);
+                                            if (count.get() == size) {
+                                                callback.onCompleted(userModels);
+                                            }
+                                        } catch (Exception e) {
+                                            Log.w(LOG_TAG,
+                                                    String.format("Failed to get userId: %s for onWaitingListModel: %s",
+                                                            onWaitingListModel.getUserId(),
+                                                            onWaitingListModel.getId()));
+                                        }
                                     }
                                 })
                                 .addOnFailureListener(doc -> {
@@ -440,6 +519,11 @@ public class FirebaseService {
                                     // Optional: handle success/failure
                                 }
                             });
+                    createNotification(
+                            model.getEventId(),
+                            model.getUserId(),
+                            "You've been selected! Please sign up.",
+                            DatabaseConstants.NOTIFICATION_TYPE.USER_SELECTED);
                 }
             }
         });
