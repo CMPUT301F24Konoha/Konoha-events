@@ -1,15 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
+    <!-- Location permissions for Entrant geolocation feature -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- Camera Permission -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KonohaEvents"
         tools:targetApi="34">
+
+        <!-- OpenStreetMap config -->
+        <meta-data
+            android:name="org.osmdroid.config"
+            android:resource="@xml/osm_config" />
+
+        <!-- Organizer Map Activity -->
+        <activity
+            android:name=".OrganizerMapActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
 
         <!-- Home screen (Launcher) -->
         <activity
@@ -21,39 +47,61 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Login -->
+
+        <!-- Login Activity -->
         <activity
             android:name=".LoginActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
-        <!-- Admin -->
+
+        <!-- Admin Activity -->
         <activity
             android:name=".AdminActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+
+        <!-- Organizer Activity -->
         <activity
             android:name=".OrganizerActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+
+        <!-- Create Event Activity -->
         <activity
             android:name=".CreateEventActivity"
-            android:exported="false"
-            android:theme="@style/Theme.KonohaEvents" />
+            android:exported="true"
+            android:theme="@style/Theme.KonohaEvents"
+            tools:node="replace"/>
+        <activity
+            android:name=".EventQRCodeActivity"
+            android:exported="false" />
 
+        <!-- Entrant Activity -->
         <activity
             android:name=".EntrantActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
 
+        <!-- Profile Activity -->
         <activity
             android:name=".ProfileActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+        <activity
+            android:name=".EntrantMyEventActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
 
-
+        <activity
+            android:name=".QRScannerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:exported="false" />
+        <activity
+            android:name=".EventDetailsActivity"
+            android:exported="false" />
 
         <!-- Main Activity -->
-
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -62,6 +110,39 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".AdminProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"
+            android:parentActivityName=".AdminActivity"/>
+        <activity
+            android:name=".AdminEventActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"
+            android:parentActivityName=".AdminActivity"/>
+        <activity
+            android:name=".AdminImageActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"
+            android:parentActivityName=".AdminActivity"/>
+
+        <!-- Organizer Activities -->
+        <activity
+            android:name=".OrganizerViewEventListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"
+            android:parentActivityName=".OrganizerActivity"/>
+
+        <!-- Organizer/Admin Activities-->
+        <activity
+            android:name=".EventDetails"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"/>
+        <activity
+            android:name=".EventEntrantDetails"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"/>
 
         <!-- Entrant Home screen for device-based login -->
         <activity

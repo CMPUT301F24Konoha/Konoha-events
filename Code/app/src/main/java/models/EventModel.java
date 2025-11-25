@@ -1,9 +1,10 @@
 package models;
 
-import android.net.Uri;
+import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
+import interfaces.HasImage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.AllArgsConstructor;
@@ -12,9 +13,12 @@ import java.util.Date;
 @Getter
 @AllArgsConstructor
 @Builder
-public class EventModel {
+public class EventModel implements HasImage {
     @NonNull
     private String id;
+
+    @NonNull
+    private String organizerId;
 
     @Nullable
     private String eventTitle;
@@ -27,7 +31,8 @@ public class EventModel {
     private String deviceId;
 
     // Images
-    private Uri imageUri;
+    @Nullable
+    private Bitmap imageBitmap;
 
     // QR Code data - stores the unique identifier for the event
     @Nullable
@@ -56,5 +61,10 @@ public class EventModel {
      */
     public boolean hasEntrantLimit() {
         return entrantLimit != null && entrantLimit > 0;
+    }
+
+    @Nullable
+    public String getDeviceId() {
+        return deviceId;
     }
 }

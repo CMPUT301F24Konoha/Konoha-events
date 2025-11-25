@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/imageEvent"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="13dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textEventTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- QR button on the right (kept id=imageButton as you had) -->
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="12dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textEventTitle"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
+
+    <TextView
+        android:id="@+id/textEventTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="2dp"
+        android:text="Event title"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textEventSubtitle"
+        app:layout_constraintEnd_toStartOf="@id/imageButton"
+        app:layout_constraintStart_toEndOf="@id/imageEvent"
+        app:layout_constraintTop_toTopOf="@id/imageEvent" />
+
+    <!-- Use as DESCRIPTION (2 lines, ellipsized) -->
+    <TextView
+        android:id="@+id/textEventSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="2dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="Short description goes here…"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/textRegistrationDeadline"
+        app:layout_constraintEnd_toStartOf="@id/imageButton"
+        app:layout_constraintStart_toStartOf="@id/textEventTitle"
+        app:layout_constraintTop_toBottomOf="@id/textEventTitle" />
+
+    <!-- NEW: Registration deadline -->
+    <TextView
+        android:id="@+id/textRegistrationDeadline"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="12dp"
+        android:text="Registration deadline: Dec 31, 2025"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintStart_toStartOf="@id/textEventTitle"
+        app:layout_constraintTop_toBottomOf="@id/textEventSubtitle"
+        app:layout_constraintEnd_toStartOf="@id/imageButton"
+        app:layout_constraintBottom_toBottomOf="@id/imageEvent"
+        tools:ignore="SmallSp" />
+
+    <Button
+        android:id="@+id/buttonJoinWaitlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="186dp"
+        android:backgroundTint="@color/black"
+        android:text="Join Waitlist"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/textEventTitle"
+        app:layout_constraintTop_toBottomOf="@id/textRegistrationDeadline" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

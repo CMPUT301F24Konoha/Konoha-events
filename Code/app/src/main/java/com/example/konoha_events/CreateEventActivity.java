@@ -4,7 +4,8 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
+import android.widget.Switch;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -12,9 +13,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.konoha_events.auth.EntrantDeviceIdStore;
 import java.util.Calendar;
 import java.util.Date;
 import services.FirebaseService;
+
+/**
+ * CreateEventActivity
+ * ----------------------
+ * - Allows the organizer to create an event
+ */
 
 public class CreateEventActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -23,6 +31,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private Button selectDeadlineButton, selectImageButton, createButton;
     private CheckBox limitEntrantsCheckbox;
     private ImageView eventPosterPreview;
+    private Switch geolocationSwitch;
     private String deviceId;
     private Date selectedDeadline;
     private Uri selectedImageUri;
@@ -34,7 +43,7 @@ public class CreateEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_event);
 
         fbs = FirebaseService.firebaseService;
-        deviceId = getIntent().getStringExtra("deviceId");
+        deviceId = EntrantDeviceIdStore.getOrCreateId(this);
 
         initializeViews();
         setupListeners();
@@ -49,6 +58,7 @@ public class CreateEventActivity extends AppCompatActivity {
         selectImageButton = findViewById(R.id.selectImageButton);
         createButton = findViewById(R.id.createButton);
         eventPosterPreview = findViewById(R.id.eventPosterPreview);
+        geolocationSwitch = findViewById(R.id.switchGeolocationRequired); //  new line
     }
 
     private void setupListeners() {
@@ -125,8 +135,15 @@ public class CreateEventActivity extends AppCompatActivity {
             }
         }
 
+        boolean geolocationRequired = false;
+        if (geolocationSwitch != null) {
+            geolocationRequired = geolocationSwitch.isChecked();
+        }
+
+        //  Pass to Firebase
         fbs.createEvent(deviceId, entrantLimit, selectedDeadline, title,
-                description, selectedImageUri);
+                description, selectedImageUri, fbs.getCurrentUserId(), geolocationRequired,
+                getContentResolver());
 
         Toast.makeText(this, "Event created successfully!", Toast.LENGTH_SHORT).show();
         finish();

@@ -24,10 +24,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <Button
+            android:id="@+id/btnViewEntrantLocations"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Entrant Locations"
+            android:layout_margin="16dp"
+            android:backgroundTint="#FFFFFF"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"/>
+
+
         <!-- Create Event -->
         <Button
             android:id="@+id/createEventButton"
             android:text="@string/create_event"
+            android:backgroundTint="#4A90E2"
+            android:textColor="#FFFFFF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Manage Events -->
+        <Button
+            android:id="@+id/activity_organizer_create_event_button"
+            android:text="@string/activity_organizer_manage_event_button_text"
             android:backgroundTint="#4A90E2"
             android:textColor="#FFFFFF"
             android:layout_width="match_parent"
