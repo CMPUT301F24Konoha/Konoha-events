@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import constants.DatabaseConstants;
 import models.EventModel;
+import models.NotificationModel;
 import models.OnWaitingListModel;
 import models.UserModel;
 
@@ -106,6 +107,25 @@ public class ModelUtil {
                         documentSnapshot.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD)))
                 .build();
     }
+
+    public static NotificationModel toNotificationModel(DocumentSnapshot documentSnapshot) {
+        Timestamp timestamp = documentSnapshot.getTimestamp(DatabaseConstants.COLLECTION_NOTIFICATIONS_DATE_CREATED_FIELD);
+        Date dateCreated = timestamp != null ? timestamp.toDate() : null;
+
+        return NotificationModel.builder()
+                .id(documentSnapshot.getId())
+                .userId(Objects.requireNonNull(
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_NOTIFICATIONS_USER_ID_FIELD)))
+                .eventId(Objects.requireNonNull(
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_NOTIFICATIONS_EVENT_ID_FIELD)))
+                .message(Objects.requireNonNull(
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_NOTIFICATIONS_MESSAGE_FIELD)))
+                .notificationType(DatabaseConstants.NOTIFICATION_TYPE.valueOf(
+                        documentSnapshot.getString(DatabaseConstants.COLLECTION_NOTIFICATIONS_TYPE_FIELD)))
+                .dateCreated(Objects.requireNonNull(dateCreated))
+                .build();
+    }
+
     private static DatabaseConstants.ON_WAITING_LIST_STATUS parseOnWaitingListStatus(String value) {
         if (value == null) {
             return DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING;

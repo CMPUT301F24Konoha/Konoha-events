@@ -51,7 +51,9 @@ public class AdminActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        manageNotificationsButton.setOnClickListener(v ->
-                Toast.makeText(this, "Manage Notifications screen (to be implemented)", Toast.LENGTH_SHORT).show());
+        manageNotificationsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AdminNotificationActivity.class);
+            startActivity(intent);
+        });
     }
 }

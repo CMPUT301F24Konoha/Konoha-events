@@ -126,6 +126,11 @@
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents"
             android:parentActivityName=".AdminActivity"/>
+        <activity
+            android:name=".AdminNotificationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents"
+            android:parentActivityName=".AdminActivity"/>
 
         <!-- Organizer Activities -->
         <activity

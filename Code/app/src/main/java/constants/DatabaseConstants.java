@@ -22,9 +22,12 @@ public class DatabaseConstants {
     public static final String COLLECTION_ON_WAITING_LIST_STATUS_FIELD = "status";
     public static final String COLLECTION_ON_WAITING_LIST_USER_ID_FIELD = "userId";
     public static final String COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD = "eventId";
-
-
-
+    public static final String COLLECTION_NOTIFICATIONS_NAME = "notifications";
+    public static final String COLLECTION_NOTIFICATIONS_USER_ID_FIELD = "userId";
+    public static final String COLLECTION_NOTIFICATIONS_EVENT_ID_FIELD = "eventId";
+    public static final String COLLECTION_NOTIFICATIONS_MESSAGE_FIELD = "message";
+    public static final String COLLECTION_NOTIFICATIONS_TYPE_FIELD = "notificationType";
+    public static final String COLLECTION_NOTIFICATIONS_DATE_CREATED_FIELD = "dateCreated";
 
     public enum USER_TYPE {
         NULL,
@@ -46,5 +49,18 @@ public class DatabaseConstants {
         ACCEPTED,
         DECLINED,
         CANCELLED
+    }
+
+    public enum NOTIFICATION_TYPE {
+        NULL,
+        INFO, // Used for general notifications. No prompt to user to do anything.
+        USER_SELECTED; // Used to notify user they have been selected from waiting list, ask to register.
+
+        @NonNull
+        @Override
+        public String toString() {
+            String lower = name().toLowerCase();
+            return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
+        }
     }
 }

@@ -39,8 +39,10 @@ import util.QRCodeUtil;
 
 public class FirebaseServiceTest {
     private FirebaseService firebaseService;
+    private CollectionReference users;
+    private CollectionReference events;
     private CollectionReference waitingList;
-
+    private CollectionReference notifications;
 
     @Before
     public void setup() {
@@ -50,16 +52,18 @@ public class FirebaseServiceTest {
         }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        CollectionReference users = FirebaseFirestore.getInstance().collection("users");
-        CollectionReference events = FirebaseFirestore.getInstance().collection("events");
-        //CollectionReference waitingList = FirebaseFirestore.getInstance().collection("onWaitingList");
+        users = db.collection(DatabaseConstants.COLLECTION_USERS_NAME);
+        events = db.collection(DatabaseConstants.COLLECTION_EVENTS_NAME);
         waitingList = db.collection(DatabaseConstants.COLLECTION_ON_WAITING_LIST_NAME);
+        notifications = db.collection(DatabaseConstants.COLLECTION_NOTIFICATIONS_NAME);
         firebaseService = new FirebaseService(
                 events,
                 users,
                 waitingList,
                 new MutableLiveData<>(),
                 new MutableLiveData<>(),
+                new MutableLiveData<>(),
+                notifications,
                 new MutableLiveData<>()
         );
     }

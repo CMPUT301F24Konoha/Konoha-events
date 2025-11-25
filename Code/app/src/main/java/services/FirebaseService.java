@@ -34,8 +34,10 @@ import interfaces.OnWaitingListArrayListCallback;
 import interfaces.OnWaitingListCallback;
 import interfaces.UserModelArrayListCallback;
 import interfaces.UserTypeCallback;
+import lombok.Data;
 import lombok.Getter;
 import models.EventModel;
+import models.NotificationModel;
 import models.OnWaitingListModel;
 import models.UserModel;
 import util.ConversionUtil;
@@ -51,6 +53,7 @@ public class FirebaseService {
     private final CollectionReference events;
     private final CollectionReference users;
     private final CollectionReference onWaitingList;
+    private final CollectionReference notifications;
 
     @Getter
     private final MutableLiveData<ArrayList<EventModel>> eventsLiveData;
@@ -58,6 +61,8 @@ public class FirebaseService {
     private final MutableLiveData<ArrayList<UserModel>> usersLiveData;
     @Getter
     private final MutableLiveData<ArrayList<OnWaitingListModel>> onWaitingListLiveData;
+    @Getter
+    private final MutableLiveData<ArrayList<NotificationModel>> notificationsLiveData;
     @Getter
     private DatabaseConstants.USER_TYPE loggedInUserType;
 
@@ -75,12 +80,16 @@ public class FirebaseService {
         events = db.collection(DatabaseConstants.COLLECTION_EVENTS_NAME);
         users = db.collection(DatabaseConstants.COLLECTION_USERS_NAME);
         onWaitingList = db.collection(DatabaseConstants.COLLECTION_ON_WAITING_LIST_NAME);
+        notifications = db.collection(DatabaseConstants.COLLECTION_NOTIFICATIONS_NAME);
 
         eventsLiveData = new MutableLiveData<>();
         usersLiveData = new MutableLiveData<>();
         onWaitingListLiveData = new MutableLiveData<>();
+        notificationsLiveData = new MutableLiveData<>();
 
         setupListeners();
+
+        cleanDatabase();
     }
 
     // Extra constructor for mocking
@@ -89,7 +98,9 @@ public class FirebaseService {
                            CollectionReference onWaitingList,
                            MutableLiveData<ArrayList<EventModel>> eventsLiveData,
                            MutableLiveData<ArrayList<UserModel>> usersLiveData,
-                           MutableLiveData<ArrayList<OnWaitingListModel>> onWaitingListLiveData){
+                           MutableLiveData<ArrayList<OnWaitingListModel>> onWaitingListLiveData,
+                           CollectionReference notifications,
+                           MutableLiveData<ArrayList<NotificationModel>> notificationsLiveData) {
         this.events = events;
         this.users = users;
         this.onWaitingList = onWaitingList;
@@ -97,6 +108,77 @@ public class FirebaseService {
         this.eventsLiveData = eventsLiveData;
         this.usersLiveData = usersLiveData;
         this.onWaitingListLiveData = onWaitingListLiveData;
+
+        this.notifications = notifications;
+        this.notificationsLiveData = notificationsLiveData;
+    }
+
+    /**
+     * Startup function to ensure that the database data is valid. Added to fix duplicate onWaitingList
+     * statuses/references to deleted users. If other DB issues occur from delets add other cleanups here.
+     */
+    public void cleanDatabase() {
+        try {
+            onWaitingList
+                    .get()
+                    .addOnSuccessListener(qs -> {
+                        List<DocumentSnapshot> onWaitingListDocuments = qs.getDocuments();
+                        Map<String, String> uniquePairs = new HashMap<>();
+                        for (DocumentSnapshot ds : onWaitingListDocuments) {
+                            OnWaitingListModel onWaitingListModel = ModelUtil.toOnWaitingListModel(ds);
+
+                            // Check and remove duplicate entries for eventId and userId pairs
+                            String key = onWaitingListModel.getEventId() + "_" + onWaitingListModel.getUserId();
+                            if (uniquePairs.containsKey(key)) {
+                                deleteOnWaitingList(onWaitingListModel.getId());
+                                continue;
+                            }
+                            uniquePairs.put(key, onWaitingListModel.getId());
+
+                            // Check that referenced users exist
+                            users.document(onWaitingListModel.getUserId())
+                                    .get()
+                                    .addOnSuccessListener(userSnapshot -> {
+                                        if (!userSnapshot.exists()) {
+                                            deleteOnWaitingList(onWaitingListModel.getId());
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(LOG_TAG, "Failed to get onWaitingList data for cleaning.", e);
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(LOG_TAG, "Failed to get onWaitingList data for cleaning.");
+                    });
+
+            notifications
+                    .get()
+                    .addOnSuccessListener(qs -> {
+                        List<DocumentSnapshot> notificationDocuments = qs.getDocuments();
+                        for (DocumentSnapshot ds : notificationDocuments) {
+                            NotificationModel notificationModel = ModelUtil.toNotificationModel(ds);
+
+                            // Check that referenced users exist
+                            users.document(notificationModel.getUserId())
+                                    .get()
+                                    .addOnSuccessListener(userSnapshot -> {
+                                        if (!userSnapshot.exists()) {
+                                            deleteNotification(notificationModel.getId());
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(LOG_TAG, "Failed to get notification data for cleaning.", e);
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(LOG_TAG, "Failed to get notification data for cleaning.");
+                    });
+        } catch (Exception e) {
+            Log.e(LOG_TAG, String.format("Error while cleaning database. Exception: %s", e));
+        }
+
     }
 
     /**
@@ -367,11 +449,20 @@ public class FirebaseService {
                         users.document(userId)
                                 .get()
                                 .addOnSuccessListener(userDoc -> {
-                                    UserModel userModel = ModelUtil.toUserModel(userDoc);
-                                    userModels.add(userModel);
-                                    count.updateAndGet(v1 -> v1 + 1);
-                                    if (count.get() == size) {
-                                        callback.onCompleted(userModels);
+                                    if (userDoc != null) {
+                                        try {
+                                            UserModel userModel = ModelUtil.toUserModel(userDoc);
+                                            userModels.add(userModel);
+                                            count.updateAndGet(v1 -> v1 + 1);
+                                            if (count.get() == size) {
+                                                callback.onCompleted(userModels);
+                                            }
+                                        } catch (Exception e) {
+                                            Log.w(LOG_TAG,
+                                                    String.format("Failed to get userId: %s for onWaitingListModel: %s",
+                                                            onWaitingListModel.getUserId(),
+                                                            onWaitingListModel.getId()));
+                                        }
                                     }
                                 })
                                 .addOnFailureListener(doc -> {
@@ -428,6 +519,11 @@ public class FirebaseService {
                                     // Optional: handle success/failure
                                 }
                             });
+                    createNotification(
+                            model.getEventId(),
+                            model.getUserId(),
+                            "You've been selected! Please sign up.",
+                            DatabaseConstants.NOTIFICATION_TYPE.USER_SELECTED);
                 }
             }
         });
@@ -535,6 +631,79 @@ public class FirebaseService {
                         String.format("Didn't find or failed to delete on waiting list %s", onWaitingListId)));
     }
 
+    public void deleteNotification(@NonNull String notificationId) {
+        notifications.document(notificationId)
+                .delete()
+                .addOnSuccessListener((v) -> Log.i(LOG_TAG,
+                        String.format("Deleted on notification %s successfully", notificationId)))
+                .addOnFailureListener((e) -> Log.i(LOG_TAG,
+                        String.format("Didn't find or failed to delete notification %s", notificationId)));
+    }
+
+    public void createNotification(@NonNull String eventId,
+                                   @NonNull String userId,
+                                   @NonNull String message,
+                                   @NonNull DatabaseConstants.NOTIFICATION_TYPE type) {
+        Map<String, Object> notificationData = new HashMap<>();
+        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_EVENT_ID_FIELD, eventId);
+        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_USER_ID_FIELD, userId);
+        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_MESSAGE_FIELD, message);
+        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_TYPE_FIELD, type.name());
+        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_DATE_CREATED_FIELD, new Timestamp(new Date()));
+
+        notifications.add(notificationData)
+                .addOnSuccessListener((v) -> Log.i(LOG_TAG,
+                        String.format("Created notification for user %s successfully", userId)))
+                .addOnFailureListener((e) -> Log.i(LOG_TAG,
+                        String.format("Failed to create notification for user %s", userId)));
+    }
+
+    public void createNotificationForUsersOfStatusOfEvent(@NonNull String eventId,
+                                                        @NonNull DatabaseConstants.ON_WAITING_LIST_STATUS onWaitingListStatus,
+                                                        @NonNull String message,
+                                                        @NonNull DatabaseConstants.NOTIFICATION_TYPE type) {
+        onWaitingList
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD, eventId)
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_STATUS_FIELD, onWaitingListStatus.name())
+                .get()
+                .addOnSuccessListener(query -> {
+                    for (DocumentSnapshot doc : query) {
+                        String userId = doc.getString("userId");
+                        if (userId != null) {
+                            createNotification(eventId, userId, message, type);
+                        }
+                    }
+
+                    Log.i(LOG_TAG, "Created notifications for "
+                            + query.size() + " users of status " + onWaitingListStatus);
+                })
+                .addOnFailureListener(e ->
+                        Log.e(LOG_TAG, "Failed to query waiting list for event " + eventId, e)
+                );
+    }
+
+    public void createNotificationForAllUsersOfEvent(@NonNull String eventId,
+                                                  @NonNull String message,
+                                                  @NonNull DatabaseConstants.NOTIFICATION_TYPE type) {
+        onWaitingList
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD, eventId)
+                .get()
+                .addOnSuccessListener(query -> {
+                    for (DocumentSnapshot doc : query) {
+                        String userId = doc.getString("userId");
+                        if (userId != null) {
+                            createNotification(eventId, userId, message, type);
+                        }
+                    }
+
+                    Log.i(LOG_TAG, "Created notifications for "
+                            + query.size() + " users of event " + eventId);
+                })
+                .addOnFailureListener(e ->
+                        Log.e(LOG_TAG, "Failed to query waiting list for event " + eventId, e)
+                );
+    }
+
     /**
      * Updates the image data of an event with the given event ID in the database. Can be used to
      * both update and remove the image data of an event.
@@ -601,6 +770,17 @@ public class FirebaseService {
                     onWaitingListModels.add(onWaitingListModel);
                 }
                 onWaitingListLiveData.postValue(onWaitingListModels);
+            }
+        });
+
+        notifications.addSnapshotListener((data, error) -> {
+            if (data != null) {
+                ArrayList<NotificationModel> notificationModels = new ArrayList<>();
+                for (DocumentSnapshot documentSnapshot : data.getDocuments()) {
+                    NotificationModel notificationModel = ModelUtil.toNotificationModel(documentSnapshot);
+                    notificationModels.add(notificationModel);
+                }
+                notificationsLiveData.postValue(notificationModels);
             }
         });
     }
