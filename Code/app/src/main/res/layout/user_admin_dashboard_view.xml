@@ -19,27 +19,31 @@
     </TextView>
 
     <TextView
-        android:id="@+id/user_admin_dashboard_view_email"
+        android:id="@+id/user_admin_dashboard_view_authority_level"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="[EMAIL]">
-
+        android:text="[AUTHORITY LEVEL]">
     </TextView>
 
     <TextView
-        android:id="@+id/user_admin_dashboard_view_location"
+        android:id="@+id/user_admin_dashboard_view_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="[LOCATION]">
-
+        android:text="[USERNAME]">
     </TextView>
 
     <TextView
-        android:id="@+id/user_admin_dashboard_view_details"
+        android:id="@+id/user_admin_dashboard_view_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="[DETAILS]">
+        android:text="[PASSWORD]">
+    </TextView>
 
+    <TextView
+        android:id="@+id/user_admin_dashboard_view_phone_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="[PHONE NUMBER]">
     </TextView>
 
     <Button
@@ -48,7 +52,6 @@
         android:layout_height="wrap_content"
         android:text="Cancel Entrant"
         android:layout_marginTop="10dp">
-
     </Button>
 
     <Button
@@ -57,7 +60,6 @@
         android:layout_height="wrap_content"
         android:text="Remove Profile"
         android:layout_marginTop="10dp">
-
     </Button>
 
 </LinearLayout>
