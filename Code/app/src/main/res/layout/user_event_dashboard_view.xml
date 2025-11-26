@@ -44,12 +44,11 @@
 
             <TextView
                 android:id="@+id/event_admin_dashboard_view_on_waiting_list_count"
-                android:layout_width="match_parent"
+                android:layout_width="213dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="4dp"
-                android:text="[ON_WAITING_LIST_COUNT]">
-            </TextView>
+                android:text="[ON_WAITING_LIST_COUNT]"></TextView>
 
             <TextView
                 android:id="@+id/event_admin_dashboard_view_description"
