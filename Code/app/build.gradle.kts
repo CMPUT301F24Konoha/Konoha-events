@@ -51,6 +51,7 @@ dependencies {
     implementation("org.osmdroid:osmdroid-android:6.1.18")
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.recyclerview)
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
     compileOnly("org.projectlombok:lombok:1.18.42")

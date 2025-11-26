@@ -43,6 +43,11 @@ public class EntrantMyEventActivity extends AppCompatActivity {
                     startActivity(new Intent(EntrantMyEventActivity.this, EntrantActivity.class))
             );
         }
+        Button History_Button = findViewById(R.id.History_Button);
+        History_Button.setOnClickListener(v -> {
+            Intent intent = new Intent(EntrantMyEventActivity.this, EntrantHistory.class);
+            startActivity(intent);
+        });
 
         recyclerMyEvents = findViewById(R.id.recyclerMyEvents);
         recyclerMyEvents.setLayoutManager(new LinearLayoutManager(this));

@@ -78,6 +78,12 @@ public class EntrantActivity extends AppCompatActivity {
 
         });
 
+        Button History_Button = findViewById(R.id.History_Button);
+        History_Button.setOnClickListener(v -> {
+            Intent intent = new Intent(EntrantActivity.this, EntrantHistory.class);
+            startActivity(intent);
+        });
+
         scanQRCodeButton = findViewById(R.id.scan_qr_code_button);
         scanQRCodeButton.setOnClickListener(v -> openQRScanner());
 
