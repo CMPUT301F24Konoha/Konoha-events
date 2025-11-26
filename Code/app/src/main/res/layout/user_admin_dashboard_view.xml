@@ -46,20 +46,29 @@
         android:text="[PHONE NUMBER]">
     </TextView>
 
-    <Button
-        android:id="@+id/user_admin_dashboard_view_cancel_button"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cancel Entrant"
-        android:layout_marginTop="10dp">
-    </Button>
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/user_admin_dashboard_view_cancel_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Cancel Entrant"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1">
+        </Button>
 
-    <Button
-        android:id="@+id/user_admin_dashboard_view_remove_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Remove Profile"
-        android:layout_marginTop="10dp">
-    </Button>
+        <Button
+            android:id="@+id/user_admin_dashboard_view_remove_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Remove Profile"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1">
+        </Button>
+    </LinearLayout>
 
 </LinearLayout>
