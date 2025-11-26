@@ -166,6 +166,11 @@
             android:name=".EntrantInvitationsActivity"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+        <!-- Entrant History -->
+        <activity
+            android:name=".EntrantHistory"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
     </application>
 
 </manifest>
