@@ -171,6 +171,11 @@
             android:name=".EntrantHistory"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+        <!-- Entrant Filter -->
+        <activity
+            android:name=".EntrantFilterEvents"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
     </application>
 
 </manifest>
