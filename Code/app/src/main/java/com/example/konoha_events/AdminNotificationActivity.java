@@ -13,6 +13,10 @@ import services.FirebaseService;
 import util.ViewUtil;
 import views.NotificationAdminDashboardView;
 
+/**
+ * Activity for admins viewing the different notifications of the system.
+ * Viewable only by logged in admins.
+ */
 public class AdminNotificationActivity extends AppCompatActivity {
     private final String tag = "[AdminNotificationActivity]";
     private FirebaseService fbs;

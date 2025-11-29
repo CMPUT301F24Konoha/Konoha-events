@@ -25,6 +25,11 @@ import constants.IntentConstants;
 import models.EventModel;
 import services.FirebaseService;
 
+/**
+ * This is an adapter of EventModels used to display info about each EventModel.
+ * Displays some quick info about the event, and other buttons related to the
+ * event. This view is shared by both Organizer and Administrator users.
+ */
 public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
     private static final String tag = "[EventAdminDashboardView]";
     private FirebaseService fbs;

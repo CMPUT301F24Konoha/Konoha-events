@@ -7,6 +7,11 @@ import lombok.Getter;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
+/**
+ * Model representing a user being on the waiting list of an event.
+ * Contains different states representing the users status with the event.
+ * More detailed description of states in the constants.
+ */
 @Getter
 @AllArgsConstructor
 @Builder

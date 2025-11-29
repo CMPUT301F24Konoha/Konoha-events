@@ -40,13 +40,13 @@ import services.FirebaseService;
 import util.ModelUtil;
 import util.ViewUtil;
 
-/*
-* Activity displaying details about events. This view is used by organizers and adminstrators.
-* Requires two intent constants to be filled to function correctly:
-*   - IntentConstants.INTENT_VIEW_EVENT_CALLER_TYPE: The Activity that the back button should return
-*     to. This is needed to know what view to go back to since it's used in various places.
-*   - IntentConstants.INTENT_VIEW_EVENT_EVENT_ID: The eventId of the event to display details for
-* */
+/**
+ * Activity displaying details about events. This view is used by organizers and adminstrators.
+ * Requires two intent constants to be filled to function correctly:
+ *   - IntentConstants.INTENT_VIEW_EVENT_CALLER_TYPE: The Activity that the back button should return
+ *     to. This is needed to know what view to go back to since it's used in various places.
+ *   - IntentConstants.INTENT_VIEW_EVENT_EVENT_ID: The eventId of the event to display details for
+ */
 public class EventDetails extends AppCompatActivity {
     private final String tag = "[EventDetails]";
     private FirebaseService fbs;
