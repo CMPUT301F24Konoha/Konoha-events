@@ -67,14 +67,4 @@ public class EventModel implements HasImage {
     public String getDeviceId() {
         return deviceId;
     }
-
-    @Override
-    public String getUploaderId() {
-        return organizerId;
-    }
-
-    @Override
-    public String getImageContext() {
-        return "Event Image";
-    }
 }

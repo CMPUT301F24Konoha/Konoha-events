@@ -34,269 +34,146 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ScrollView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:fillViewport="true"
-                    android:layout_weight="1">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textStyle="bold"
-                            android:textSize="@dimen/text_size_large"
-                            android:text="Event Details">
-                        </TextView>
-
-                        <TextView
-                            android:id="@+id/activity_event_view_id"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="4dp"
-                            android:text="[EVENT_ID]"></TextView>
-
-                        <TextView
-                            android:id="@+id/activity_event_view_deadline_text"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="4dp"
-                            android:text="[Deadline]">
-                        </TextView>
-
-                        <TextView
-                            android:id="@+id/activity_event_view_description"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="4dp"
-                            android:text="[DESCRIPTION]" />
-
-                        <TextView
-                            android:id="@+id/activity_event_view_is_geolocation_enabled_text"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="4dp"
-                            android:text="[GEOLOCATION_STATUS]">
-                        </TextView>
-                    </LinearLayout>
-                </ScrollView>
-
-                <LinearLayout
-                    android:layout_width="10dp"
-                    android:layout_height="match_parent">
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/activity_event_view_poster_image_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:background="@color/light_gray"
-                        android:padding="4dp"
-                        android:scaleType="fitCenter"></ImageView>
-
-                    <Button
-                        android:id="@+id/activity_event_view_upload_event_poster"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text="Upload Event Poster"></Button>
-
-                    <Button
-                        android:id="@+id/activity_event_view_delete_event_poster"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Delete Event Poster"></Button>
-                </LinearLayout>
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black"
-                android:layout_marginVertical="2dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-                    <NumberPicker
-                        android:id="@+id/activity_event_view_number_picker"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                    </NumberPicker>
-                </LinearLayout>
-                
-                <LinearLayout
-                    android:layout_width="10dp"
+                android:gravity="center">
+                <Switch
+                    android:id="@+id/activity_event_view_geolocation_toggle_switch"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                </Switch>
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginTop="10dp">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Entrant Breakdown"
-                        android:textSize="@dimen/text_size_large"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="10dp">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/activity_event_view_total_on_list_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/activity_event_view_deadline_text"
-                        android:text="[TOTAL ON LIST]">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/activity_event_view_waiting_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/activity_event_view_total_on_list_text"
-                        android:text="[WAITING]">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/activity_event_view_selected_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/activity_event_view_waiting_text"
-                        android:text="[SELECTED]">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/activity_event_view_accepted_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/activity_event_view_selected_text"
-                        android:text="[ACCEPTED]">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/activity_event_view_declined_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/activity_event_view_accepted_text"
-                        android:text="[DECLINED]">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/activity_event_view_cancelled_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/activity_event_view_declined_text"
-                        android:text="[CANCELLED]">
-                    </TextView>
-                </LinearLayout>
+                    android:text="Enable Geolocation Tracking">
+                </TextView>
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black"
-                android:layout_marginVertical="2dp" />
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/activity_event_view_deadline_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="2dp">
-                <Button
-                    android:id="@+id/activity_event_view_draw_from_waitlist_button"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Draw from Waitlist"
-                    android:layout_weight="1">
-                </Button>
+                app:layout_constraintTop_toBottomOf="@id/activity_event_toolbar"
+                android:text="[Deadline]">
+            </TextView>
 
-                <LinearLayout
-                    android:layout_width="10dp"
-                    android:layout_height="match_parent">
-                </LinearLayout>
+            <TextView
+                android:id="@+id/activity_event_view_total_on_list_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/activity_event_view_deadline_text"
+                android:text="[TOTAL ON LIST]">
+            </TextView>
 
-                <Button
-                    android:id="@+id/activity_event_view_entrants_button"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@+id/activity_event_view_cancelled_text"
-                    android:text="View Entrants"
-                    android:layout_weight="1">
-                </Button>
-            </LinearLayout>
+            <TextView
+                android:id="@+id/activity_event_view_waiting_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/activity_event_view_total_on_list_text"
+                android:text="[WAITING]">
+            </TextView>
+
+            <TextView
+                android:id="@+id/activity_event_view_selected_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/activity_event_view_waiting_text"
+                android:text="[SELECTED]">
+            </TextView>
+
+            <TextView
+                android:id="@+id/activity_event_view_accepted_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/activity_event_view_selected_text"
+                android:text="[ACCEPTED]">
+            </TextView>
+
+            <TextView
+                android:id="@+id/activity_event_view_declined_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/activity_event_view_accepted_text"
+                android:text="[DECLINED]">
+            </TextView>
+
+            <TextView
+                android:id="@+id/activity_event_view_cancelled_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/activity_event_view_declined_text"
+                android:text="[CANCELLED]">
+            </TextView>
+
+            <Button
+                android:id="@+id/activity_event_view_entrants_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/activity_event_view_cancelled_text"
+                android:text="View Entrants">
+            </Button>
+
+            <NumberPicker
+                android:id="@+id/activity_event_view_number_picker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </NumberPicker>
+
+            <Button
+                android:id="@+id/activity_event_view_draw_from_waitlist_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Draw from Waitlist">
+            </Button>
+
+            <ImageView
+                android:id="@+id/activity_event_view_poster_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"/>
+
+            <Button
+                android:id="@+id/activity_event_view_upload_event_poster"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Upload Event Poster">
+            </Button>
+
+            <Button
+                android:id="@+id/activity_event_view_delete_event_poster"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delete Event Poster">
+            </Button>
 
             <Button
                 android:id="@+id/activity_event_view_notify_selected_entrants_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Notify Selected Entrants"
-                android:visibility="gone">
+                android:text="Notify Selected Entrants">
             </Button>
 
             <Button
                 android:id="@+id/activity_event_view_notify_non_selected_entrants_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Notify Non-Selected Entrants"
-                android:visibility="gone">
+                android:text="Notify Non-Selected Entrants">
+            </Button>
+
+            <Button
+                android:id="@+id/activity_event_view_show_qr_code_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Show QR Code">
+            </Button>
+
+            <Button
+                android:id="@+id/activity_event_view_start_send_notification_menu_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Send Notification">
+
             </Button>
         </LinearLayout>
     </ScrollView>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/black"
-        android:layout_marginVertical="2dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/activity_event_view_show_qr_code_button"
-        app:layout_constraintHorizontal_bias="0"
-        android:layout_marginHorizontal="5dp"/>
-
-    <Button
-        android:id="@+id/activity_event_view_show_qr_code_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Show QR Code"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/activity_event_view_start_send_notification_menu_button"
-        app:layout_constraintHorizontal_bias="0"
-        android:layout_marginHorizontal="5dp"/>
-
-    <Button
-        android:id="@+id/activity_event_view_start_send_notification_menu_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Send Notification"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0"
-        android:layout_marginBottom="10dp"
-        android:layout_marginHorizontal="5dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
