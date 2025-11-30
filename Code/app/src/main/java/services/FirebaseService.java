@@ -486,48 +486,85 @@ public class FirebaseService {
         getOnWaitingListsOfEvent(eventId, new OnWaitingListArrayListCallback() {
             @Override
             public void onCompleted(ArrayList<OnWaitingListModel> onWaitingListModels) {
-                ArrayList<OnWaitingListModel> waitingWaitingListModels = new ArrayList<OnWaitingListModel>();
-                for (OnWaitingListModel model: onWaitingListModels) {
+                ArrayList<OnWaitingListModel> waitingWaitingListModels = new ArrayList<>();
+                for (OnWaitingListModel model : onWaitingListModels) {
                     if (model.getStatus() == DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING) {
                         waitingWaitingListModels.add(model);
                     }
                 }
 
                 int waitingCount = waitingWaitingListModels.size();
-                if (count >= waitingCount) {
-                    for (OnWaitingListModel model: waitingWaitingListModels) {
-                        updateStatusOfOnWaitingList(model.getId(),
-                                DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED,
-                                new BooleanCallback() {
-                                    @Override
-                                    public void onCompleted(boolean succeeded) {
+                if (waitingCount == 0) {
+                    return;
+                }
 
-                                    }
-                                });
+                // Track which userIds have been selected (handles duplicates cleanly)
+                java.util.HashSet<String> selectedUserIds = new java.util.HashSet<>();
+
+                // Case 1: we can select everyone
+                if (count >= waitingCount) {
+                    for (OnWaitingListModel model : waitingWaitingListModels) {
+                        selectedUserIds.add(model.getUserId());
+
+                        updateStatusOfOnWaitingList(
+                                model.getId(),
+                                DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED,
+                                succeeded -> {});
+
+                        // ✅ WIN notification for all selected users
+                        createNotification(
+                                model.getEventId(),
+                                model.getUserId(),
+                                "You've been selected! Please sign up.",
+                                DatabaseConstants.NOTIFICATION_TYPE.USER_SELECTED
+                        );
                     }
                     return;
                 }
 
+                // Case 2: select only 'count' random winners
                 Collections.shuffle(waitingWaitingListModels);
+
+                // Winners
                 for (int i = 0; i < count; i++) {
                     OnWaitingListModel model = waitingWaitingListModels.get(i);
-                    updateStatusOfOnWaitingList(model.getId(),
+                    selectedUserIds.add(model.getUserId());
+
+                    updateStatusOfOnWaitingList(
+                            model.getId(),
                             DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED,
-                            new BooleanCallback() {
-                                @Override
-                                public void onCompleted(boolean succeeded) {
-                                    // Optional: handle success/failure
-                                }
-                            });
+                            succeeded -> {});
+
+                    // ✅ WIN notification for winners
                     createNotification(
                             model.getEventId(),
                             model.getUserId(),
                             "You've been selected! Please sign up.",
-                            DatabaseConstants.NOTIFICATION_TYPE.USER_SELECTED);
+                            DatabaseConstants.NOTIFICATION_TYPE.USER_SELECTED
+                    );
+                }
+
+                // Losers – only for users who were NOT selected
+                for (int i = count; i < waitingWaitingListModels.size(); i++) {
+                    OnWaitingListModel model = waitingWaitingListModels.get(i);
+                    if (selectedUserIds.contains(model.getUserId())) {
+                        // same user had multiple entries; skip loser notification
+                        continue;
+                    }
+
+                    // ✅ LOSE notification
+                    createNotification(
+                            model.getEventId(),
+                            model.getUserId(),
+                            "You were not selected to participate in this event this time.",
+                            DatabaseConstants.NOTIFICATION_TYPE.INFO  // or another type if you want
+                    );
                 }
             }
         });
     }
+
+
 
     public void updateStatusOfOnWaitingList(@NonNull String onWaitingListId,
                                             @NonNull DatabaseConstants.ON_WAITING_LIST_STATUS status,

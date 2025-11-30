@@ -41,7 +41,7 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
             return;
         }
 
-        // If you added the guidelines button in XML, wire it here:
+        // guideline wiring
         Button guidelinesButton = findViewById(R.id.guidelines_button);
         if (guidelinesButton != null) {
             guidelinesButton.setOnClickListener(v ->
@@ -51,6 +51,16 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
                     ))
             );
         }
+
+        Button notificationsButton = findViewById(R.id.notifications_button);
+        notificationsButton.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(
+                    EntrantInvitationsActivity.this,
+                    EntrantNotificationsActivity.class
+            );
+            startActivity(intent);
+        });
+
 
         loadPendingInvitations();
     }
