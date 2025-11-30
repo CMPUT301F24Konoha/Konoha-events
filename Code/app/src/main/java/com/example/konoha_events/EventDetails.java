@@ -17,6 +17,7 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Switch;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -33,7 +34,6 @@ import java.util.Date;
 import constants.DatabaseConstants;
 import constants.IntentConstants;
 import interfaces.OnWaitingListArrayListCallback;
-import lombok.val;
 import models.EventModel;
 import models.OnWaitingListModel;
 import services.FirebaseService;
@@ -66,6 +66,10 @@ public class EventDetails extends AppCompatActivity {
     private NumberPicker numberPicker;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ImageView posterImageView;
+
+    // 🔹 New: geolocation toggle + map button
+    private Switch geolocationSwitch;
+    private Button viewEntrantLocationsMapButton;
 
     public enum SEND_NOTIFICATION_OPTIONS {
         EVERYONE(null),
@@ -135,6 +139,11 @@ public class EventDetails extends AppCompatActivity {
         showQRCodeButton = findViewById(R.id.activity_event_view_show_qr_code_button);
         showSendNotificationMenuButton = findViewById(R.id.activity_event_view_start_send_notification_menu_button);
 
+        // 🔹 New views
+        geolocationSwitch = findViewById(R.id.switchGeolocationRequired);
+        viewEntrantLocationsMapButton =
+                findViewById(R.id.activity_event_view_view_entrant_locations_button);
+
         DocumentReference eventDocument = fbs.getEventDocumentReference(eventId);
         Class<?> finalReturnActivityClass = returnActivityClass;
         eventDocument
@@ -142,9 +151,33 @@ public class EventDetails extends AppCompatActivity {
                 .addOnSuccessListener((v) -> {
                     Log.i(tag, String.format("Got event model of event %s successfully", eventId));
                     EventModel eventModel = ModelUtil.toEventModel(v);
-                    ViewUtil.setupToolbarWithBackButtonToActivity(this, toolbar, eventModel.getEventTitle(), (Class<? extends Activity>) finalReturnActivityClass);
+                    ViewUtil.setupToolbarWithBackButtonToActivity(
+                            this,
+                            toolbar,
+                            eventModel.getEventTitle(),
+                            (Class<? extends Activity>) finalReturnActivityClass);
+
                     if (eventModel.getRegistrationDeadline() != null) {
                         displayDeadline(eventModel.getRegistrationDeadline());
+                    }
+
+                    // 🔹 Sync geolocation switch with Firestore field "geolocationRequired"
+                    if (geolocationSwitch != null) {
+                        Boolean geoRequired = v.getBoolean("geolocationRequired");
+                        geolocationSwitch.setChecked(Boolean.TRUE.equals(geoRequired));
+
+                        geolocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                            eventDocument.update("geolocationRequired", isChecked);
+                        });
+                    }
+
+                    // 🔹 Map button – opens OrganizerMapActivity for this event
+                    if (viewEntrantLocationsMapButton != null) {
+                        viewEntrantLocationsMapButton.setOnClickListener(btn -> {
+                            Intent mapIntent = new Intent(EventDetails.this, OrganizerMapActivity.class);
+                            mapIntent.putExtra(IntentConstants.INTENT_EVENT_ID, eventId);
+                            startActivity(mapIntent);
+                        });
                     }
 
                     drawFromWaitlistButton.setOnClickListener(vv -> {
