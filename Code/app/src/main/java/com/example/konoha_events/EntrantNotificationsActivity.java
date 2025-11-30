@@ -20,16 +20,38 @@ import java.util.List;
 
 import services.FirebaseService;
 
+/**
+ * activity that shows all notifications for the currently logged-in entrant.
+ * it also lets the user turn app notifications on or off using a simple switch.
+ */
 public class EntrantNotificationsActivity extends AppCompatActivity {
+
+    /** toggle that controls whether the user wants to receive notifications or not */
     private Switch switchNotifications;
+
+    /** recyclerview that displays the list of notifications */
     private RecyclerView rvNotifications;
+
+    /** text shown when the user has no notifications at all */
     private TextView tvNoNotifications;
+
+    /** adapter backing the recyclerview with notification data */
     private NotificationsAdapter adapter;
+
+    /** in-memory list of notifications loaded from firestore */
     private List<Notification> notificationList = new ArrayList<>();
 
     private FirebaseFirestore db;
+
+    /** firestore user id for the currently logged-in entrant */
     private String entrantId;
 
+    /**
+     * sets up the notifications screen, loads the user's notification preference,
+     * and fetches their notifications from firestore.
+     *
+     * @param savedInstanceState previous state, usually not super important here
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,41 +77,49 @@ public class EntrantNotificationsActivity extends AppCompatActivity {
         String userId = fbs.getCurrentUserId();
 
         if (userId == null || userId.isEmpty()) {
-            Toast.makeText(this, "No logged-in user. Please log in again.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    "no logged-in user. please log in again.",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
-// 1) Load current preference from Firestore
+        // load the current opt-out flag so the switch matches what is stored in firestore
         fbs.getUserDocumentReference(userId)
                 .get()
                 .addOnSuccessListener(doc -> {
                     Boolean optOut = doc.getBoolean("notificationsOptOut");
-                    // default: receive notifications (switch ON)
+                    // default behavior: user receives notifications (switch is on)
                     boolean receiveNotifications = (optOut == null || !optOut);
                     switchNotifications.setChecked(receiveNotifications);
                 })
-                .addOnFailureListener(e -> {
-                    // If it fails, default to ON
-                    switchNotifications.setChecked(true);
-                });
+                .addOnFailureListener(e ->
+                        // if this fails, just assume notifications are on
+                        switchNotifications.setChecked(true)
+                );
 
-// 2) Save when user toggles
+        // whenever the user toggles the switch, update the flag on their user document
         switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // isChecked = wants to receive notifications
+            // isChecked = user wants notifications → optOut is the opposite
             boolean optOut = !isChecked;
 
             fbs.getUserDocumentReference(userId)
                     .update("notificationsOptOut", optOut)
                     .addOnSuccessListener(v ->
-                            Log.i("EntrantNotifications", "Updated notificationsOptOut=" + optOut))
+                            Log.i("EntrantNotifications",
+                                    "updated notificationsOptOut=" + optOut))
                     .addOnFailureListener(e ->
-                            Log.e("EntrantNotifications", "Failed to update notificationsOptOut", e));
+                            Log.e("EntrantNotifications",
+                                    "failed to update notificationsOptOut", e));
         });
-
 
         loadNotifications();
     }
 
+    /**
+     * loads all notifications for the current entrant from the "notifications" collection.
+     * they are ordered by dateCreated in descending order so the newest ones show up first.
+     * if there are none, a simple message is shown instead of the list.
+     */
     private void loadNotifications() {
         db.collection("notifications")
                 .whereEqualTo("userId", entrantId)
@@ -116,7 +146,8 @@ public class EntrantNotificationsActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this,
-                                "Failed to load notifications: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
+                                "failed to load notifications: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show()
+                );
     }
 }
