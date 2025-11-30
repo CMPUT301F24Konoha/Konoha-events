@@ -33,7 +33,7 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
         container = findViewById(R.id.container_invitations);
         db = FirebaseFirestore.getInstance();
 
-        // 🔹 Use the Firestore userId (same one used in joinWaitingList)
+        // Use the Firestore userId (same one used in joinWaitingList)
         entrantId = FirebaseService.firebaseService.getCurrentUserId();
 
         if (entrantId == null || entrantId.isEmpty()) {
@@ -97,17 +97,25 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
      * Adds a card to the screen for a single invitation.
      */
     private void addInvitationCard(String docId, String eventId) {
-        if (eventId == null) eventId = "(unknown event)";
+        if (eventId == null || eventId.isEmpty()) {
+            eventId = "(unknown event)";
+        }
 
+        // Create the card layout
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         int pad = (int) (16 * getResources().getDisplayMetrics().density);
         card.setPadding(pad, pad, pad, pad);
         card.setBackgroundResource(android.R.drawable.dialog_holo_light_frame);
 
+        // Title TextView (we'll fill the actual text after we fetch the event)
         TextView title = new TextView(this);
-        title.setText("Event ID: " + eventId);
         title.setTextSize(16f);
+
+        // Optional: show ID as a smaller line under the title
+        TextView subtitle = new TextView(this);
+        subtitle.setTextSize(12f);
+        subtitle.setText("Event ID: " + eventId);
 
         Button acceptBtn = new Button(this);
         acceptBtn.setText("Accept");
@@ -123,12 +131,40 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
                         DatabaseConstants.ON_WAITING_LIST_STATUS.DECLINED,
                         card));
 
+        // Add views to card
         card.addView(title);
+        card.addView(subtitle);
         card.addView(acceptBtn);
         card.addView(declineBtn);
 
+        // Add the card to the container immediately (UI feels snappy)
         container.addView(card);
+
+        // 🔍 Now fetch the event title from Firestore and update the title TextView
+        db.collection(DatabaseConstants.COLLECTION_EVENTS_NAME)
+                .document(eventId)
+                .get()
+                .addOnSuccessListener(eventDoc -> {
+                    if (eventDoc != null && eventDoc.exists()) {
+                        String eventTitle = eventDoc.getString(
+                                DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD);
+
+                        if (eventTitle == null || eventTitle.isEmpty()) {
+                            eventTitle = "Event";
+                        }
+
+                        title.setText("Event: " + eventTitle);
+                    } else {
+                        // Fallback if event doesn't exist
+                        title.setText("Event: (unknown)");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // On failure, show a generic label instead of crashing
+                    title.setText("Event: (failed to load)");
+                });
     }
+
 
     /**
      * Updates the invitation status in Firestore for accepted or declined.

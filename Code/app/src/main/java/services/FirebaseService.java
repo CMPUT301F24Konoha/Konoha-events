@@ -681,19 +681,37 @@ public class FirebaseService {
                                    @NonNull String userId,
                                    @NonNull String message,
                                    @NonNull DatabaseConstants.NOTIFICATION_TYPE type) {
-        Map<String, Object> notificationData = new HashMap<>();
-        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_EVENT_ID_FIELD, eventId);
-        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_USER_ID_FIELD, userId);
-        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_MESSAGE_FIELD, message);
-        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_TYPE_FIELD, type.name());
-        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_DATE_CREATED_FIELD, new Timestamp(new Date()));
 
-        notifications.add(notificationData)
-                .addOnSuccessListener((v) -> Log.i(LOG_TAG,
-                        String.format("Created notification for user %s successfully", userId)))
-                .addOnFailureListener((e) -> Log.i(LOG_TAG,
-                        String.format("Failed to create notification for user %s", userId)));
+        // Check user's opt-out setting first
+        users.document(userId)
+                .get()
+                .addOnSuccessListener(userDoc -> {
+                    Boolean optOut = userDoc.getBoolean("notificationsOptOut");
+                    if (optOut != null && optOut) {
+                        Log.i(LOG_TAG, "User " + userId + " opted out of notifications. Skipping.");
+                        return;
+                    }
+
+                    Map<String, Object> notificationData = new HashMap<>();
+                    notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_EVENT_ID_FIELD, eventId);
+                    notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_USER_ID_FIELD, userId);
+                    notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_MESSAGE_FIELD, message);
+                    notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_TYPE_FIELD, type.name());
+                    notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_DATE_CREATED_FIELD, new Timestamp(new Date()));
+
+                    notifications.add(notificationData)
+                            .addOnSuccessListener((v) -> Log.i(LOG_TAG,
+                                    String.format("Created notification for user %s successfully", userId)))
+                            .addOnFailureListener((e) -> Log.i(LOG_TAG,
+                                    String.format("Failed to create notification for user %s", userId)));
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(LOG_TAG, "Failed to read user for notificationsOptOut, userId=" + userId, e);
+                    // Optional: you could still send the notification here if you want,
+                    // but I'm skipping on failure to be safe.
+                });
     }
+
 
     public void createNotificationForUsersOfStatusOfEvent(@NonNull String eventId,
                                                         @NonNull DatabaseConstants.ON_WAITING_LIST_STATUS onWaitingListStatus,

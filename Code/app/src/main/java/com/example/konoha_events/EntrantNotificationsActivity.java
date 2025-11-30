@@ -1,7 +1,9 @@
 package com.example.konoha_events;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +21,7 @@ import java.util.List;
 import services.FirebaseService;
 
 public class EntrantNotificationsActivity extends AppCompatActivity {
-
+    private Switch switchNotifications;
     private RecyclerView rvNotifications;
     private TextView tvNoNotifications;
     private NotificationsAdapter adapter;
@@ -47,10 +49,43 @@ public class EntrantNotificationsActivity extends AppCompatActivity {
         rvNotifications.setLayoutManager(new LinearLayoutManager(this));
         rvNotifications.setAdapter(adapter);
 
-        if (entrantId == null || entrantId.isEmpty()) {
+        switchNotifications = findViewById(R.id.switch_notifications);
+
+        FirebaseService fbs = FirebaseService.firebaseService;
+        String userId = fbs.getCurrentUserId();
+
+        if (userId == null || userId.isEmpty()) {
             Toast.makeText(this, "No logged-in user. Please log in again.", Toast.LENGTH_SHORT).show();
             return;
         }
+
+// 1) Load current preference from Firestore
+        fbs.getUserDocumentReference(userId)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    Boolean optOut = doc.getBoolean("notificationsOptOut");
+                    // default: receive notifications (switch ON)
+                    boolean receiveNotifications = (optOut == null || !optOut);
+                    switchNotifications.setChecked(receiveNotifications);
+                })
+                .addOnFailureListener(e -> {
+                    // If it fails, default to ON
+                    switchNotifications.setChecked(true);
+                });
+
+// 2) Save when user toggles
+        switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // isChecked = wants to receive notifications
+            boolean optOut = !isChecked;
+
+            fbs.getUserDocumentReference(userId)
+                    .update("notificationsOptOut", optOut)
+                    .addOnSuccessListener(v ->
+                            Log.i("EntrantNotifications", "Updated notificationsOptOut=" + optOut))
+                    .addOnFailureListener(e ->
+                            Log.e("EntrantNotifications", "Failed to update notificationsOptOut", e));
+        });
+
 
         loadNotifications();
     }

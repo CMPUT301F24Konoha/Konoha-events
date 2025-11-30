@@ -12,6 +12,14 @@
         android:text="Notifications"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <!--toggle for opt-out -->
+    <Switch
+        android:id="@+id/switch_notifications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Receive notifications"
         android:layout_marginBottom="12dp" />
 
     <androidx.recyclerview.widget.RecyclerView
