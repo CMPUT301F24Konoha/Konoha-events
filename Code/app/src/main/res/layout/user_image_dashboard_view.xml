@@ -6,49 +6,11 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/image_admin_dashboard_view_image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="1">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Image Details"
-                android:textSize="@dimen/text_size_large"
-                android:textStyle="bold">
-            </TextView>
-            <TextView
-                android:id="@+id/image_admin_dashboard_view_image_uploader_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="[UPLOADER]">
-            </TextView>
-            <TextView
-                android:id="@+id/image_admin_dashboard_view_image_context_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="[IMAGE CONTEXT]">
-            </TextView>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="1">
-            <ImageView
-                android:id="@+id/image_admin_dashboard_view_image"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                android:padding="4dp" />
-        </LinearLayout>
-    </LinearLayout>
+        android:layout_height="wrap_content">
+    </ImageView>
 
     <Button
         android:id="@+id/image_admin_dashboard_view_remove_button"
