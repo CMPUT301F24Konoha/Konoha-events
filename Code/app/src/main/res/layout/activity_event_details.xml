@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:background="@android:color/white">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
 
         <!-- Loading Spinner -->
@@ -15,62 +16,40 @@
             android:id="@+id/loadingSpinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="100dp"
+            android:layout_centerInParent="true"
             android:visibility="gone" />
-
-        <!-- Back Button -->
-        <Button
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Back"
-            android:textColor="@color/black"
-            android:textAllCaps="false"
-            style="?android:attr/borderlessButtonStyle" />
 
         <!-- Event Poster -->
         <ImageView
             android:id="@+id/eventPoster"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
             android:scaleType="centerCrop"
-            android:background="#E0E0E0"
-            android:visibility="gone"
-            android:contentDescription="Event Poster" />
+            android:contentDescription="Event Poster"
+            android:visibility="visible" />
 
         <!-- Event Title -->
         <TextView
             android:id="@+id/eventTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/eventPoster"
             android:text="Event Title"
-            android:textSize="28sp"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="#000000"
+            android:textColor="@android:color/black"
             android:layout_marginBottom="8dp" />
-
-        <!-- Event Description Label -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Description"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#666666"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="4dp" />
 
         <!-- Event Description -->
         <TextView
             android:id="@+id/eventDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/eventTitle"
             android:text="Event description will appear here"
             android:textSize="16sp"
-            android:textColor="#000000"
+            android:textColor="@android:color/darker_gray"
             android:layout_marginBottom="16dp" />
 
         <!-- Registration Deadline -->
@@ -78,9 +57,10 @@
             android:id="@+id/eventDeadline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Registration Deadline: TBD"
+            android:layout_below="@id/eventDescription"
+            android:text="Registration Deadline: "
             android:textSize="14sp"
-            android:textColor="#666666"
+            android:textColor="@android:color/holo_red_dark"
             android:layout_marginBottom="8dp" />
 
         <!-- Entrant Limit -->
@@ -88,23 +68,50 @@
             android:id="@+id/entrantLimit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Entrant Limit: No limit"
+            android:layout_below="@id/eventDeadline"
+            android:text="Entrant Limit: "
             android:textSize="14sp"
-            android:textColor="#666666"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="8dp"
+            android:visibility="visible" />
+
+        <!-- Waitlist Count -->
+        <TextView
+            android:id="@+id/waitlistCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/entrantLimit"
+            android:text="Waitlist: 0 entrants"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_blue_dark"
             android:layout_marginBottom="24dp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <!-- Join Waitlist Button -->
         <Button
             android:id="@+id/joinWaitlistButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/waitlistCount"
             android:text="Join Waitlist"
             android:textSize="18sp"
-            android:textStyle="bold"
+            android:backgroundTint="@android:color/holo_green_dark"
+            android:textColor="@android:color/white"
             android:padding="16dp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginBottom="16dp" />
 
-    </LinearLayout>
+        <!-- Back Button -->
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/joinWaitlistButton"
+            android:text="Back"
+            android:textSize="16sp"
+            android:backgroundTint="@android:color/darker_gray"
+            android:textColor="@android:color/white"
+            android:padding="12dp" />
 
+    </RelativeLayout>
 </ScrollView>

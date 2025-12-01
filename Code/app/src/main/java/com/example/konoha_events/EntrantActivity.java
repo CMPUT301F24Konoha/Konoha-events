@@ -19,6 +19,7 @@ import com.example.konoha_events.ProfileActivity;
 import java.util.ArrayList;
 import java.util.Date;
 
+import constants.IntentConstants;
 import models.EventModel;
 import models.OnWaitingListModel;
 import services.FirebaseService;
@@ -45,6 +46,7 @@ public class EntrantActivity extends AppCompatActivity {
                         .getExistingWaitlistEntry(event.getId(), userId);
                 //Check if the user has already joined the waiting list, has accepted
                 //declined or is selected for the event.
+
                 if (existing != null && existing.getStatus() != null) {
 
                     String status = existing.getStatus().name();
@@ -85,7 +87,10 @@ public class EntrantActivity extends AppCompatActivity {
 
             @Override
             public void onQrClick(EventModel event) {
-                //TODO: Open QR code
+                // Navigate to EventDetailsActivity when an event is clicked
+                Intent intent = new Intent(EntrantActivity.this, EventDetailsActivity.class);
+                intent.putExtra(IntentConstants.INTENT_EVENT_ID, event.getId());
+                startActivity(intent);
             }
         });
         recyclerEvents.setAdapter(eventsAdapter);
