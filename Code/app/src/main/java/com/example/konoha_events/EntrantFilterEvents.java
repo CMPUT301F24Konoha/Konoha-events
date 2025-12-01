@@ -109,59 +109,59 @@ public class EntrantFilterEvents extends AppCompatActivity {
 
         showFilterDialog();
     }
-        //Show the filter dialog for optional keywords and registration deadline
-        private void showFilterDialog() {
-            LayoutInflater inflater = LayoutInflater.from(this);
-            View view = inflater.inflate(R.layout.filter_events_dialog, null);
+    //Show the filter dialog for optional keywords and registration deadline
+    private void showFilterDialog() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View view = inflater.inflate(R.layout.filter_events_dialog, null);
 
-            EditText editKeyword = view.findViewById(R.id.editKeyword);
-            TextView textDate = view.findViewById(R.id.textDate);
+        EditText editKeyword = view.findViewById(R.id.editKeyword);
+        TextView textDate = view.findViewById(R.id.textDate);
 
-            //Prefill
-            if (currentKeyword != null) editKeyword.setText(currentKeyword);
-            if (currentDateFilter != null)
-                textDate.setText(dialogDateFormat.format(currentDateFilter));
+        //Prefill
+        if (currentKeyword != null) editKeyword.setText(currentKeyword);
+        if (currentDateFilter != null)
+            textDate.setText(dialogDateFormat.format(currentDateFilter));
 
-            //Open date picker
-            final Date[] selectedDate = new Date[1];
-            selectedDate[0] = currentDateFilter;
+        //Open date picker
+        final Date[] selectedDate = new Date[1];
+        selectedDate[0] = currentDateFilter;
 
-            textDate.setOnClickListener(v -> {
-                Calendar cal = Calendar.getInstance();
-                if (selectedDate[0] != null) cal.setTime(selectedDate[0]);
+        textDate.setOnClickListener(v -> {
+            Calendar cal = Calendar.getInstance();
+            if (selectedDate[0] != null) cal.setTime(selectedDate[0]);
 
-                new DatePickerDialog(
-                        this,
-                        (dp, y, m, d) -> {
-                            Calendar chosen = Calendar.getInstance();
-                            chosen.set(y, m, d, 0, 0, 0);
-                            chosen.set(Calendar.MILLISECOND, 0);
-                            selectedDate[0] = chosen.getTime();
-                            textDate.setText(dialogDateFormat.format(selectedDate[0]));
-                        },
-                        cal.get(Calendar.YEAR),
-                        cal.get(Calendar.MONTH),
-                        cal.get(Calendar.DAY_OF_MONTH)
-                ).show();
-            });
+            new DatePickerDialog(
+                    this,
+                    (dp, y, m, d) -> {
+                        Calendar chosen = Calendar.getInstance();
+                        chosen.set(y, m, d, 0, 0, 0);
+                        chosen.set(Calendar.MILLISECOND, 0);
+                        selectedDate[0] = chosen.getTime();
+                        textDate.setText(dialogDateFormat.format(selectedDate[0]));
+                    },
+                    cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH),
+                    cal.get(Calendar.DAY_OF_MONTH)
+            ).show();
+        });
 
-            new AlertDialog.Builder(this)
-                    .setTitle("Filter events")
-                    .setView(view)
-                    .setPositiveButton("Apply", (dialog, which) -> {
-                        currentKeyword = editKeyword.getText().toString().trim();
-                        currentKeyword = currentKeyword.isEmpty() ? null : currentKeyword;
-                        currentDateFilter = selectedDate[0];
-                        applyFiltersAndShow();
-                    })
-                    .setNegativeButton("Clear filters", (dialog, which) -> {
-                        currentKeyword = null;
-                        currentDateFilter = null;
-                        applyFiltersAndShow();
-                    })
-                    .setNeutralButton("Cancel", null)
-                    .show();
-        }
+        new AlertDialog.Builder(this)
+                .setTitle("Filter events")
+                .setView(view)
+                .setPositiveButton("Apply", (dialog, which) -> {
+                    currentKeyword = editKeyword.getText().toString().trim();
+                    currentKeyword = currentKeyword.isEmpty() ? null : currentKeyword;
+                    currentDateFilter = selectedDate[0];
+                    applyFiltersAndShow();
+                })
+                .setNegativeButton("Clear filters", (dialog, which) -> {
+                    currentKeyword = null;
+                    currentDateFilter = null;
+                    applyFiltersAndShow();
+                })
+                .setNeutralButton("Cancel", null)
+                .show();
+    }
     private void applyFiltersAndShow() {
         List<EventModel> filtered = new ArrayList<>();
 

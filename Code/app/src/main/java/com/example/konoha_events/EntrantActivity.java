@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import java.util.Date;
+import models.OnWaitingListModel;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -17,11 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.konoha_events.ProfileActivity;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import constants.IntentConstants;
 import models.EventModel;
-import models.OnWaitingListModel;
 import services.FirebaseService;
 
 public class EntrantActivity extends AppCompatActivity {
@@ -71,6 +71,7 @@ public class EntrantActivity extends AppCompatActivity {
                     return;
                 }
                 //alert user to join waiting list if the above conditions are false.
+
                 new androidx.appcompat.app.AlertDialog.Builder(EntrantActivity.this)
                         .setTitle("Join waiting list?")
                         .setPositiveButton("Join", (d, w) -> {
@@ -116,7 +117,6 @@ public class EntrantActivity extends AppCompatActivity {
             Intent intent = new Intent(EntrantActivity.this, EntrantMyEventActivity.class);
             startActivity(intent);
             overridePendingTransition(0, 0);
-
         });
 
         Button History_Button = findViewById(R.id.History_Button);
@@ -130,7 +130,6 @@ public class EntrantActivity extends AppCompatActivity {
             Intent intent = new Intent(EntrantActivity.this, EntrantFilterEvents.class);
             startActivity(intent);
         });
-
 
         scanQRCodeButton = findViewById(R.id.scan_qr_code_button);
         scanQRCodeButton.setOnClickListener(v -> openQRScanner());

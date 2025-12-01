@@ -56,10 +56,9 @@ public class UserAdminDashboardView extends ArrayAdapter<UserModel> {
         }
 
         TextView nameTextView = view.findViewById(R.id.user_admin_dashboard_view_name);
-        TextView authorityLevelTextView = view.findViewById(R.id.user_admin_dashboard_view_authority_level);
-        TextView usernameTextView = view.findViewById(R.id.user_admin_dashboard_view_username);
-        TextView passwordTextView = view.findViewById(R.id.user_admin_dashboard_view_password);
-        TextView phoneNumberTextView = view.findViewById(R.id.user_admin_dashboard_view_phone_number);
+        TextView emailTextView = view.findViewById(R.id.user_admin_dashboard_view_email);
+        TextView locationTextView = view.findViewById(R.id.user_admin_dashboard_view_location);
+        TextView detailsTextView = view.findViewById(R.id.user_admin_dashboard_view_details);
         Button removeProfileButton = view.findViewById(R.id.user_admin_dashboard_view_remove_button);
         Button cancelEntrantButton = view.findViewById(R.id.user_admin_dashboard_view_cancel_button);
 
@@ -69,25 +68,14 @@ public class UserAdminDashboardView extends ArrayAdapter<UserModel> {
             return view;
         }
 
-        nameTextView.setText(String.format("Full Name: %s", userModel.getFullName()));
-        usernameTextView.setText(String.format("Username: %s", userModel.getUsername()));
-
-        authorityLevelTextView.setVisibility(GONE);
-        passwordTextView.setVisibility(GONE);
-        phoneNumberTextView.setVisibility(GONE);
+        nameTextView.setText(String.format("%s (%s)", userModel.getFullName(), userModel.getUserType()));
+        emailTextView.setVisibility(GONE);
+        locationTextView.setVisibility(GONE);
+        detailsTextView.setVisibility(GONE);
 
         if (fbs.getLoggedInUserType() == DatabaseConstants.USER_TYPE.ADMINISTRATOR) {
             removeProfileButton.setVisibility(VISIBLE);
             removeProfileButton.setOnClickListener(v -> fbs.deleteUser(userModel.getId()));
-
-            authorityLevelTextView.setVisibility(VISIBLE);
-            authorityLevelTextView.setText(String.format("User Type: %s", userModel.getUserType().toString()));
-
-            passwordTextView.setVisibility(VISIBLE);
-            passwordTextView.setText(String.format("Password: %s", userModel.getPassword()));
-
-            phoneNumberTextView.setVisibility(VISIBLE);
-            phoneNumberTextView.setText(String.format("Phone Number: %s", userModel.getPhoneNumber()));
         } else {
             removeProfileButton.setVisibility(GONE);
         }

@@ -15,8 +15,8 @@
         android:ems="30"
         android:inputType="text"
         android:text="Event History"
-
         android:textSize="24sp"
+
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

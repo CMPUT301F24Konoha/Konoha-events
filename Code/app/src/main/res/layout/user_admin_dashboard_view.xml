@@ -19,56 +19,45 @@
     </TextView>
 
     <TextView
-        android:id="@+id/user_admin_dashboard_view_authority_level"
+        android:id="@+id/user_admin_dashboard_view_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="[AUTHORITY LEVEL]">
+        android:text="[EMAIL]">
+
     </TextView>
 
     <TextView
-        android:id="@+id/user_admin_dashboard_view_username"
+        android:id="@+id/user_admin_dashboard_view_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="[USERNAME]">
+        android:text="[LOCATION]">
+
     </TextView>
 
     <TextView
-        android:id="@+id/user_admin_dashboard_view_password"
+        android:id="@+id/user_admin_dashboard_view_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="[PASSWORD]">
+        android:text="[DETAILS]">
+
     </TextView>
 
-    <TextView
-        android:id="@+id/user_admin_dashboard_view_phone_number"
+    <Button
+        android:id="@+id/user_admin_dashboard_view_cancel_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="[PHONE NUMBER]">
-    </TextView>
+        android:text="Cancel Entrant"
+        android:layout_marginTop="10dp">
 
-    <LinearLayout
+    </Button>
+
+    <Button
+        android:id="@+id/user_admin_dashboard_view_remove_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <Button
-            android:id="@+id/user_admin_dashboard_view_cancel_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Cancel Entrant"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1">
-        </Button>
+        android:text="Remove Profile"
+        android:layout_marginTop="10dp">
 
-        <Button
-            android:id="@+id/user_admin_dashboard_view_remove_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Remove Profile"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="5dp"
-            android:layout_weight="1">
-        </Button>
-    </LinearLayout>
+    </Button>
 
 </LinearLayout>

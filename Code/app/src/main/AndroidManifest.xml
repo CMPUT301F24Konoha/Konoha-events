@@ -185,6 +185,10 @@
             android:name=".EntrantFilterEvents"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+        <!-- Entrant Notifications -->
+        <activity
+            android:name=".EntrantNotificationsActivity" />
+
     </application>
 
 </manifest>

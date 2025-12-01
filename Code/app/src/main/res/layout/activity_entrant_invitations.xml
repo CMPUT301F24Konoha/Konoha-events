@@ -12,6 +12,13 @@
         android:text="View Lottery Guidelines"
         android:layout_marginBottom="16dp" />
 
+    <Button
+        android:id="@+id/notifications_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notifications"
+        android:layout_marginBottom="16dp" />
+
     <TextView
         android:id="@+id/text_title"
         android:layout_width="match_parent"

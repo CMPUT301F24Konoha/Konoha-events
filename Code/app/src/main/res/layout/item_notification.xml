@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/tv_notification_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You were selected!"
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_notification_body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You won the lottery for Event X."
+        android:paddingTop="2dp"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tv_notification_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2025-11-28 14:30"
+        android:paddingTop="4dp"
+        android:textSize="12sp" />
+
+</LinearLayout>
