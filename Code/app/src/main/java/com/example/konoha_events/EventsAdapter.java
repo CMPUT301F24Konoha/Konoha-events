@@ -20,30 +20,67 @@ import java.util.List;
 import java.util.Locale;
 
 import models.EventModel;
-
+/**
+ * Adapter used to display a list of events for the entrant.
+ * Each row shows event information, an optional image,
+ * a primary action button, and an info button for details.
+ */
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
-
+    /**
+     * Callback for events triggered from each row.
+     */
     public interface Callback {
+        /**
+         * Called when the main button ("Join" or "Leave") is pressed.
+         *
+         * @param event The event associated with that row.
+         */
         void onRowClick(EventModel event);
+        /**
+         * Called when the info button is pressed.
+         *
+         * @param event The event associated with that row.
+         */
         void onQrClick(EventModel event);
     }
 
     private final List<EventModel> items = new ArrayList<>();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
     private String primaryButtonLabel = "Join Waitlist";
-
+    /**
+     * Updates the button label shown on each row (e.g., "Join" or "Leave").
+     *
+     * @param label New label to use for the row's main button.
+     */
     public void setPrimaryButtonLabel(String label) {
         if (label != null) primaryButtonLabel = label;
     }
     private final Callback callback;
+    /**
+     * Creates an adapter with a callback for row actions.
+     *
+     * @param callback The object that handles click events for each row.
+     */
     public EventsAdapter(Callback callback) {
         this.callback = callback;
     }
+    /**
+     * Replaces the current event list with a new one.
+     *
+     * @param newItems The new list of events to display.
+     */
     public void submitList(List<EventModel> newItems) {
         items.clear();
         if (newItems != null) items.addAll(newItems);
         notifyDataSetChanged();
     }
+    /**
+     * Inflates the XML layout for a single event row.
+     *
+     * @param parent   The parent view group.
+     * @param viewType The view type (unused).
+     * @return A new EventViewHolder.
+     */
     @NonNull
     @Override
     public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -51,6 +88,12 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                 .inflate(R.layout.item_event, parent, false);
         return new EventViewHolder(v);
     }
+    /**
+     * Binds event data to a row on screen.
+     *
+     * @param h   The view holder for the row.
+     * @param position The position of the event in the list.
+     */
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder h, int position) {
         EventModel e = items.get(position);
@@ -86,16 +129,24 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         });
     }
 
-
+    /**
+     * @return The number of events shown in the list.
+     */
     @Override
     public int getItemCount() { return items.size(); }
-
+    /**
+     * Holds references to views inside a single event row.
+     */
     static class EventViewHolder extends RecyclerView.ViewHolder {
         Button joinButton;
         ImageView image;
         TextView title, description, deadline;
         ImageButton infoButton;
-
+        /**
+         * Creates a view holder for an event row.
+         *
+         * @param itemView The root view of the row layout.
+         */
         EventViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.imageEvent);

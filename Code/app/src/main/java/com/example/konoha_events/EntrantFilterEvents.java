@@ -24,7 +24,10 @@ import java.util.Locale;
 import models.EventModel;
 import models.OnWaitingListModel;
 import services.FirebaseService;
-
+/**
+ * Allows an entrant to filter events by keyword and/or registration deadline.
+ * Displays the filtered results in a list.
+ */
 public class EntrantFilterEvents extends AppCompatActivity {
     private RecyclerView recyclerFilter;
     private EventsAdapter adapter;
@@ -44,6 +47,12 @@ public class EntrantFilterEvents extends AppCompatActivity {
         recyclerFilter.setLayoutManager(new LinearLayoutManager(this));
         //Use existing events adapter
         adapter = new EventsAdapter(new EventsAdapter.Callback() {
+            /**
+             * Called when an event row is tapped.
+             * Performs waitlist checks and shows alerts if needed.
+             *
+             * @param event The event the user clicked.
+             */
             @Override
             public void onRowClick(EventModel event) {
                 String userId = FirebaseService.firebaseService.getCurrentUserId();
@@ -110,6 +119,9 @@ public class EntrantFilterEvents extends AppCompatActivity {
         showFilterDialog();
     }
     //Show the filter dialog for optional keywords and registration deadline
+    /**
+     * Opens a dialog where the user can choose a keyword and/or deadline filter.
+     */
     private void showFilterDialog() {
         LayoutInflater inflater = LayoutInflater.from(this);
         View view = inflater.inflate(R.layout.filter_events_dialog, null);
@@ -162,6 +174,9 @@ public class EntrantFilterEvents extends AppCompatActivity {
                 .setNeutralButton("Cancel", null)
                 .show();
     }
+    /**
+     * Applies the selected filters and updates the event list.
+     */
     private void applyFiltersAndShow() {
         List<EventModel> filtered = new ArrayList<>();
 
@@ -174,7 +189,12 @@ public class EntrantFilterEvents extends AppCompatActivity {
 
         adapter.submitList(filtered);
     }
-
+    /**
+     * Checks whether an event matches the current keyword filter.
+     *
+     * @param e The event to test.
+     * @return true if it matches or no keyword filter is applied.
+     */
     private boolean matchesKeyword(EventModel e) {
         if (currentKeyword == null) return true;
 
@@ -184,7 +204,12 @@ public class EntrantFilterEvents extends AppCompatActivity {
 
         return title.contains(kw) || desc.contains(kw);
     }
-
+    /**
+     * Checks whether an event matches the current date filter.
+     *
+     * @param e The event to test.
+     * @return true if the event's registration deadline is on or after the selected date.
+     */
     private boolean matchesDate(EventModel e) {
         if (currentDateFilter == null) return true;
         if (e.getRegistrationDeadline() == null) return false;

@@ -18,7 +18,10 @@ import constants.DatabaseConstants;
 import models.EventModel;
 import models.OnWaitingListModel;
 import services.FirebaseService;
-
+/**
+ * Shows all events the entrant is currently signed up for.
+ * Allows the user to leave the waitlist for any of these events.
+ */
 public class EntrantMyEventActivity extends AppCompatActivity {
 
     private RecyclerView recyclerMyEvents;
@@ -61,6 +64,12 @@ public class EntrantMyEventActivity extends AppCompatActivity {
         recyclerMyEvents.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new EventsAdapter(new EventsAdapter.Callback() {
+            /**
+             * Called when the user taps one of their events.
+             * Shows a confirmation dialog to leave the waitlist.
+             *
+             * @param event The event the user clicked.
+             */
             @Override
             public void onRowClick(EventModel event) {
                 new androidx.appcompat.app.AlertDialog.Builder(EntrantMyEventActivity.this)
@@ -97,6 +106,10 @@ public class EntrantMyEventActivity extends AppCompatActivity {
 
     //Helper to find all the events a user is signed up for.
     //Collect eventIds where the user is on the waitlist for.
+    /**
+     * Finds all events the current user is part of and displays them.
+     * A user is shown an event if their status is WAITING, ACCEPTED, or SELECTED.
+     */
     private void recomputeAndShow() {
         String userId = FirebaseService.firebaseService.getCurrentUserId();
         Set<String> myEventIds = new HashSet<>();
