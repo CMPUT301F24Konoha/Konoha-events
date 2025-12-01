@@ -9,6 +9,8 @@ import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 
 import androidx.annotation.NonNull;
@@ -30,6 +32,7 @@ import services.FirebaseService;
 public class ImageAdminDashboardView extends ArrayAdapter<HasImage> {
     private static final String tag = "[EventAdminDashboardView]";
     private FirebaseService fbs;
+    private TextView uploaderTextView;
     private ImageView imageView;
     private Button removeImageButton;
 
@@ -40,11 +43,10 @@ public class ImageAdminDashboardView extends ArrayAdapter<HasImage> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        fbs = FirebaseService.firebaseService;
-
         HasImage hasImage = getItem(position);
-        if (hasImage == null) {
-            Log.e(tag, "Could not get hasImage model at position " + position);
+
+        // Skip entries without an image
+        if (hasImage == null || hasImage.getImageBitmap() == null) {
             View emptyView = new View(getContext());
             emptyView.setLayoutParams(new AbsListView.LayoutParams(
                     AbsListView.LayoutParams.MATCH_PARENT, 0));
@@ -52,25 +54,19 @@ public class ImageAdminDashboardView extends ArrayAdapter<HasImage> {
             return emptyView;
         }
 
-        if (hasImage.getImageBitmap() == null) {
-            // No log because it's okay to not have an image
-            View emptyView = new View(getContext());
-            emptyView.setLayoutParams(new AbsListView.LayoutParams(
-                    AbsListView.LayoutParams.MATCH_PARENT, 0));
-            emptyView.setVisibility(View.GONE);
-            return emptyView;
+        View view = convertView;
+        if (view == null || view.findViewById(R.id.image_admin_dashboard_view_image) == null) {
+            view = LayoutInflater.from(getContext())
+                    .inflate(R.layout.user_image_dashboard_view, parent, false);
         }
 
-        View view;
-        if (convertView == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.user_image_dashboard_view,
-                    parent, false);
-        } else {
-            view = convertView;
-        }
+        TextView uploaderTextView = view.findViewById(R.id.image_admin_dashboard_view_image_uploader_text);
+        TextView imageContextTextView = view.findViewById(R.id.image_admin_dashboard_view_image_context_text);
+        ImageView imageView = view.findViewById(R.id.image_admin_dashboard_view_image);
+        Button removeImageButton = view.findViewById(R.id.image_admin_dashboard_view_remove_button);
 
-        imageView = view.findViewById(R.id.image_admin_dashboard_view_image);
-        removeImageButton = view.findViewById(R.id.image_admin_dashboard_view_remove_button);
+        imageContextTextView.setText(String.format("Image Context: %s", hasImage.getImageContext()));
+        uploaderTextView.setText(String.format("Uploader: %s", hasImage.getUploaderId()));
 
         Glide.with(getContext())
                 .load(hasImage.getImageBitmap())
@@ -78,9 +74,7 @@ public class ImageAdminDashboardView extends ArrayAdapter<HasImage> {
 
         removeImageButton.setOnClickListener((v) -> {
             if (hasImage instanceof EventModel) {
-                fbs.deleteEventImage(hasImage.getId());
-            } else {
-                Log.e(tag, "Removed image called on class without delete function.");
+                FirebaseService.firebaseService.deleteEventImage(hasImage.getId());
             }
         });
 

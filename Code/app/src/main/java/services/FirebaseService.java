@@ -496,53 +496,100 @@ public class FirebaseService {
 
     }
 
+    /**
+     * runs the "lottery" for a given event by selecting some entrants from the waitlist.
+     * only entrants with status waiting are considered. selected users are marked as
+     * selected and get a "you've been selected" notification. users who stay waiting
+     * get a "not selected this time" notification.
+     *
+     * @param eventId id of the event whose waitlist we are drawing from
+     * @param count   number of entrants we want to select (if there are that many)
+     */
     public void selectUsersForEvent(@NonNull String eventId,
                                     int count) {
         getOnWaitingListsOfEvent(eventId, new OnWaitingListArrayListCallback() {
             @Override
             public void onCompleted(ArrayList<OnWaitingListModel> onWaitingListModels) {
-                ArrayList<OnWaitingListModel> waitingWaitingListModels = new ArrayList<OnWaitingListModel>();
-                for (OnWaitingListModel model: onWaitingListModels) {
+                ArrayList<OnWaitingListModel> waitingWaitingListModels = new ArrayList<>();
+                for (OnWaitingListModel model : onWaitingListModels) {
                     if (model.getStatus() == DatabaseConstants.ON_WAITING_LIST_STATUS.WAITING) {
                         waitingWaitingListModels.add(model);
                     }
                 }
 
                 int waitingCount = waitingWaitingListModels.size();
-                if (count >= waitingCount) {
-                    for (OnWaitingListModel model: waitingWaitingListModels) {
-                        updateStatusOfOnWaitingList(model.getId(),
-                                DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED,
-                                new BooleanCallback() {
-                                    @Override
-                                    public void onCompleted(boolean succeeded) {
+                if (waitingCount == 0) {
+                    // nothing to do if no one is waiting
+                    return;
+                }
 
-                                    }
-                                });
+                // track user ids that end up selected so we don't send them a loser notification too
+                java.util.HashSet<String> selectedUserIds = new java.util.HashSet<>();
+
+                // case 1: we can select everyone (or more than everyone, which just means all)
+                if (count >= waitingCount) {
+                    for (OnWaitingListModel model : waitingWaitingListModels) {
+                        selectedUserIds.add(model.getUserId());
+
+                        updateStatusOfOnWaitingList(
+                                model.getId(),
+                                DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED,
+                                succeeded -> { /* nothing extra needed here */ });
+
+                        createNotification(
+                                model.getEventId(),
+                                model.getUserId(),
+                                "You've been selected! Please sign up.",
+                                DatabaseConstants.NOTIFICATION_TYPE.USER_SELECTED
+                        );
                     }
                     return;
                 }
 
-                Collections.shuffle(waitingWaitingListModels);
+                // case 2: more people waiting than we can select
+                // shuffle so the selection is random
+                java.util.Collections.shuffle(waitingWaitingListModels);
+
+                // first, pick winners
                 for (int i = 0; i < count; i++) {
                     OnWaitingListModel model = waitingWaitingListModels.get(i);
-                    updateStatusOfOnWaitingList(model.getId(),
+                    selectedUserIds.add(model.getUserId());
+
+                    updateStatusOfOnWaitingList(
+                            model.getId(),
                             DatabaseConstants.ON_WAITING_LIST_STATUS.SELECTED,
-                            new BooleanCallback() {
-                                @Override
-                                public void onCompleted(boolean succeeded) {
-                                    // Optional: handle success/failure
-                                }
-                            });
+                            succeeded -> { /* optional: log or handle errors */ });
+
                     createNotification(
                             model.getEventId(),
                             model.getUserId(),
                             "You've been selected! Please sign up.",
-                            DatabaseConstants.NOTIFICATION_TYPE.USER_SELECTED);
+                            DatabaseConstants.NOTIFICATION_TYPE.USER_SELECTED
+                    );
+                }
+
+                // then, notify non-selected users (but only if they weren't picked already)
+                for (int i = count; i < waitingWaitingListModels.size(); i++) {
+                    OnWaitingListModel model = waitingWaitingListModels.get(i);
+
+                    if (selectedUserIds.contains(model.getUserId())) {
+                        // if a user somehow has duplicate waitlist entries, don't send both win and lose
+                        continue;
+                    }
+
+                    createNotification(
+                            model.getEventId(),
+                            model.getUserId(),
+                            "You were not selected to participate in this event this time.",
+                            DatabaseConstants.NOTIFICATION_TYPE.INFO
+                    );
                 }
             }
         });
     }
+
+
+
 
     public void updateStatusOfOnWaitingList(@NonNull String onWaitingListId,
                                             @NonNull DatabaseConstants.ON_WAITING_LIST_STATUS status,
@@ -655,22 +702,59 @@ public class FirebaseService {
                         String.format("Didn't find or failed to delete notification %s", notificationId)));
     }
 
+    /**
+     * creates a single notification document in firestore for a given user and event.
+     * it first checks the user's notification preference and skips creating anything
+     * if the user has chosen to opt out.
+     *
+     * @param eventId  id of the event this notification is related to (can be reused in the ui)
+     * @param userId   id of the user who should receive this notification
+     * @param message  text content that will be shown to the user in the notifications screen
+     * @param type     simple enum label describing what kind of notification this is
+     */
     public void createNotification(@NonNull String eventId,
                                    @NonNull String userId,
                                    @NonNull String message,
                                    @NonNull DatabaseConstants.NOTIFICATION_TYPE type) {
-        Map<String, Object> notificationData = new HashMap<>();
-        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_EVENT_ID_FIELD, eventId);
-        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_USER_ID_FIELD, userId);
-        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_MESSAGE_FIELD, message);
-        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_TYPE_FIELD, type.name());
-        notificationData.put(DatabaseConstants.COLLECTION_NOTIFICATIONS_DATE_CREATED_FIELD, new Timestamp(new Date()));
 
-        notifications.add(notificationData)
-                .addOnSuccessListener((v) -> Log.i(LOG_TAG,
-                        String.format("Created notification for user %s successfully", userId)))
-                .addOnFailureListener((e) -> Log.i(LOG_TAG,
-                        String.format("Failed to create notification for user %s", userId)));
+        // first check if this user has opted out of notifications
+        users.document(userId)
+                .get()
+                .addOnSuccessListener(userDoc -> {
+                    Boolean optOut = userDoc.getBoolean("notificationsOptOut");
+                    if (optOut != null && optOut) {
+                        Log.i(LOG_TAG,
+                                "user " + userId + " opted out of notifications, skipping create");
+                        return;
+                    }
+
+                    // build the notification data to be stored in firestore
+                    Map<String, Object> notificationData = new HashMap<>();
+                    notificationData.put(
+                            DatabaseConstants.COLLECTION_NOTIFICATIONS_EVENT_ID_FIELD, eventId);
+                    notificationData.put(
+                            DatabaseConstants.COLLECTION_NOTIFICATIONS_USER_ID_FIELD, userId);
+                    notificationData.put(
+                            DatabaseConstants.COLLECTION_NOTIFICATIONS_MESSAGE_FIELD, message);
+                    notificationData.put(
+                            DatabaseConstants.COLLECTION_NOTIFICATIONS_TYPE_FIELD, type.name());
+                    notificationData.put(
+                            DatabaseConstants.COLLECTION_NOTIFICATIONS_DATE_CREATED_FIELD,
+                            new Timestamp(new Date()));
+
+                    notifications.add(notificationData)
+                            .addOnSuccessListener(v ->
+                                    Log.i(LOG_TAG,
+                                            "created notification for user " + userId))
+                            .addOnFailureListener(e ->
+                                    Log.i(LOG_TAG,
+                                            "failed to create notification for user " + userId, e));
+                })
+                .addOnFailureListener(e -> {
+                    // if we can't even read the user doc, just log and give up
+                    Log.e(LOG_TAG,
+                            "failed to read user for notificationsOptOut, userId=" + userId, e);
+                });
     }
 
     public void createNotificationForUsersOfStatusOfEvent(@NonNull String eventId,
@@ -848,6 +932,27 @@ public class FirebaseService {
      * the entrant without asking for credentials again.</p>
      *
      * @param deviceId newly generated device id to associate with {@link #currentUserId}
+     * Looks up the user's existing waitlist entry for the given event
+     * @param eventId ID of the event
+     * @param userId ID of the user
+     * @return The matching waitlist row or null if none exists
+     */
+    public OnWaitingListModel getExistingWaitlistEntry(String eventId, String userId) {
+        List<OnWaitingListModel> rows = getOnWaitingListLiveData().getValue();
+        if (rows == null) return null;
+
+        for (OnWaitingListModel r : rows) {
+            if (r == null) continue;
+            if (eventId.equals(r.getEventId()) && userId.equals(r.getUserId())) {
+                return r;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Updates the deviceId field for the currently logged-in user in Firestore.
+     * Used after a successful username/password login so future device logins work.
      */
     public void updateDeviceIdForCurrentUser(@NonNull String deviceId) {
         if (currentUserId == null || deviceId.isEmpty()) {

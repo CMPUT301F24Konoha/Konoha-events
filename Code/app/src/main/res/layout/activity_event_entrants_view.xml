@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -64,6 +65,12 @@
             android:checkable="true"
             android:paddingHorizontal="1dp">
         </com.google.android.material.button.MaterialButton>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="2dp"
+            android:background="@color/black" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <TextView
@@ -72,6 +79,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/activity_event_entrants_button_toggle_group"
         android:text="Waiting Entrants"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_large"
         android:gravity="center">
     </TextView>
 
@@ -79,10 +88,10 @@
         android:id="@+id/activity_event_entrant_list_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/activity_event_entrants_title"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/activity_event_entrants_title">
 
     </ListView>
 

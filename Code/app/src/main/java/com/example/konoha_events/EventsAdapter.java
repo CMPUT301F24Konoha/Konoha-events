@@ -81,7 +81,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             if (callback != null) callback.onRowClick(e);
         });
 
-        h.qrButton.setOnClickListener(v -> {
+        h.infoButton.setOnClickListener(v -> {
             if (callback != null) callback.onQrClick(e);
         });
     }
@@ -94,7 +94,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         Button joinButton;
         ImageView image;
         TextView title, description, deadline;
-        ImageButton qrButton;
+        ImageButton infoButton;
 
         EventViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -102,7 +102,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             title = itemView.findViewById(R.id.textEventTitle);
             description = itemView.findViewById(R.id.textEventSubtitle);
             deadline = itemView.findViewById(R.id.textRegistrationDeadline);
-            qrButton = itemView.findViewById(R.id.imageButton);
+            infoButton = itemView.findViewById(R.id.imageButton);
             joinButton = itemView.findViewById(R.id.buttonJoinWaitlist);
 
         }

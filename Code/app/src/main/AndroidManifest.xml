@@ -144,6 +144,15 @@
             android:name=".EventDetails"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents"/>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.konoha.konoha_events.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
         <activity
             android:name=".EventEntrantDetails"
             android:exported="false"
@@ -171,6 +180,15 @@
             android:name=".EntrantHistory"
             android:exported="false"
             android:theme="@style/Theme.KonohaEvents" />
+        <!-- Entrant Filter -->
+        <activity
+            android:name=".EntrantFilterEvents"
+            android:exported="false"
+            android:theme="@style/Theme.KonohaEvents" />
+        <!-- Entrant Notifications -->
+        <activity
+            android:name=".EntrantNotificationsActivity" />
+
     </application>
 
 </manifest>
