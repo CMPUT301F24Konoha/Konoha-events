@@ -50,7 +50,7 @@ public class OrganizerActivity extends AppCompatActivity {
         initializeViews();
         setupCreateEventButton();
         setupManageEventButton();
-        setupViewEntrantLocationsButton();
+//        setupViewEntrantLocationsButton();
     }
 
     /**
@@ -59,7 +59,7 @@ public class OrganizerActivity extends AppCompatActivity {
     public void initializeViews() {
         // Initialize buttons
         createEventButton = findViewById(R.id.createEventButton);
-        viewEntrantLocationsButton = findViewById(R.id.btnViewEntrantLocations);
+//        viewEntrantLocationsButton = findViewById(R.id.btnViewEntrantLocations);
         manageEventsButton = findViewById(R.id.activity_organizer_create_event_button);
     }
 
@@ -182,16 +182,16 @@ public class OrganizerActivity extends AppCompatActivity {
     /**
      * Set up the button for viewing entrant locations on a map.
      */
-    public void setupViewEntrantLocationsButton() {
-        if (viewEntrantLocationsButton != null) {
-            viewEntrantLocationsButton.setOnClickListener(v -> {
-                Intent intent = new Intent(this, OrganizerMapActivity.class);
-                startActivity(intent);
-            });
-        } else {
-            Toast.makeText(this, "Map button not found in layout", Toast.LENGTH_SHORT).show();
-        }
-    }
+//    public void setupViewEntrantLocationsButton() {
+//        if (viewEntrantLocationsButton != null) {
+//            viewEntrantLocationsButton.setOnClickListener(v -> {
+//                Intent intent = new Intent(this, OrganizerMapActivity.class);
+//                startActivity(intent);
+//            });
+//        } else {
+//            Toast.makeText(this, "Map button not found in layout", Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
     public void setupManageEventButton() {
         manageEventsButton.setOnClickListener(v -> {
