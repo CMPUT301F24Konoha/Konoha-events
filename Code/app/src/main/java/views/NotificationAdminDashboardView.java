@@ -13,7 +13,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.example.konoha_events.R;
-import com.google.firebase.Firebase;
 
 import java.util.ArrayList;
 
@@ -23,6 +22,11 @@ import models.NotificationModel;
 import services.FirebaseService;
 import util.ModelUtil;
 
+/**
+ * This is an adapter of NotificationModels to display info about each NotificationModel.
+ * Displays various information about the notification and provides admin controls.
+ * This view should only be seen only by admins.
+ */
 public class NotificationAdminDashboardView extends ArrayAdapter<NotificationModel> {
     private static final String tag = "[NotificationAdminDashboardView]";
     private FirebaseService fbs;

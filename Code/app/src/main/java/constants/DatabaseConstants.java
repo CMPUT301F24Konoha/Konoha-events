@@ -2,6 +2,9 @@ package constants;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Class for storing Database related constants.
+ */
 public class DatabaseConstants {
     public static final String COLLECTION_EVENTS_NAME = "events";
     public static final String COLLECTION_EVENTS_ORGANIZER_ID_FIELD = "organizerId";
@@ -29,8 +32,11 @@ public class DatabaseConstants {
     public static final String COLLECTION_NOTIFICATIONS_TYPE_FIELD = "notificationType";
     public static final String COLLECTION_NOTIFICATIONS_DATE_CREATED_FIELD = "dateCreated";
 
+    /**
+     * Enum defining the type of user used in the UserModel.
+     */
     public enum USER_TYPE {
-        NULL,
+        NULL, // Error enum state
         ENTRANT,
         ORGANIZER,
         ADMINISTRATOR;
@@ -42,17 +48,21 @@ public class DatabaseConstants {
             return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
         }
     }
+
+    /**
+     * Enum defining the status of a user on a waiting list.
+     */
     public enum ON_WAITING_LIST_STATUS {
-        NULL,
-        WAITING,
-        SELECTED,
-        ACCEPTED,
-        DECLINED,
-        CANCELLED
+        NULL, // Error enum state
+        WAITING, // User just joined waiting list. Starting status.
+        SELECTED, // User has been selected to join the event.
+        ACCEPTED, // User was selected, then accepted
+        DECLINED, // User was selected, then declined
+        CANCELLED // Holder state that an Organizer/Admin moved a bad entrant to
     }
 
     public enum NOTIFICATION_TYPE {
-        NULL,
+        NULL, // Error enum state
         INFO, // Used for general notifications. No prompt to user to do anything.
         USER_SELECTED; // Used to notify user they have been selected from waiting list, ask to register.
 

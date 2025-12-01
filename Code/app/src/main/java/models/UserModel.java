@@ -9,6 +9,10 @@ import lombok.Getter;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
+/**
+ * Model defining a user who can log in to the system.
+ * Encapsulates all users including Admins, Entrants, and Organizers.
+ */
 @Getter
 @AllArgsConstructor
 @Builder

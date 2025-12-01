@@ -26,9 +26,10 @@ import models.UserModel;
 import services.FirebaseService;
 
 /**
- * This view is no longer used exclusively for admin use. It is also used in the organizer event
- * view. Therefore in the future it should be named something more general. For now we will keep it
- * like this to prevent merge conflicts.
+ * This is an adapter of UserModels to display info about each UserModel.
+ * The view is shared between Organizer and Admin users, but displays
+ * different information based on the type of user. For example, admins
+ * have access to the delete user button but Organizers don't.
  */
 public class UserAdminDashboardView extends ArrayAdapter<UserModel> {
     private static final String tag = "[UserAdminDashboardView]";

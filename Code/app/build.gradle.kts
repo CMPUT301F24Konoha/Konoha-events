@@ -74,6 +74,18 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
+    /**
+     * Testing
+     * 1. Uncomment out the below line
+     * 2. Paste in the absolute path of your android.jar (As seen in Lab 6)
+     * 3. Sync project
+     * 4. Tools -> Generate Javadoc
+     * 5. Create a custom scope with everything in it and set the output directory
+     * 6. Generate
+     * 7. Once done generating, comment it out again + sync (otherwise build will fail)
+     */
+    //implementation(files("Your Path"))
+
     testImplementation(libs.junit)
     testImplementation("org.mockito:mockito-core:5.11.0")
     testImplementation("org.robolectric:robolectric:4.10")

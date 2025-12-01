@@ -22,6 +22,11 @@ import interfaces.HasImage;
 import models.EventModel;
 import services.FirebaseService;
 
+/**
+ * This is an adapter of classes implementing HasImage to display the various images of the system.
+ * Displays various information about the context of the image and provides admin controls.
+ * This view should only be seen only by admins.
+ */
 public class ImageAdminDashboardView extends ArrayAdapter<HasImage> {
     private static final String tag = "[EventAdminDashboardView]";
     private FirebaseService fbs;

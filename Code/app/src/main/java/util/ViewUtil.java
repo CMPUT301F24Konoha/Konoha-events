@@ -8,6 +8,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+/**
+ * Contains various helpers for creating UI components or views that require
+ * the same/similar implementations.
+ */
 public class ViewUtil {
     private static final String tag = "[ViewUtil]";
     public static void setupToolbarWithBackButtonToParent(AppCompatActivity activity,

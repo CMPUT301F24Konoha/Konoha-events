@@ -38,22 +38,14 @@ public class EntrantMyEventActivity extends AppCompatActivity {
             );
         }
         Button allEventsBtn = findViewById(R.id.All_Events_Button);
-        allEventsBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(EntrantMyEventActivity.this, EntrantActivity.class);
-            startActivity(intent);
-            overridePendingTransition(0, 0);
-
-        });
-
+        if (allEventsBtn != null) {
+            allEventsBtn.setOnClickListener(v ->
+                    startActivity(new Intent(EntrantMyEventActivity.this, EntrantActivity.class))
+            );
+        }
         Button History_Button = findViewById(R.id.History_Button);
         History_Button.setOnClickListener(v -> {
             Intent intent = new Intent(EntrantMyEventActivity.this, EntrantHistory.class);
-            startActivity(intent);
-        });
-
-        ImageButton messagesButton = findViewById(R.id.imageButton2);
-        messagesButton.setOnClickListener(v -> {
-            Intent intent = new Intent(EntrantMyEventActivity.this, EntrantInvitationsActivity.class);
             startActivity(intent);
         });
 

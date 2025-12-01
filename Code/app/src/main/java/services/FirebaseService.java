@@ -926,23 +926,4 @@ public class FirebaseService {
                 .addOnFailureListener(e ->
                         Log.e(LOG_TAG, "Failed to update deviceId for user " + currentUserId, e));
     }
-    /**
-     * Looks up the user's existing waitlist entry for the given event.
-     *
-     * @param eventId ID of the event
-     * @param userId ID of the user
-     * @return The matching waitlist row or null if none exists
-     */
-    public OnWaitingListModel getExistingWaitlistEntry(String eventId, String userId) {
-        List<OnWaitingListModel> rows = getOnWaitingListLiveData().getValue();
-        if (rows == null) return null;
-
-        for (OnWaitingListModel r : rows) {
-            if (r == null) continue;
-            if (eventId.equals(r.getEventId()) && userId.equals(r.getUserId())) {
-                return r;
-            }
-        }
-        return null;
-    }
 }

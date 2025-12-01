@@ -13,6 +13,10 @@ import services.FirebaseService;
 import util.ViewUtil;
 import views.EventAdminDashboardView;
 
+/**
+ * Home view screen of organizers, links to other activities.
+ * Viewable only to logged in organizers.
+ */
 public class OrganizerViewEventListActivity extends AppCompatActivity {
     private final String tag = "[OrganizerViewEventListActivity]";
     private FirebaseService fbs;

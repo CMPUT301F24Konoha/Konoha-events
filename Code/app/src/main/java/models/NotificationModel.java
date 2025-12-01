@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 
+/**
+ * Model representing a notification to an entrant.
+ */
 @Getter
 @AllArgsConstructor
 @Builder

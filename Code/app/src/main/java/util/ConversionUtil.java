@@ -9,6 +9,9 @@ import android.util.Base64;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * Class containing helpers for conversions to unique formats.
+ */
 public class ConversionUtil {
     public static String convertUriToBase64(Uri uri, ContentResolver contentResolver) throws IOException {
         String base64String;
