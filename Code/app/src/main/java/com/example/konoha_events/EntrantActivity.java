@@ -23,7 +23,12 @@ import java.util.ArrayList;
 import constants.IntentConstants;
 import models.EventModel;
 import services.FirebaseService;
-
+/**
+ * Shows all events available to an entrant.
+ * Lets the user join waitlists, view event details,
+ * open profile/settings, scan QR codes, and navigate
+ * to other entrant screens.
+ */
 public class EntrantActivity extends AppCompatActivity {
     private RecyclerView recyclerEvents;
     private EventsAdapter eventsAdapter;
@@ -38,6 +43,12 @@ public class EntrantActivity extends AppCompatActivity {
         recyclerEvents.setLayoutManager(new LinearLayoutManager(this));
 
         eventsAdapter = new EventsAdapter(new EventsAdapter.Callback() {
+            /**
+             * Called when the user taps an event row.
+             * Checks if the user can join the waitlist, and
+             * shows alerts if they cannot.
+             * @param event The event the user clicked.
+             */
             @Override
             public void onRowClick(EventModel event) {
                 String userId = FirebaseService.firebaseService.getCurrentUserId();
@@ -85,7 +96,10 @@ public class EntrantActivity extends AppCompatActivity {
                         .setNegativeButton("Cancel", null)
                         .show();
             }
-
+            /**
+             * Opens the event details screen when the info icon is tapped.
+             * @param event The event whose info icon was clicked.
+             */
             @Override
             public void onQrClick(EventModel event) {
                 // Navigate to EventDetailsActivity when an event is clicked
@@ -140,7 +154,9 @@ public class EntrantActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
-
+    /**
+     * Opens the QR scanner screen.
+     */
     private void openQRScanner() {
         Intent intent = new Intent(this, QRScannerActivity.class);
         startActivity(intent);

@@ -18,14 +18,27 @@ import java.util.Locale;
 
 import constants.DatabaseConstants;
 import models.EventModel;
-
+/**
+ * Adapter that displays a list of events from the entrant's history.
+ * Each list item includes the event and the user's waitlist status.
+ */
 public class EntrantHistoryAdapter extends RecyclerView.Adapter<EntrantHistoryAdapter.HistoryViewHolder> {
     //Most recycled code from EventsAdapter.
+    /**
+     * Represents a single history entry containing an event
+     * and the user's status for that event.
+     */
     public static class HistoryItem {
         public final EventModel event;
         public final DatabaseConstants.ON_WAITING_LIST_STATUS status;
 
         //Model the event in terms of event and user event status.
+        /**
+         * Creates a history entry.
+         *
+         * @param event  The event being shown.
+         * @param status The user's waitlist status for that event.
+         */
         public HistoryItem(EventModel event, DatabaseConstants.ON_WAITING_LIST_STATUS status) {
             this.event = event;
             this.status = status;
@@ -35,13 +48,23 @@ public class EntrantHistoryAdapter extends RecyclerView.Adapter<EntrantHistoryAd
     private final List<HistoryItem> items = new ArrayList<>();
     private final SimpleDateFormat dateFormat =
             new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
-
+    /**
+     * Replaces the adapter's data with a new list of history items.
+     *
+     * @param newItems The new list to display.
+     */
     public void submitList(List<HistoryItem> newItems) {
         items.clear();
         if (newItems != null) items.addAll(newItems);
         notifyDataSetChanged();
     }
-
+    /**
+     * Inflates the history item layout.
+     *
+     * @param parent   The parent view group.
+     * @param viewType The type of view (unused here).
+     * @return A new HistoryViewHolder.
+     */
     @NonNull
     //Call the history event screen, history_item_event.xml. Please don't make UI changes here, adjust the view if possible.
     @Override
@@ -50,7 +73,12 @@ public class EntrantHistoryAdapter extends RecyclerView.Adapter<EntrantHistoryAd
                 .inflate(R.layout.history_item_event, parent, false);
         return new HistoryViewHolder(v);
     }
-
+    /**
+     * Binds a history item to its view.
+     *
+     * @param h   The view holder to update.
+     * @param position The position of the item in the list.
+     */
     @Override
     public void onBindViewHolder(@NonNull HistoryViewHolder h, int position) {
         HistoryItem item = items.get(position);
@@ -104,18 +132,26 @@ public class EntrantHistoryAdapter extends RecyclerView.Adapter<EntrantHistoryAd
         h.status.setText(statusText);
         h.status.setTextColor(color);
     }
-
+    /**
+     * @return The number of items shown in the history list.
+     */
     @Override
     public int getItemCount() {
         return items.size();
     }
-
+    /**
+     * Holds references to the views inside a history list item.
+     */
     static class HistoryViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
         TextView title;
         TextView deadline;
         TextView status;
-
+        /**
+         * Creates a view holder for a history item.
+         *
+         * @param itemView The root view of the list item layout.
+         */
         HistoryViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.imageEvent);

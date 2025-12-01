@@ -145,6 +145,54 @@ public class FirebaseServiceTest {
             fail("joinWaitingList test timed out");
         }
     }
+    @Test
+    public void givenEventAndUser_whenLeaveWaitingList_thenEntryRemoved() throws InterruptedException {
+        String eventId = "testEvent_leave_" + System.currentTimeMillis();
+        String userId = "testUser_leave_" + System.currentTimeMillis();
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        firebaseService.joinWaitingList(eventId, userId);
+
+        waitingList.whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD, eventId)
+                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD, userId)
+                .get()
+                .addOnSuccessListener(qs -> {
+                    try {
+                        assertEquals("Expected exactly one waitlist entry before leaving", 1, qs.size());
+                        firebaseService.leaveWaitingList(eventId, userId);
+                        waitingList.whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD, eventId)
+                                .whereEqualTo(DatabaseConstants.COLLECTION_ON_WAITING_LIST_USER_ID_FIELD, userId)
+                                .get()
+                                .addOnSuccessListener(qsAfter -> {
+                                    try {
+                                        assertEquals(
+                                                "Expected no waitlist entries after leaving",
+                                                0,
+                                                qsAfter.size()
+                                        );
+                                    } finally {
+                                        latch.countDown();
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    fail("Second query failed in leave waitlist test: " + e);
+                                    latch.countDown();
+                                });
+                    } catch (AssertionError ae) {
+                        latch.countDown();
+                        throw ae;
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    fail("First query failed in leave waitlist test: " + e);
+                    latch.countDown();
+                });
+
+        if (!latch.await(10, TimeUnit.SECONDS)) {
+            fail("leaveWaitingList test timed out");
+        }
+    }
 
     @Test
     public void createEventWithoutImage() {

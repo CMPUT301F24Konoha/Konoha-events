@@ -116,6 +116,7 @@ public class ModelUtilTest {
         assertNotNull(model.getStatus());
     }
 
+
     @Test
     public void toUserModel_with_validDocumentSnapshot_then_makeCorrectModel() {
         when(mockDocumentSnapshot.getId()).thenReturn("user123");

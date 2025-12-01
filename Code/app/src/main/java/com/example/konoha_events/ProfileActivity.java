@@ -21,6 +21,10 @@ import java.util.Map;
 import constants.DatabaseConstants;
 import services.FirebaseService;
 
+/**
+ * Screen that lets the entrant view, edit, and delete their profile.
+ * Loads the user's existing data, allows updates, and saves changes to Firestore.
+ */
 public class ProfileActivity extends AppCompatActivity {
 
     public static final String EXTRA_USER_ID = "EXTRA_USER_ID";
@@ -70,6 +74,11 @@ public class ProfileActivity extends AppCompatActivity {
     }
     //Fill the editText boxes to show the current users information. Not specified in
     //the project description but is nice to have.
+    /**
+     * Fills the text fields with existing user data from Firestore.
+     *
+     * @param snap The Firestore document containing user fields.
+     */
     private void prefill(@NonNull DocumentSnapshot snap) {
         if (!snap.exists()) return;
 
@@ -85,6 +94,10 @@ public class ProfileActivity extends AppCompatActivity {
     //Add new information to database. It's fine if a phone number is removed
     //but probably not if a full name is removed. Can remove if i'm wrong.
     //eventually should add checks for duplicates but function first.
+    /**
+     * Saves any changes the user made to their profile fields.
+     * Requires that full name and email are not empty.
+     */
     private void save() {
         String newname  = fullName.getText().toString().trim();
         String newemail = email.getText().toString().trim();
@@ -110,6 +123,10 @@ public class ProfileActivity extends AppCompatActivity {
     //delete profile from database entry. Maybe it's better to save the
     //table entry just remove the fields?
     //Removing table entry for now.
+    /**
+     * Deletes the user's profile document from Firestore.
+     * After deletion, the user is sent back to the HomeActivity.
+     */
     private void delete() {
         userRef.delete()
                 .addOnSuccessListener(v -> { //success, return to home screen

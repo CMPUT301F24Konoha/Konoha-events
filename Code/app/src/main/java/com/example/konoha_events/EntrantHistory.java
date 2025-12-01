@@ -17,7 +17,10 @@ import constants.DatabaseConstants;
 import models.EventModel;
 import models.OnWaitingListModel;
 import services.FirebaseService;
-
+/**
+ * Shows the user's event history, including events where their
+ * waitlist status is WAITING, ACCEPTED, SELECTED, DECLINED, or CANCELLED.
+ */
 public class EntrantHistory extends AppCompatActivity {
 
     private ArrayList<EventModel> allEvents = new ArrayList<>();
