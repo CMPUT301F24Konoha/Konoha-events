@@ -20,8 +20,17 @@ import services.FirebaseService;
 
 /**
  * CreateEventActivity
- * ----------------------
- * - Allows the organizer to create an event
+ * -------------------
+ * Allows an organizer to create a new event.
+ * <p>
+ * Features:
+ * <ul>
+ *     <li>Set basic event information (title, description, registration deadline).</li>
+ *     <li>Optionally limit the number of entrants (US 02.03.01).</li>
+ *     <li>Optionally upload an event poster image (US 02.04.01).</li>
+ *     <li>Toggle whether geolocation is required for this event
+ *         (US 02.02.03 - enable/disable geolocation requirement).</li>
+ * </ul>
  */
 
 public class CreateEventActivity extends AppCompatActivity {
@@ -48,7 +57,11 @@ public class CreateEventActivity extends AppCompatActivity {
         initializeViews();
         setupListeners();
     }
-
+    /**
+     * Initialize all view references from the layout.
+     * This includes the geolocation toggle switch, which controls whether
+     * entrants must have geolocation enabled for this event.
+     */
     private void initializeViews() {
         eventTitleInput = findViewById(R.id.eventTitleInput);
         eventDescriptionInput = findViewById(R.id.eventDescriptionInput);
@@ -61,6 +74,9 @@ public class CreateEventActivity extends AppCompatActivity {
         geolocationSwitch = findViewById(R.id.switchGeolocationRequired); //  new line
     }
 
+    /**
+     * Set up listeners for checkboxes, buttons, and date selection.
+     */
     private void setupListeners() {
         // US 02.03.01 - Optional entrant limit
         limitEntrantsCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -83,6 +99,9 @@ public class CreateEventActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Show a date picker dialog to select the registration deadline.
+     */
     private void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
         new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
@@ -92,7 +111,10 @@ public class CreateEventActivity extends AppCompatActivity {
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
-
+    /**
+     * Launch an intent to let the organizer choose an image from the device
+     * to use as an event poster.
+     */
     private void selectImage() {
         Intent intent = new Intent();
         intent.setType("image/*");

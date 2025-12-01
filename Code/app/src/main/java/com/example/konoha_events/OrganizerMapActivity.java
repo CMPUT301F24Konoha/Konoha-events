@@ -20,7 +20,26 @@ import org.osmdroid.views.overlay.Marker;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
-
+/**
+ * OrganizerMapActivity
+ * --------------------
+ * Displays a map with markers for entrant locations using OSMDroid.
+ * <p>
+ * Data source:
+ * <ul>
+ *     <li>Reads documents from the "entrants" collection in Firestore.</li>
+ *     <li>Each document is expected to contain fields:
+ *         <ul>
+ *             <li><b>deviceId</b> - the device identifier for the entrant</li>
+ *             <li><b>latitude</b> - last known latitude</li>
+ *             <li><b>longitude</b> - last known longitude</li>
+ *         </ul>
+ *     </li>
+ * </ul>
+ * <p>
+ * This activity is launched from the organizer dashboard and is intended to support
+ * the geolocation-related user stories such as US 02.02.02 (view entrant locations on a map).
+ */
 
 public class OrganizerMapActivity extends AppCompatActivity {
 
@@ -45,6 +64,12 @@ public class OrganizerMapActivity extends AppCompatActivity {
         loadEntrantLocations();
     }
 
+    /**
+     * Attach a Firestore snapshot listener to the "entrants" collection and
+     * place a marker on the map for each entrant document with latitude/longitude.
+     * <p>
+     * When the underlying Firestore data changes, the markers are refreshed.
+     */
     private void loadEntrantLocations() {
         db.collection("entrants").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override

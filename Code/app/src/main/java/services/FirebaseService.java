@@ -280,12 +280,18 @@ public class FirebaseService {
     }
 
     /**
-     * Attempts to log in a user using only their deviceId.
-     * If a user with this deviceId is found in the users collection,
-     * currentUserId and loggedInUserType are set, and callback is called with true.
-     * Otherwise, callback is called with false.
-     * This is used for device-based auto login for entrants.
+     * Attempts to log a user in using only their stored {@code deviceId}.
+     *
+     * <p>This is used for entrant "device login". If a user document exists whose
+     * {@link DatabaseConstants#COLLECTION_USERS_DEVICE_ID_FIELD} matches the supplied
+     * {@code deviceId}, this method sets {@link #currentUserId} and {@link #loggedInUserType}
+     * and invokes the callback with {@code true}. Otherwise the callback is invoked with
+     * {@code false}.</p>
+     *
+     * @param deviceId non-empty device identifier generated on the entrant's device
+     * @param callback callback that receives {@code true} on success and {@code false} on failure
      */
+
     public void loginWithDeviceId(@NonNull String deviceId,
                                   @NonNull BooleanCallback callback) {
         if (deviceId.isEmpty()) {
@@ -346,13 +352,22 @@ public class FirebaseService {
     }
 
     /**
-     * Creates an event with a given organizer Id (device Id)
-     * @param deviceId      The ID of the organizer creating the event
-     * @param entrantLimit  An optional limit on entrants for the given event
-     * @param registrationDeadline     The last day of registration
-     * @param eventTitle     The name of the event
-     * @param imageUri     Image description for the event
-     * @param description   A description of the event
+     * Creates a new event document in Firestore.
+     *
+     * <p>Besides the usual event fields (organizer, title, description, registration deadline,
+     * optional entrant limit and poster image), this method also stores the
+     * {@code geolocationRequired} flag. That flag is used by organizers to indicate whether
+     * entrants for this event should have their device location tracked.</p>
+     *
+     * @param deviceId             organizer's device id at the time of creation (can be used for auditing)
+     * @param entrantLimit         optional limit on entrants; use {@code -1} for no limit
+     * @param registrationDeadline last day on which entrants can register
+     * @param eventTitle           title of the event
+     * @param description          human-readable description of the event
+     * @param imageUri             URI of the poster image, or {@code null} if no image
+     * @param organizerId          Firestore user id of the organizer creating the event
+     * @param geolocationRequired  {@code true} if location tracking is enabled for this event
+     * @param contentResolver      Android {@link android.content.ContentResolver} used to read the image
      */
     public void createEvent(@NonNull String deviceId,
                             @NonNull int entrantLimit,
@@ -910,8 +925,14 @@ public class FirebaseService {
     }
 
     /**
-     * Looks up the user's existing waitlist entry for the given event.
+     * Saves the given device id into the currently logged-in user's Firestore document.
      *
+     * <p>Called after a successful username/password login so that later sessions on the same
+     * device can use {@link #loginWithDeviceId(String, interfaces.BooleanCallback)} to auto-login
+     * the entrant without asking for credentials again.</p>
+     *
+     * @param deviceId newly generated device id to associate with {@link #currentUserId}
+     * Looks up the user's existing waitlist entry for the given event
      * @param eventId ID of the event
      * @param userId ID of the user
      * @return The matching waitlist row or null if none exists
