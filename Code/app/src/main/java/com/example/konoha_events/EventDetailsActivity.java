@@ -318,11 +318,11 @@ public class EventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if waitlist is full (if entrant limit exists)
-        if (currentEvent.hasEntrantLimit() && currentWaitlistCount >= currentEvent.getEntrantLimit()) {
-            Toast.makeText(this, "Waitlist is full", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        // Check if waitlist is full (if entrant limit exists)
+//        if (currentEvent.hasEntrantLimit() && currentWaitlistCount >= currentEvent.getEntrantLimit()) {
+//            Toast.makeText(this, "Waitlist is full", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
         // Show confirmation dialog
         new androidx.appcompat.app.AlertDialog.Builder(this)
