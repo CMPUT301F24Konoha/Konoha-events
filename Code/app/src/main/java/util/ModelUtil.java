@@ -18,6 +18,9 @@ import models.NotificationModel;
 import models.OnWaitingListModel;
 import models.UserModel;
 
+/**
+ * Contains various helpers related to models.
+ */
 public class ModelUtil {
     private static String TAG = "[ModelUtil]";
     /**

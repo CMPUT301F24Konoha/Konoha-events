@@ -16,6 +16,10 @@ import services.FirebaseService;
 import util.ViewUtil;
 import views.UserAdminDashboardView;
 
+/**
+ * Activity for admins viewing the different profiles of the system.
+ * Viewable only by logged in admins.
+ */
 public class AdminProfileActivity extends AppCompatActivity {
     private final String tag = "[AdminProfileActivity]";
     private FirebaseService fbs;

@@ -17,10 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.konoha_events.ProfileActivity;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import models.EventModel;
-import models.OnWaitingListModel;
 import services.FirebaseService;
 
 public class EntrantActivity extends AppCompatActivity {
@@ -39,45 +37,12 @@ public class EntrantActivity extends AppCompatActivity {
         eventsAdapter = new EventsAdapter(new EventsAdapter.Callback() {
             @Override
             public void onRowClick(EventModel event) {
-                String userId = FirebaseService.firebaseService.getCurrentUserId();
-
-                OnWaitingListModel existing = FirebaseService.firebaseService
-                        .getExistingWaitlistEntry(event.getId(), userId);
-                //Check if the user has already joined the waiting list, has accepted
-                //declined or is selected for the event.
-                if (existing != null && existing.getStatus() != null) {
-
-                    String status = existing.getStatus().name();
-
-                    new androidx.appcompat.app.AlertDialog.Builder(EntrantActivity.this)
-                            .setTitle("Hold on!")
-                            .setMessage("You are already " + status + " for this event.")
-                            .setPositiveButton("OK", null)
-                            .show();
-                    return;
-                }
-
-                Date deadline = event.getRegistrationDeadline();
-                Date now = new Date();
-                //Check if the registration deadline has already passed
-                if (deadline != null && deadline.before(now)) {
-                    new androidx.appcompat.app.AlertDialog.Builder(EntrantActivity.this)
-                            .setTitle("Registration Closed")
-                            .setMessage("The registration deadline for this event has already passed.")
-                            .setPositiveButton("OK", null)
-                            .show();
-                    return;
-                }
-                //alert user to join waiting list if the above conditions are false.
                 new androidx.appcompat.app.AlertDialog.Builder(EntrantActivity.this)
                         .setTitle("Join waiting list?")
                         .setPositiveButton("Join", (d, w) -> {
+                            String userId = FirebaseService.firebaseService.getCurrentUserId();
                             FirebaseService.firebaseService.joinWaitingList(event.getId(), userId);
-                            Toast.makeText(
-                                    EntrantActivity.this,
-                                    "Joined waiting list!",
-                                    Toast.LENGTH_SHORT
-                            ).show();
+                            Toast.makeText(EntrantActivity.this, "Joined waiting list!", Toast.LENGTH_SHORT).show();
                         })
                         .setNegativeButton("Cancel", null)
                         .show();
@@ -110,7 +75,6 @@ public class EntrantActivity extends AppCompatActivity {
         my_events_button.setOnClickListener(v -> {
             Intent intent = new Intent(EntrantActivity.this, EntrantMyEventActivity.class);
             startActivity(intent);
-            overridePendingTransition(0, 0);
 
         });
 
@@ -119,14 +83,6 @@ public class EntrantActivity extends AppCompatActivity {
             Intent intent = new Intent(EntrantActivity.this, EntrantHistory.class);
             startActivity(intent);
         });
-
-        Button Filter = findViewById(R.id.Filter_Button);
-        Filter.setOnClickListener(v -> {
-            Intent intent = new Intent(EntrantActivity.this, EntrantFilterEvents.class);
-            startActivity(intent);
-        });
-        //hello
-
 
         scanQRCodeButton = findViewById(R.id.scan_qr_code_button);
         scanQRCodeButton.setOnClickListener(v -> openQRScanner());

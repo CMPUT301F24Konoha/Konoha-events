@@ -14,6 +14,10 @@ import util.ViewUtil;
 import views.EventAdminDashboardView;
 import views.UserAdminDashboardView;
 
+/**
+ * Activity for admins viewing the different events of the system.
+ * Viewable only by logged in admins.
+ */
 public class AdminEventActivity extends AppCompatActivity {
     private final String tag = "[AdminEventActivity]";
     private FirebaseService fbs;

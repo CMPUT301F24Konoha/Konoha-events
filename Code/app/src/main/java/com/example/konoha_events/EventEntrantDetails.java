@@ -25,6 +25,15 @@ import services.FirebaseService;
 import util.ViewUtil;
 import views.UserAdminDashboardView;
 
+/**
+ * Activity for viewing details about entrants of a selected event.
+ * Viewable only by organizers and admins.
+ * Requires intent parameters to be filled in before changing to this activity, otherwise won't
+ * function correctly.
+ * - IntentConstants.INTENT_VIEW_EVENT_EVENT_ID = eventID of info to display
+ * - IntentConstants.INTENT_VIEW_EVENT_CALLER_TYPE = The activity the back button of the toolbar
+ * should return to.
+ */
 public class EventEntrantDetails extends AppCompatActivity {
     private final String tag = "[EventEntrantDetails]";
     private FirebaseService fbs;

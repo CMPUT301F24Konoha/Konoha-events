@@ -17,6 +17,10 @@ import util.ViewUtil;
 import views.ImageAdminDashboardView;
 import views.UserAdminDashboardView;
 
+/**
+ * Activity for admins viewing the different images of the system.
+ * Viewable only by logged in admins.
+ */
 public class AdminImageActivity extends AppCompatActivity {
     private final String tag = "[AdminImageActivity]";
     private FirebaseService fbs;

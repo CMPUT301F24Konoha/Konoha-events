@@ -15,33 +15,46 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import constants.DatabaseConstants;
 import services.FirebaseService;
 
+/**
+ * activity that shows all pending invitations for the logged-in entrant.
+ * each invitation lets the user accept or decline their selection for an event.
+ * also provides shortcuts to the guidelines screen and the notifications screen.
+ */
 public class EntrantInvitationsActivity extends AppCompatActivity {
 
+    /** container where all invitation cards will be added dynamically */
     private LinearLayout container;
-    private FirebaseFirestore db;
-    private String entrantId;   // Firestore userId for the logged-in entrant
 
+    /** firestore instance for loading pending invitations */
+    private FirebaseFirestore db;
+
+    /** logged-in user's firestore id */
+    private String entrantId;
+
+    /**
+     * initializes the page, sets up buttons, and loads the user's pending invitations.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrant_invitations);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("My Invitations");
+            getSupportActionBar().setTitle("my invitations");
         }
 
         container = findViewById(R.id.container_invitations);
         db = FirebaseFirestore.getInstance();
 
-        // 🔹 Use the Firestore userId (same one used in joinWaitingList)
+        // get the currently logged-in entrant's id
         entrantId = FirebaseService.firebaseService.getCurrentUserId();
 
         if (entrantId == null || entrantId.isEmpty()) {
-            showMessage("No logged-in user. Please log in again.");
+            showMessage("no logged-in user. please log in again.");
             return;
         }
 
-        // If you added the guidelines button in XML, wire it here:
+        // button: guidelines
         Button guidelinesButton = findViewById(R.id.guidelines_button);
         if (guidelinesButton != null) {
             guidelinesButton.setOnClickListener(v ->
@@ -52,11 +65,22 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
             );
         }
 
+        // button: notifications
+        Button notificationsButton = findViewById(R.id.notifications_button);
+        notificationsButton.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(
+                    EntrantInvitationsActivity.this,
+                    EntrantNotificationsActivity.class
+            );
+            startActivity(intent);
+        });
+
         loadPendingInvitations();
     }
 
     /**
-     * Loads all invitations for the current entrant with status = SELECTED.
+     * loads all invitations where this user has been marked as "selected".
+     * every result becomes its own card with accept/decline functionality.
      */
     private void loadPendingInvitations() {
         container.removeAllViews();
@@ -68,26 +92,32 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (querySnapshot.isEmpty()) {
-                        showMessage("You have no pending invitations.");
+                        showMessage("you have no pending invitations.");
                         return;
                     }
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
-                        addInvitationCard(
-                                doc.getId(),
-                                doc.getString(DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD)
+                        String eventId = doc.getString(
+                                DatabaseConstants.COLLECTION_ON_WAITING_LIST_EVENT_ID_FIELD
                         );
+                        addInvitationCard(doc.getId(), eventId);
                     }
                 })
                 .addOnFailureListener(e ->
-                        showMessage("Failed to load invitations: " + e.getMessage()));
+                        showMessage("failed to load invitations: " + e.getMessage()));
     }
 
     /**
-     * Adds a card to the screen for a single invitation.
+     * creates a small ui card representing one invitation.
+     * it shows the event title, event id, and accept/decline buttons.
+     *
+     * @param docId   the id of the waitlist entry
+     * @param eventId the id of the event this invite belongs to
      */
     private void addInvitationCard(String docId, String eventId) {
-        if (eventId == null) eventId = "(unknown event)";
+        if (eventId == null || eventId.isEmpty()) {
+            eventId = "(unknown event)";
+        }
 
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
@@ -95,33 +125,64 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
         card.setPadding(pad, pad, pad, pad);
         card.setBackgroundResource(android.R.drawable.dialog_holo_light_frame);
 
+        // title (will be replaced once event title loads)
         TextView title = new TextView(this);
-        title.setText("Event ID: " + eventId);
         title.setTextSize(16f);
 
+        // subtitle showing event id
+        TextView subtitle = new TextView(this);
+        subtitle.setTextSize(12f);
+        subtitle.setText("event id: " + eventId);
+
         Button acceptBtn = new Button(this);
-        acceptBtn.setText("Accept");
+        acceptBtn.setText("accept");
         acceptBtn.setOnClickListener(v ->
                 updateInvitationStatus(docId,
                         DatabaseConstants.ON_WAITING_LIST_STATUS.ACCEPTED,
                         card));
 
         Button declineBtn = new Button(this);
-        declineBtn.setText("Decline");
+        declineBtn.setText("decline");
         declineBtn.setOnClickListener(v ->
                 updateInvitationStatus(docId,
                         DatabaseConstants.ON_WAITING_LIST_STATUS.DECLINED,
                         card));
 
         card.addView(title);
+        card.addView(subtitle);
         card.addView(acceptBtn);
         card.addView(declineBtn);
 
         container.addView(card);
+
+        // fetch event title and update title text
+        db.collection(DatabaseConstants.COLLECTION_EVENTS_NAME)
+                .document(eventId)
+                .get()
+                .addOnSuccessListener(eventDoc -> {
+                    String eventTitle = null;
+                    if (eventDoc != null && eventDoc.exists()) {
+                        eventTitle = eventDoc.getString(
+                                DatabaseConstants.COLLECTION_EVENTS_TITLE_FIELD
+                        );
+                    }
+                    if (eventTitle == null || eventTitle.isEmpty()) {
+                        eventTitle = "event";
+                    }
+                    title.setText("event: " + eventTitle);
+                })
+                .addOnFailureListener(e ->
+                        title.setText("event: (failed to load)")
+                );
     }
 
     /**
-     * Updates the invitation status in Firestore for accepted or declined.
+     * updates the status of an existing invitation (accepted or declined).
+     * once done, the card is removed from the screen.
+     *
+     * @param docId     the waitlist document id
+     * @param newStatus new status to apply (accepted or declined)
+     * @param cardView  the card ui element that should be removed afterwards
      */
     private void updateInvitationStatus(String docId,
                                         DatabaseConstants.ON_WAITING_LIST_STATUS newStatus,
@@ -133,18 +194,18 @@ public class EntrantInvitationsActivity extends AppCompatActivity {
                         newStatus.name())
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this,
-                            "Invitation " + newStatus.name().toLowerCase(),
+                            "invitation " + newStatus.name().toLowerCase(),
                             Toast.LENGTH_SHORT).show();
                     container.removeView(cardView);
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this,
-                                "Failed to update: " + e.getMessage(),
+                                "failed to update: " + e.getMessage(),
                                 Toast.LENGTH_SHORT).show());
     }
 
     /**
-     * Shows a simple message and, if empty, displays it in the container.
+     * small helper to show a message both as a toast and as fallback text on the screen
      */
     private void showMessage(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();

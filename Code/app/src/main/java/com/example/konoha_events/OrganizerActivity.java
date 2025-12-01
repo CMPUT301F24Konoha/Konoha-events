@@ -34,7 +34,6 @@ public class OrganizerActivity extends AppCompatActivity {
     private Button createEventButton;
     private Button viewEntrantLocationsButton;
     private Button manageEventsButton;
-    private LinearLayout eventsContainer;
     private FirebaseService fbs;
     private String deviceId;
 
@@ -51,7 +50,6 @@ public class OrganizerActivity extends AppCompatActivity {
         initializeViews();
         setupCreateEventButton();
         setupManageEventButton();
-        loadOrganizerEvents();
         setupViewEntrantLocationsButton();
     }
 
@@ -63,20 +61,6 @@ public class OrganizerActivity extends AppCompatActivity {
         createEventButton = findViewById(R.id.createEventButton);
         viewEntrantLocationsButton = findViewById(R.id.btnViewEntrantLocations);
         manageEventsButton = findViewById(R.id.activity_organizer_create_event_button);
-
-        // Get parent view of createEventButton
-        LinearLayout parentLayout = (LinearLayout) createEventButton.getParent();
-
-        // Create container for events
-        eventsContainer = new LinearLayout(this);
-        eventsContainer.setOrientation(LinearLayout.VERTICAL);
-        eventsContainer.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        ));
-        eventsContainer.setPadding(16, 16, 16, 16);
-
-        parentLayout.addView(eventsContainer);
     }
 
     /**
@@ -88,54 +72,6 @@ public class OrganizerActivity extends AppCompatActivity {
             intent.putExtra("deviceId", deviceId);
             startActivity(intent);
         });
-    }
-
-    /**
-     * Load and display events created by this organizer
-     */
-    private void loadOrganizerEvents() {
-        fbs.getEventsLiveData().observe(this, new Observer<ArrayList<EventModel>>() {
-            @Override
-            public void onChanged(ArrayList<EventModel> events) {
-                displayEvents(events);
-            }
-        });
-    }
-
-    /**
-     * Display the organizer's events in the container
-     */
-    private void displayEvents(ArrayList<EventModel> allEvents) {
-        eventsContainer.removeAllViews();
-
-        String deviceId = EntrantDeviceIdStore.getOrCreateId(this);
-
-        if (deviceId == null) {
-            deviceId = "12345";
-        }
-
-        // Filter events by this organizer's device ID
-        ArrayList<EventModel> organizerEvents = new ArrayList<>();
-        for (EventModel event : allEvents) {
-            if (deviceId.equals(event.getDeviceId())) {
-                organizerEvents.add(event);
-            }
-        }
-
-        if (organizerEvents.isEmpty()) {
-            TextView noEventsText = new TextView(this);
-            noEventsText.setText("No events created yet. Tap 'Create Event' to get started!");
-            noEventsText.setGravity(Gravity.CENTER);
-            noEventsText.setPadding(16, 32, 16, 32);
-            eventsContainer.addView(noEventsText);
-            return;
-        }
-
-        // Display each event
-        for (EventModel event : organizerEvents) {
-            LinearLayout eventCard = createEventCard(event);
-            eventsContainer.addView(eventCard);
-        }
     }
 
     /**
