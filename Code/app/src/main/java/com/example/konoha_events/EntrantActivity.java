@@ -125,6 +125,7 @@ public class EntrantActivity extends AppCompatActivity {
             Intent intent = new Intent(EntrantActivity.this, EntrantFilterEvents.class);
             startActivity(intent);
         });
+        //hello
 
 
         scanQRCodeButton = findViewById(R.id.scan_qr_code_button);
