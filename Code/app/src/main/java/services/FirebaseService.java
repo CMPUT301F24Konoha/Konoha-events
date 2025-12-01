@@ -170,6 +170,18 @@ public class FirebaseService {
                                     .addOnFailureListener(e -> {
                                         Log.e(LOG_TAG, "Failed to get notification data for cleaning.", e);
                                     });
+
+                            // Check that referenced events exist
+                            events.document(notificationModel.getEventId())
+                                    .get()
+                                    .addOnSuccessListener(eventSnapshot -> {
+                                        if (!eventSnapshot.exists()) {
+                                            deleteNotification(notificationModel.getId());
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(LOG_TAG, "Failed to get event data for cleaning.", e);
+                                    });
                         }
                     })
                     .addOnFailureListener(e -> {

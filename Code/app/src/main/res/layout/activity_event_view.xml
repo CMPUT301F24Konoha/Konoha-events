@@ -253,13 +253,6 @@
                 android:text="Notify Selected Entrants"
                 android:visibility="gone">
             </Button>
-
-            <Button
-                android:id="@+id/activity_event_view_notify_non_selected_entrants_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Notify Non-Selected Entrants">
-            </Button>
           
             <Button
                 android:id="@+id/activity_event_view_view_entrant_locations_button"
