@@ -77,8 +77,4 @@ public class EventModel implements HasImage {
     public String getImageContext() {
         return "Event Image";
     }
-
-    @Override
-    @NonNull
-    public String getId() {return id;}
 }

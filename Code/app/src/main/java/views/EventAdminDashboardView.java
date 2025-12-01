@@ -60,22 +60,50 @@ public class EventAdminDashboardView extends ArrayAdapter<EventModel> {
         }
 
         TextView eventNameTextView = view.findViewById(R.id.event_admin_dashboard_view_name);
+        TextView eventIdTextView = view.findViewById(R.id.event_admin_dashboard_view_id);
+        TextView eventDeadlineTextView = view.findViewById(R.id.event_admin_dashboard_view_deadline);
+        TextView eventOnWaitingListCountTextView = view.findViewById(R.id.event_admin_dashboard_view_on_waiting_list_count);
+        TextView eventDescriptionTextView = view.findViewById(R.id.event_admin_dashboard_view_description);
         Button removeEventButton = view.findViewById(R.id.event_admin_dashboard_view_remove_button);
         Button editDetailsButton = view.findViewById(R.id.event_admin_dashboard_view_details_button);
         ImageView posterView = view.findViewById(R.id.event_admin_dashboard_image_view);
 
         if (eventModel.getImageBitmap() != null) {
-            Glide.with(this.getContext())
+            posterView.setVisibility(View.VISIBLE);
+            Glide.with(getContext())
                     .load(eventModel.getImageBitmap())
                     .into(posterView);
         } else {
             Glide.with(getContext()).clear(posterView);
             posterView.setImageDrawable(null);
+            posterView.setVisibility(View.GONE);
         }
 
         eventNameTextView.setText(eventModel.getEventTitle());
+        eventIdTextView.setText("ID: " + eventModel.getId());
 
-        // We should also set other fields here once they're added to event model.
+        String eventDeadlineString;
+        if (eventModel.getRegistrationDeadline() == null) {
+            eventDeadlineString = "Deadline: N/A";
+        } else {
+            eventDeadlineString = "Deadline: " + eventModel.getRegistrationDeadline().toString();
+        }
+        eventDeadlineTextView.setText(eventDeadlineString);
+
+        eventOnWaitingListCountTextView.setText("Loading...");
+        fbs.getOnWaitingListsOfEvent(eventModel.getId(), (onWaitingListModels) -> {
+            int count = onWaitingListModels.size();
+            String entrantsString;
+
+            if (eventModel.getEntrantLimit() != null && eventModel.getEntrantLimit() != -1) {
+                entrantsString = String.format("Total Entrants: (%s/%s)", count, eventModel.getEntrantLimit());
+            } else {
+                entrantsString = String.format("Total Entrants: %s", count);
+            }
+            eventOnWaitingListCountTextView.setText(entrantsString);
+        });
+
+        eventDescriptionTextView.setText("Description: " + eventModel.getDescription());
 
         editDetailsButton.setOnClickListener((v) -> {
             Context context = getContext();

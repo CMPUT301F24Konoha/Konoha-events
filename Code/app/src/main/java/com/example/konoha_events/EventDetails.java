@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -60,6 +59,9 @@ import interfaces.UserModelArrayListCallback;
 public class EventDetails extends AppCompatActivity {
     private final String tag = "[EventDetails]";
     private FirebaseService fbs;
+    private TextView eventIdTextView;
+    private TextView eventDescriptionTextView;
+    private TextView isGeolocationEnabledTextView;
     private TextView deadlineTextView;
     private TextView totalOnListTextView;
     private TextView waitingTextView;
@@ -132,6 +134,9 @@ public class EventDetails extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+        eventIdTextView = findViewById(R.id.activity_event_view_id);
+        eventDescriptionTextView = findViewById(R.id.activity_event_view_description);
+        isGeolocationEnabledTextView = findViewById(R.id.activity_event_view_is_geolocation_enabled_text);
         deadlineTextView = findViewById(R.id.activity_event_view_deadline_text);
         totalOnListTextView = findViewById(R.id.activity_event_view_total_on_list_text);
         waitingTextView = findViewById(R.id.activity_event_view_waiting_text);
@@ -160,6 +165,12 @@ public class EventDetails extends AppCompatActivity {
                     if (eventModel.getRegistrationDeadline() != null) {
                         displayDeadline(eventModel.getRegistrationDeadline());
                     }
+
+                    eventIdTextView.setText(String.format("Event ID: %s", eventModel.getId()));
+                    eventDescriptionTextView.setText(String.format("Description: %s", eventModel.getDescription()));
+
+                    // Geolocation isn't actually in the model
+                    isGeolocationEnabledTextView.setText("Geolocation Enabled: No");
 
                     drawFromWaitlistButton.setOnClickListener(vv -> {
                         fbs.selectUsersForEvent(eventModel.getId(), numberPicker.getValue());
