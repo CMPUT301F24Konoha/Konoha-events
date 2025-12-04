@@ -30,7 +30,7 @@ import util.ModelUtil;
 /**
  * EventDetailsActivity
  * ----------------------
- * Displays detailed information about an event
+ * Displays information about an event
  * Allows entrants to join the waitlist for the event
  * Display waitlist count
  */
