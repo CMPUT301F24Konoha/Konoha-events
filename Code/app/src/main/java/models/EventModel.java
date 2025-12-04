@@ -63,15 +63,24 @@ public class EventModel implements HasImage {
         return entrantLimit != null && entrantLimit > 0;
     }
 
+    /**
+     * Getter method that returns the deviceId
+     * @return deviceId the device Id
+     */
     @Nullable
     public String getDeviceId() {
         return deviceId;
     }
 
+    /**
+     * Getter method that returns the ID of a given events uploader (the organizer)
+     * @return the organizer ID
+     */
     @Override
     public String getUploaderId() {
         return organizerId;
     }
+
 
     @Override
     public String getImageContext() {

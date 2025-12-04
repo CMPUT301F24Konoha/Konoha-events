@@ -13,10 +13,7 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="givenEventAndUser_whenLeaveWaitingList_thenEntryRemoved()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="FirebaseServiceTest">
+      <SelectionState runConfigName="Tests in 'com.example.konoha_events'">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
